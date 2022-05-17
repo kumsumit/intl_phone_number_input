@@ -131,7 +131,8 @@ InternationalPhoneNumberInput({
       this.focusNode,
       this.cursorColor,
       this.autofillHints,
-      this.countries
+      this.countries,
+      this.defaultCountryCode,
     });
 ```|
 
@@ -179,9 +180,9 @@ SelectorConfig({
 | textAlignVertical                   | TextAlignVertical      | TextAlignVertical.center  |
 | scrollPadding                       | EdgeInsets             | EdgeInsets.all(20.0)      |
 | countrySelectorScrollControlled     | boolean                |        true               |
-| cursorColor                         | String     \            |       null                |
+| cursorColor                         | String     \            |       null               |
 | autofillHints                       | Iterable<String>       |       null                |
-
+| defaultCountryCode                  | String?                |       null                | 
 ### Selector Types
 | DROPDOWN | BOTTOMSHEET | DIALOG |
 |----------|-------------|--------|
