@@ -45,6 +45,15 @@ class _MyHomePageState extends State<MyHomePage> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
             InternationalPhoneNumberInput(
+              selectorButtonBottomWidget: Container(
+                color: Colors.white,
+                height: 1,
+                width: 120,
+              ),
+              betweenTextFieldWidget: Icon(
+                Icons.arrow_drop_down_sharp,
+                color: Colors.white,
+              ),
               locale: "hi",
               onInputChanged: (PhoneNumber number) {
                 print(number.phoneNumber);
