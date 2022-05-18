@@ -32,7 +32,8 @@ void main() {
         'fa',
         'ru',
         'yue',
-        'ku'
+        'ku',
+        'hi'
       ];
 
       Countries.countryList.forEach((Map<String, dynamic> data) {
