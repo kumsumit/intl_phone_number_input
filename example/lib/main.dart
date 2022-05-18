@@ -33,7 +33,6 @@ class _MyHomePageState extends State<MyHomePage> {
   final GlobalKey<FormState> formKey = GlobalKey<FormState>();
 
   final TextEditingController controller = TextEditingController();
-  String initialCountry = 'NG';
   PhoneNumber number = PhoneNumber(isoCode: 'NG');
 
   @override
@@ -67,7 +66,7 @@ class _MyHomePageState extends State<MyHomePage> {
                       .toString()
                       .compareTo(b.nameTranslations!["hi"].toString());
                 },
-                setSelectorButtonAsPrefixIcon: true,
+                // setSelectorButtonAsPrefixIcon: true,
                 selectorType: PhoneInputSelectorType.BOTTOM_SHEET,
               ),
               ignoreBlank: false,
@@ -82,6 +81,11 @@ class _MyHomePageState extends State<MyHomePage> {
               onSaved: (PhoneNumber number) {
                 print('On Saved: $number');
               },
+              inputDecoration: InputDecoration(
+                  labelText: 'Your Name',
+                  border: const OutlineInputBorder(),
+                  // Display the number of entered characters
+                  counterText: 'character(s)'),
             ),
             ElevatedButton(
               onPressed: () {

@@ -132,7 +132,6 @@ InternationalPhoneNumberInput({
       this.cursorColor,
       this.autofillHints,
       this.countries,
-      this.defaultCountryCode,
     });
 ```|
 
@@ -182,7 +181,6 @@ SelectorConfig({
 | countrySelectorScrollControlled     | boolean                |        true               |
 | cursorColor                         | String     \            |       null               |
 | autofillHints                       | Iterable<String>       |       null                |
-| defaultCountryCode                  | String?                |       null                | 
 ### Selector Types
 | DROPDOWN | BOTTOMSHEET | DIALOG |
 |----------|-------------|--------|
