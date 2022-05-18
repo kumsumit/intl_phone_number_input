@@ -73,7 +73,7 @@ class InternationalPhoneNumberInput extends StatefulWidget {
   final bool countrySelectorScrollControlled;
 
   final String? locale;
-
+  final TextDirection textDirection;
   final TextStyle? textStyle;
   final TextStyle? selectorTextStyle;
   final InputBorder? inputBorder;
@@ -97,6 +97,7 @@ class InternationalPhoneNumberInput extends StatefulWidget {
       required this.onInputChanged,
       this.onInputValidated,
       this.onSubmit,
+      this.textDirection = TextDirection.ltr,
       this.onFieldSubmitted,
       this.validator,
       this.onSaved,
@@ -214,6 +215,7 @@ class _InputWidgetState extends State<InternationalPhoneNumberInput> {
 
       final CountryComparator? countryComparator =
           widget.selectorConfig.countryComparator;
+
       if (countryComparator != null) {
         countries.sort(countryComparator);
       }
@@ -424,6 +426,7 @@ class _InputWidgetView
           ],
           Flexible(
             child: TextFormField(
+              textDirection: widget.textDirection,
               key: widget.fieldKey ?? Key(TestHelper.TextInputKeyValue),
               controller: state.controller,
               cursorColor: widget.cursorColor,
