@@ -9,18 +9,16 @@ class MyApp extends StatelessWidget {
     var darkTheme = ThemeData.dark().copyWith(primaryColor: Colors.blue);
 
     return MaterialApp(
+      debugShowCheckedModeBanner: false,
       title: 'Demo',
       themeMode: ThemeMode.dark,
       darkTheme: darkTheme,
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: Directionality(
-        textDirection: TextDirection.rtl,
-        child: Scaffold(
-          appBar: AppBar(title: Text('Demo')),
-          body: MyHomePage(),
-        ),
+      home: Scaffold(
+        appBar: AppBar(title: Text('Demo')),
+        body: MyHomePage(),
       ),
     );
   }
@@ -47,6 +45,7 @@ class _MyHomePageState extends State<MyHomePage> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
             InternationalPhoneNumberInput(
+              locale: "hi",
               onInputChanged: (PhoneNumber number) {
                 print(number.phoneNumber);
               },
@@ -54,6 +53,12 @@ class _MyHomePageState extends State<MyHomePage> {
                 print(value);
               },
               selectorConfig: SelectorConfig(
+                countryComparator: (a, b) {
+                  return a.nameTranslations!["hi"]
+                      .toString()
+                      .compareTo(b.nameTranslations!["hi"].toString());
+                },
+                setSelectorButtonAsPrefixIcon: true,
                 selectorType: PhoneInputSelectorType.BOTTOM_SHEET,
               ),
               ignoreBlank: false,
