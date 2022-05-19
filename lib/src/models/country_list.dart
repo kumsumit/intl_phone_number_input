@@ -7,6 +7,8 @@ class Countries {
   ///  *  en_short_name
   ///  *  nationality
   ///  *  dial_code
+  ///  *  minLength,
+  ///  *  maxLength,
   ///  *  nameTranslations
   ///
   ///   ```dart
@@ -17,6 +19,8 @@ class Countries {
   ///    "en_short_name": "Nigeria",
   ///    "nationality": "Nigerian",
   ///    "dial_code": "+234",
+  ///    "minLength": 9,
+  ///    "maxLength": 9,
   ///    "nameTranslations": {
   ///      "sk": "Nigéria",
   ///      "se": "Nigeria",
@@ -54,6 +58,8 @@ class Countries {
       "en_short_name": "Andorra",
       "nationality": "Andorran",
       "dial_code": "+376",
+      "minLength": 9,
+      "maxLength": 9,
       "nameTranslations": {
         "sk": "Andorra",
         "se": "Andorra",
@@ -88,6 +94,8 @@ class Countries {
       "en_short_name": "United Arab Emirates",
       "nationality": "Emirati, Emirian, Emiri",
       "dial_code": "+971",
+      "minLength": 9,
+      "maxLength": 9,
       "nameTranslations": {
         "sk": "Spojené arabské emiráty",
         "se": "Ovttastuvvan Arábaemiráhtat",
@@ -122,6 +130,8 @@ class Countries {
       "en_short_name": "Afghanistan",
       "nationality": "Afghan",
       "dial_code": "+93",
+      "minLength": 9,
+      "maxLength": 9,
       "nameTranslations": {
         "sk": "Afganistan",
         "se": "Afghanistan",
@@ -156,6 +166,8 @@ class Countries {
       "en_short_name": "Antigua and Barbuda",
       "nationality": "Antiguan or Barbudan",
       "dial_code": "+1268",
+      "minLength": 7,
+      "maxLength": 7,
       "nameTranslations": {
         "sk": "Antigua a Barbuda",
         "se": "Antigua ja Barbuda",
@@ -190,6 +202,8 @@ class Countries {
       "en_short_name": "Anguilla",
       "nationality": "Anguillan",
       "dial_code": "+1264",
+      "minLength": 7,
+      "maxLength": 7,
       "nameTranslations": {
         "sk": "Anguilla",
         "se": "Anguilla",
@@ -224,6 +238,8 @@ class Countries {
       "en_short_name": "Albania",
       "nationality": "Albanian",
       "dial_code": "+355",
+      "minLength": 9,
+      "maxLength": 9,
       "nameTranslations": {
         "sk": "Albánsko",
         "se": "Albánia",
@@ -258,6 +274,8 @@ class Countries {
       "en_short_name": "Armenia",
       "nationality": "Armenian",
       "dial_code": "+374",
+      "minLength": 8,
+      "maxLength": 8,
       "nameTranslations": {
         "sk": "Arménsko",
         "se": "Armenia",
@@ -292,6 +310,8 @@ class Countries {
       "en_short_name": "Angola",
       "nationality": "Angolan",
       "dial_code": "+244",
+      "minLength": 9,
+      "maxLength": 9,
       "nameTranslations": {
         "sk": "Angola",
         "se": "Angola",
@@ -326,6 +346,8 @@ class Countries {
       "en_short_name": "Antarctica",
       "nationality": "Antarctic",
       "dial_code": "+672",
+      "minLength": 6,
+      "maxLength": 6,
       "nameTranslations": {
         "sk": "Antarktída",
         "se": "Antárktis",
@@ -360,6 +382,8 @@ class Countries {
       "en_short_name": "Argentina",
       "nationality": "Argentine",
       "dial_code": "+54",
+      "minLength": 12,
+      "maxLength": 12,
       "nameTranslations": {
         "sk": "Argentína",
         "se": "Argentina",
@@ -394,6 +418,8 @@ class Countries {
       "en_short_name": "American Samoa",
       "nationality": "American Samoan",
       "dial_code": "+1684",
+      "minLength": 7,
+      "maxLength": 7,
       "nameTranslations": {
         "sk": "Americká Samoa",
         "se": "Amerihká Samoa",
@@ -428,6 +454,8 @@ class Countries {
       "en_short_name": "Austria",
       "nationality": "Austrian",
       "dial_code": "+43",
+      "minLength": 13,
+      "maxLength": 13,
       "nameTranslations": {
         "sk": "Rakúsko",
         "se": "Nuortariika",
@@ -462,6 +490,8 @@ class Countries {
       "en_short_name": "Australia",
       "nationality": "Australian",
       "dial_code": "+61",
+      "minLength": 9,
+      "maxLength": 9,
       "nameTranslations": {
         "sk": "Austrália",
         "se": "Austrália",
@@ -496,6 +526,8 @@ class Countries {
       "en_short_name": "Åland Islands",
       "nationality": "Åland Island",
       "dial_code": "+358",
+      "minLength": 15,
+      "maxLength": 15,
       "nameTranslations": {
         "sk": "Alandy",
         "se": "Ålánda",
@@ -530,6 +562,8 @@ class Countries {
       "en_short_name": "Aruba",
       "nationality": "Aruban",
       "dial_code": "+297",
+      "minLength": 7,
+      "maxLength": 7,
       "nameTranslations": {
         "sk": "Aruba",
         "se": "Aruba",
@@ -564,6 +598,8 @@ class Countries {
       "en_short_name": "Azerbaijan",
       "nationality": "Azerbaijani, Azeri",
       "dial_code": "+994",
+      "minLength": 9,
+      "maxLength": 9,
       "nameTranslations": {
         "sk": "Azerbajdžan",
         "se": "Aserbaižan",
@@ -598,6 +634,8 @@ class Countries {
       "en_short_name": "Bosnia and Herzegovina",
       "nationality": "Bosnian or Herzegovinian",
       "dial_code": "+387",
+      "minLength": 9,
+      "maxLength": 9,
       "nameTranslations": {
         "sk": "Bosna a Hercegovina",
         "se": "Bosnia-Hercegovina",
@@ -632,6 +670,8 @@ class Countries {
       "en_short_name": "Barbados",
       "nationality": "Barbadian",
       "dial_code": "+1246",
+      "minLength": 7,
+      "maxLength": 7,
       "nameTranslations": {
         "sk": "Barbados",
         "se": "Barbados",
@@ -666,6 +706,8 @@ class Countries {
       "en_short_name": "Bangladesh",
       "nationality": "Bangladeshi",
       "dial_code": "+880",
+      "minLength": 10,
+      "maxLength": 10,
       "nameTranslations": {
         "sk": "Bangladéš",
         "se": "Bangladesh",
@@ -700,6 +742,8 @@ class Countries {
       "en_short_name": "Belgium",
       "nationality": "Belgian",
       "dial_code": "+32",
+      "minLength": 9,
+      "maxLength": 9,
       "nameTranslations": {
         "sk": "Belgicko",
         "se": "Belgia",
@@ -734,6 +778,8 @@ class Countries {
       "en_short_name": "Burkina Faso",
       "nationality": "Burkinabé",
       "dial_code": "+226",
+      "minLength": 8,
+      "maxLength": 8,
       "nameTranslations": {
         "sk": "Burkina Faso",
         "se": "Burkina Faso",
@@ -768,6 +814,8 @@ class Countries {
       "en_short_name": "Bulgaria",
       "nationality": "Bulgarian",
       "dial_code": "+359",
+      "minLength": 9,
+      "maxLength": 9,
       "nameTranslations": {
         "sk": "Bulharsko",
         "se": "Bulgária",
@@ -802,6 +850,8 @@ class Countries {
       "en_short_name": "Bahrain",
       "nationality": "Bahraini",
       "dial_code": "+973",
+      "minLength": 8,
+      "maxLength": 8,
       "nameTranslations": {
         "sk": "Bahrajn",
         "se": "Bahrain",
@@ -836,6 +886,8 @@ class Countries {
       "en_short_name": "Burundi",
       "nationality": "Burundian",
       "dial_code": "+257",
+      "minLength": 8,
+      "maxLength": 8,
       "nameTranslations": {
         "sk": "Burundi",
         "se": "Burundi",
@@ -870,6 +922,8 @@ class Countries {
       "en_short_name": "Benin",
       "nationality": "Beninese, Beninois",
       "dial_code": "+229",
+      "minLength": 8,
+      "maxLength": 8,
       "nameTranslations": {
         "sk": "Benin",
         "se": "Benin",
@@ -904,6 +958,8 @@ class Countries {
       "en_short_name": "Saint Barthélemy",
       "nationality": "Barthélemois",
       "dial_code": "+590",
+      "minLength": 9,
+      "maxLength": 9,
       "nameTranslations": {
         "sk": "Svätý Bartolomej",
         "se": "Saint Barthélemy",
@@ -938,6 +994,8 @@ class Countries {
       "en_short_name": "Bermuda",
       "nationality": "Bermudian, Bermudan",
       "dial_code": "+1441",
+      "minLength": 7,
+      "maxLength": 7,
       "nameTranslations": {
         "sk": "Bermudy",
         "se": "Bermuda",
@@ -972,6 +1030,8 @@ class Countries {
       "en_short_name": "Brunei Darussalam",
       "nationality": "Bruneian",
       "dial_code": "+673",
+      "minLength": 7,
+      "maxLength": 7,
       "nameTranslations": {
         "sk": "Brunej",
         "se": "Brunei",
@@ -1006,6 +1066,8 @@ class Countries {
       "en_short_name": "Bolivia (Plurinational State of)",
       "nationality": "Bolivian",
       "dial_code": "+591",
+      "minLength": 8,
+      "maxLength": 8,
       "nameTranslations": {
         "sk": "Bolívia",
         "se": "Bolivia",
@@ -1040,6 +1102,8 @@ class Countries {
       "en_short_name": "Brazil",
       "nationality": "Brazilian",
       "dial_code": "+55",
+      "minLength": 11,
+      "maxLength": 11,
       "nameTranslations": {
         "sk": "Brazília",
         "se": "Brasil",
@@ -1074,6 +1138,8 @@ class Countries {
       "en_short_name": "Bahamas",
       "nationality": "Bahamian",
       "dial_code": "+1242",
+      "minLength": 7,
+      "maxLength": 7,
       "nameTranslations": {
         "sk": "Bahamy",
         "se": "Bahamas",
@@ -1108,6 +1174,8 @@ class Countries {
       "en_short_name": "Bhutan",
       "nationality": "Bhutanese",
       "dial_code": "+975",
+      "minLength": 8,
+      "maxLength": 8,
       "nameTranslations": {
         "sk": "Bhután",
         "se": "Bhutan",
@@ -1142,6 +1210,8 @@ class Countries {
       "en_short_name": "Bouvet Island",
       "nationality": "Bouvet Island",
       "dial_code": "+47",
+      "minLength": 15,
+      "maxLength": 15,
       "nameTranslations": {
         "sk": "Bouvetov ostrov",
         "se": "Bouvet-sullot",
@@ -1176,6 +1246,8 @@ class Countries {
       "en_short_name": "Botswana",
       "nationality": "Motswana, Botswanan",
       "dial_code": "+267",
+      "minLength": 8,
+      "maxLength": 8,
       "nameTranslations": {
         "sk": "Botswana",
         "se": "Botswana",
@@ -1210,6 +1282,8 @@ class Countries {
       "en_short_name": "Belarus",
       "nationality": "Belarusian",
       "dial_code": "+375",
+      "minLength": 10,
+      "maxLength": 10,
       "nameTranslations": {
         "sk": "Bielorusko",
         "se": "Vilges-Ruošša",
@@ -1244,6 +1318,8 @@ class Countries {
       "en_short_name": "Belize",
       "nationality": "Belizean",
       "dial_code": "+501",
+      "minLength": 7,
+      "maxLength": 7,
       "nameTranslations": {
         "sk": "Belize",
         "se": "Belize",
@@ -1278,6 +1354,8 @@ class Countries {
       "en_short_name": "Canada",
       "nationality": "Canadian",
       "dial_code": "+1",
+      "minLength": 10,
+      "maxLength": 10,
       "nameTranslations": {
         "sk": "Kanada",
         "se": "Kanáda",
@@ -1312,6 +1390,8 @@ class Countries {
       "en_short_name": "Cocos (Keeling) Islands",
       "nationality": "Cocos Island",
       "dial_code": "+61",
+      "minLength": 15,
+      "maxLength": 15,
       "nameTranslations": {
         "sk": "Kokosové ostrovy",
         "se": "Cocos-sullot",
@@ -1346,6 +1426,8 @@ class Countries {
       "en_short_name": "Congo (Democratic Republic of the)",
       "nationality": "Congolese",
       "dial_code": "+243",
+      "minLength": 9,
+      "maxLength": 9,
       "nameTranslations": {
         "sk": "Konžská demokratická republika",
         "se": "Kongo-Kinshasa",
@@ -1380,6 +1462,8 @@ class Countries {
       "en_short_name": "Central African Republic",
       "nationality": "Central African",
       "dial_code": "+236",
+      "minLength": 8,
+      "maxLength": 8,
       "nameTranslations": {
         "sk": "Stredoafrická republika",
         "se": "Gaska-Afrihká dásseváldi",
@@ -1414,6 +1498,8 @@ class Countries {
       "en_short_name": "Congo (Republic of the)",
       "nationality": "Congolese",
       "dial_code": "+242",
+      "minLength": 7,
+      "maxLength": 7,
       "nameTranslations": {
         "sk": "Konžská republika",
         "se": "Kongo-Brazzaville",
@@ -1448,6 +1534,8 @@ class Countries {
       "en_short_name": "Switzerland",
       "nationality": "Swiss",
       "dial_code": "+41",
+      "minLength": 12,
+      "maxLength": 12,
       "nameTranslations": {
         "sk": "Švajčiarsko",
         "se": "Šveica",
@@ -1482,6 +1570,8 @@ class Countries {
       "en_short_name": "Côte d'Ivoire",
       "nationality": "Ivorian",
       "dial_code": "+225",
+      "minLength": 10,
+      "maxLength": 10,
       "nameTranslations": {
         "sk": "Pobrežie Slonoviny",
         "se": "Elfenbenariddu",
@@ -1516,6 +1606,8 @@ class Countries {
       "en_short_name": "Cook Islands",
       "nationality": "Cook Island",
       "dial_code": "+682",
+      "minLength": 5,
+      "maxLength": 5,
       "nameTranslations": {
         "sk": "Cookove ostrovy",
         "se": "Cook-sullot",
@@ -1550,6 +1642,8 @@ class Countries {
       "en_short_name": "Chile",
       "nationality": "Chilean",
       "dial_code": "+56",
+      "minLength": 9,
+      "maxLength": 9,
       "nameTranslations": {
         "sk": "Čile",
         "se": "Čiile",
@@ -1584,6 +1678,8 @@ class Countries {
       "en_short_name": "Cameroon",
       "nationality": "Cameroonian",
       "dial_code": "+237",
+      "minLength": 9,
+      "maxLength": 9,
       "nameTranslations": {
         "sk": "Kamerun",
         "se": "Kamerun",
@@ -1618,6 +1714,8 @@ class Countries {
       "en_short_name": "China",
       "nationality": "Chinese",
       "dial_code": "+86",
+      "minLength": 12,
+      "maxLength": 12,
       "nameTranslations": {
         "sk": "Čína",
         "se": "Kiinná",
@@ -1652,6 +1750,8 @@ class Countries {
       "en_short_name": "Colombia",
       "nationality": "Colombian",
       "dial_code": "+57",
+      "minLength": 10,
+      "maxLength": 10,
       "nameTranslations": {
         "sk": "Kolumbia",
         "se": "Kolombia",
@@ -1686,6 +1786,8 @@ class Countries {
       "en_short_name": "Costa Rica",
       "nationality": "Costa Rican",
       "dial_code": "+506",
+      "minLength": 8,
+      "maxLength": 8,
       "nameTranslations": {
         "sk": "Kostarika",
         "se": "Costa Rica",
@@ -1720,6 +1822,8 @@ class Countries {
       "en_short_name": "Cuba",
       "nationality": "Cuban",
       "dial_code": "+53",
+      "minLength": 8,
+      "maxLength": 8,
       "nameTranslations": {
         "sk": "Kuba",
         "se": "Kuba",
@@ -1754,6 +1858,8 @@ class Countries {
       "en_short_name": "Cabo Verde",
       "nationality": "Cabo Verdean",
       "dial_code": "+238",
+      "minLength": 7,
+      "maxLength": 7,
       "nameTranslations": {
         "sk": "Kapverdy",
         "se": "Kap Verde",
@@ -1788,6 +1894,8 @@ class Countries {
       "en_short_name": "Curaçao",
       "nationality": "Curaçaon",
       "dial_code": "+5999",
+      "minLength": 7,
+      "maxLength": 7,
       "nameTranslations": {
         "sk": "Curaçao",
         "se": "Curaçao",
@@ -1822,6 +1930,8 @@ class Countries {
       "en_short_name": "Christmas Island",
       "nationality": "Christmas Island",
       "dial_code": "+61",
+      "minLength": 15,
+      "maxLength": 15,
       "nameTranslations": {
         "sk": "Vianočný ostrov",
         "se": "Juovllat-sullot",
@@ -1856,6 +1966,8 @@ class Countries {
       "en_short_name": "Cyprus",
       "nationality": "Cypriot",
       "dial_code": "+357",
+      "minLength": 8,
+      "maxLength": 8,
       "nameTranslations": {
         "sk": "Cyprus",
         "se": "Kypros",
@@ -1890,6 +2002,8 @@ class Countries {
       "en_short_name": "Czech Republic",
       "nationality": "Czech",
       "dial_code": "+420",
+      "minLength": 9,
+      "maxLength": 9,
       "nameTranslations": {
         "sk": "Česko",
         "se": "Čeahkka",
@@ -1924,6 +2038,8 @@ class Countries {
       "en_short_name": "Germany",
       "nationality": "German",
       "dial_code": "+49",
+      "minLength": 9,
+      "maxLength": 13,
       "nameTranslations": {
         "sk": "Nemecko",
         "se": "Duiska",
@@ -1958,6 +2074,8 @@ class Countries {
       "en_short_name": "Djibouti",
       "nationality": "Djiboutian",
       "dial_code": "+253",
+      "minLength": 6,
+      "maxLength": 6,
       "nameTranslations": {
         "sk": "Džibutsko",
         "se": "Djibouti",
@@ -1992,6 +2110,8 @@ class Countries {
       "en_short_name": "Denmark",
       "nationality": "Danish",
       "dial_code": "+45",
+      "minLength": 8,
+      "maxLength": 8,
       "nameTranslations": {
         "sk": "Dánsko",
         "se": "Dánmárku",
@@ -2026,6 +2146,8 @@ class Countries {
       "en_short_name": "Dominica",
       "nationality": "Dominican",
       "dial_code": "+1767",
+      "minLength": 7,
+      "maxLength": 7,
       "nameTranslations": {
         "sk": "Dominika",
         "se": "Dominica",
@@ -2060,6 +2182,8 @@ class Countries {
       "en_short_name": "Dominican Republic",
       "nationality": "Dominican",
       "dial_code": "+1",
+      "minLength": 12,
+      "maxLength": 12,
       "nameTranslations": {
         "sk": "Dominikánska republika",
         "se": "Dominikána dásseváldi",
@@ -2094,6 +2218,8 @@ class Countries {
       "en_short_name": "Algeria",
       "nationality": "Algerian",
       "dial_code": "+213",
+      "minLength": 9,
+      "maxLength": 9,
       "nameTranslations": {
         "sk": "Alžírsko",
         "se": "Algeria",
@@ -2128,6 +2254,8 @@ class Countries {
       "en_short_name": "Ecuador",
       "nationality": "Ecuadorian",
       "dial_code": "+593",
+      "minLength": 8,
+      "maxLength": 8,
       "nameTranslations": {
         "sk": "Ekvádor",
         "se": "Ecuador",
@@ -2162,6 +2290,8 @@ class Countries {
       "en_short_name": "Estonia",
       "nationality": "Estonian",
       "dial_code": "+372",
+      "minLength": 10,
+      "maxLength": 10,
       "nameTranslations": {
         "sk": "Estónsko",
         "se": "Estlánda",
@@ -2196,6 +2326,8 @@ class Countries {
       "en_short_name": "Egypt",
       "nationality": "Egypt",
       "dial_code": "+20",
+      "minLength": 10,
+      "maxLength": 10,
       "nameTranslations": {
         "sk": "Egypt",
         "se": "Egypt",
@@ -2230,6 +2362,8 @@ class Countries {
       "en_short_name": "Western Sahara",
       "nationality": "Western Sahara",
       "dial_code": "+212",
+      "minLength": 9,
+      "maxLength": 9,
       "nameTranslations": {
         "sk": "Western Sahara",
         "se": "Western Sahara",
@@ -2264,6 +2398,8 @@ class Countries {
       "en_short_name": "Eritrea",
       "nationality": "Eritrean",
       "dial_code": "+291",
+      "minLength": 7,
+      "maxLength": 7,
       "nameTranslations": {
         "sk": "Eritrea",
         "se": "Eritrea",
@@ -2298,6 +2434,8 @@ class Countries {
       "en_short_name": "Spain",
       "nationality": "Spanish",
       "dial_code": "+34",
+      "minLength": 9,
+      "maxLength": 9,
       "nameTranslations": {
         "sk": "Španielsko",
         "se": "Spánia",
@@ -2332,6 +2470,8 @@ class Countries {
       "en_short_name": "Ethiopia",
       "nationality": "Ethiopian",
       "dial_code": "+251",
+      "minLength": 9,
+      "maxLength": 9,
       "nameTranslations": {
         "sk": "Etiópia",
         "se": "Etiopia",
@@ -2366,6 +2506,8 @@ class Countries {
       "en_short_name": "Finland",
       "nationality": "Finnish",
       "dial_code": "+358",
+      "minLength": 12,
+      "maxLength": 12,
       "nameTranslations": {
         "sk": "Fínsko",
         "se": "Suopma",
@@ -2400,6 +2542,8 @@ class Countries {
       "en_short_name": "Fiji",
       "nationality": "Fijian",
       "dial_code": "+679",
+      "minLength": 7,
+      "maxLength": 7,
       "nameTranslations": {
         "sk": "Fidži",
         "se": "Fijisullot",
@@ -2434,6 +2578,8 @@ class Countries {
       "en_short_name": "Falkland Islands (Malvinas)",
       "nationality": "Falkland Island",
       "dial_code": "+500",
+      "minLength": 5,
+      "maxLength": 5,
       "nameTranslations": {
         "sk": "Falklandy",
         "se": "Falklandsullot",
@@ -2468,6 +2614,8 @@ class Countries {
       "en_short_name": "Micronesia (Federated States of)",
       "nationality": "Micronesian",
       "dial_code": "+691",
+      "minLength": 7,
+      "maxLength": 7,
       "nameTranslations": {
         "sk": "Mikronézia",
         "se": "Mikronesia",
@@ -2502,6 +2650,8 @@ class Countries {
       "en_short_name": "Faroe Islands",
       "nationality": "Faroese",
       "dial_code": "+298",
+      "minLength": 6,
+      "maxLength": 6,
       "nameTranslations": {
         "sk": "Faerské ostrovy",
         "se": "Fearsullot",
@@ -2536,6 +2686,8 @@ class Countries {
       "en_short_name": "France",
       "nationality": "French",
       "dial_code": "+33",
+      "minLength": 9,
+      "maxLength": 9,
       "nameTranslations": {
         "sk": "Francúzsko",
         "se": "Frankriika",
@@ -2570,6 +2722,8 @@ class Countries {
       "en_short_name": "Gabon",
       "nationality": "Gabonese",
       "dial_code": "+241",
+      "minLength": 9,
+      "maxLength": 9,
       "nameTranslations": {
         "sk": "Gabon",
         "se": "Gabon",
@@ -2604,6 +2758,8 @@ class Countries {
       "en_short_name": "United Kingdom of Great Britain and Northern Ireland",
       "nationality": "British, UK",
       "dial_code": "+44",
+      "minLength": 10,
+      "maxLength": 10,
       "nameTranslations": {
         "sk": "Spojené kráľovstvo",
         "se": "Stuorra-Británnia",
@@ -2638,6 +2794,8 @@ class Countries {
       "en_short_name": "Grenada",
       "nationality": "Grenadian",
       "dial_code": "+1473",
+      "minLength": 7,
+      "maxLength": 7,
       "nameTranslations": {
         "sk": "Grenada",
         "se": "Grenada",
@@ -2672,6 +2830,8 @@ class Countries {
       "en_short_name": "Georgia",
       "nationality": "Georgian",
       "dial_code": "+995",
+      "minLength": 8,
+      "maxLength": 9,
       "nameTranslations": {
         "sk": "Gruzínsko",
         "se": "Georgia",
@@ -2706,6 +2866,8 @@ class Countries {
       "en_short_name": "French Guiana",
       "nationality": "French Guianese",
       "dial_code": "+594",
+      "minLength": 15,
+      "maxLength": 15,
       "nameTranslations": {
         "sk": "Francúzska Guyana",
         "se": "Frankriikka Guayana",
@@ -2739,7 +2901,9 @@ class Countries {
       "alpha_3_code": "GGY",
       "en_short_name": "Guernsey",
       "nationality": "Channel Island",
-      "dial_code": "+44",
+      "dial_code": "+44 1481",
+      "minLength": 6,
+      "maxLength": 6,
       "nameTranslations": {
         "sk": "Guernsey",
         "se": "Guernsey",
@@ -2774,6 +2938,8 @@ class Countries {
       "en_short_name": "Ghana",
       "nationality": "Ghanaian",
       "dial_code": "+233",
+      "minLength": 10,
+      "maxLength": 10,
       "nameTranslations": {
         "sk": "Ghana",
         "se": "Ghana",
@@ -2808,6 +2974,8 @@ class Countries {
       "en_short_name": "Gibraltar",
       "nationality": "Gibraltar",
       "dial_code": "+350",
+      "minLength": 8,
+      "maxLength": 8,
       "nameTranslations": {
         "sk": "Gibraltár",
         "se": "Gibraltar",
@@ -2842,6 +3010,8 @@ class Countries {
       "en_short_name": "Greenland",
       "nationality": "Greenlandic",
       "dial_code": "+299",
+      "minLength": 6,
+      "maxLength": 6,
       "nameTranslations": {
         "sk": "Grónsko",
         "se": "Kalaallit Nunaat",
@@ -2876,6 +3046,8 @@ class Countries {
       "en_short_name": "Gambia",
       "nationality": "Gambian",
       "dial_code": "+220",
+      "minLength": 7,
+      "maxLength": 7,
       "nameTranslations": {
         "sk": "Gambia",
         "se": "Gámbia",
@@ -2910,6 +3082,8 @@ class Countries {
       "en_short_name": "Guinea",
       "nationality": "Guinean",
       "dial_code": "+224",
+      "minLength": 8,
+      "maxLength": 9,
       "nameTranslations": {
         "sk": "Guinea",
         "se": "Guinea",
@@ -2944,6 +3118,8 @@ class Countries {
       "en_short_name": "Guadeloupe",
       "nationality": "Guadeloupe",
       "dial_code": "+590",
+      "minLength": 15,
+      "maxLength": 15,
       "nameTranslations": {
         "sk": "Guadeloupe",
         "se": "Guadeloupe",
@@ -2978,6 +3154,8 @@ class Countries {
       "en_short_name": "Equatorial Guinea",
       "nationality": "Equatorial Guinean, Equatoguinean",
       "dial_code": "+240",
+      "minLength": 6,
+      "maxLength": 6,
       "nameTranslations": {
         "sk": "Rovníková Guinea",
         "se": "Ekvatoriála Guinea",
@@ -3012,6 +3190,8 @@ class Countries {
       "en_short_name": "Greece",
       "nationality": "Greek, Hellenic",
       "dial_code": "+30",
+      "minLength": 10,
+      "maxLength": 10,
       "nameTranslations": {
         "sk": "Grécko",
         "se": "Greika",
@@ -3046,6 +3226,8 @@ class Countries {
       "en_short_name": "South Georgia and the South Sandwich Islands",
       "nationality": "South Georgia or South Sandwich Islands",
       "dial_code": "+500",
+      "minLength": 15,
+      "maxLength": 15,
       "nameTranslations": {
         "sk": "Južná Georgia a Južné Sandwichove ostrovy",
         "se": "Lulli Georgia ja Lulli Sandwich-sullot",
@@ -3080,6 +3262,8 @@ class Countries {
       "en_short_name": "Guatemala",
       "nationality": "Guatemalan",
       "dial_code": "+502",
+      "minLength": 8,
+      "maxLength": 8,
       "nameTranslations": {
         "sk": "Guatemala",
         "se": "Guatemala",
@@ -3114,6 +3298,8 @@ class Countries {
       "en_short_name": "Guam",
       "nationality": "Guamanian, Guambat",
       "dial_code": "+1671",
+      "minLength": 7,
+      "maxLength": 7,
       "nameTranslations": {
         "sk": "Guam",
         "se": "Guam",
@@ -3148,6 +3334,8 @@ class Countries {
       "en_short_name": "Guinea-Bissau",
       "nationality": "Bissau-Guinean",
       "dial_code": "+245",
+      "minLength": 7,
+      "maxLength": 7,
       "nameTranslations": {
         "sk": "Guinea-Bissau",
         "se": "Guinea-Bissau",
@@ -3182,6 +3370,8 @@ class Countries {
       "en_short_name": "Guyana",
       "nationality": "Guyanese",
       "dial_code": "+592",
+      "minLength": 7,
+      "maxLength": 7,
       "nameTranslations": {
         "sk": "Guyana",
         "se": "Guyana",
@@ -3216,6 +3406,8 @@ class Countries {
       "en_short_name": "Hong Kong",
       "nationality": "Hong Kong, Hong Kongese",
       "dial_code": "+852",
+      "minLength": 8,
+      "maxLength": 8,
       "nameTranslations": {
         "sk": "Hongkong – OAO Číny",
         "se": "Hongkong",
@@ -3249,7 +3441,9 @@ class Countries {
       "alpha_3_code": "HMD",
       "en_short_name": "Heard Island and McDonald Islands",
       "nationality": "Heard Island or McDonald Islands",
-      "dial_code": "+0",
+      "dial_code": "+672",
+      "minLength": 15,
+      "maxLength": 15,
       "nameTranslations": {
         "sk": "Heardov ostrov a Macdonaldove ostrovy",
         "se": "Heard- ja McDonald-sullot",
@@ -3284,6 +3478,8 @@ class Countries {
       "en_short_name": "Honduras",
       "nationality": "Honduran",
       "dial_code": "+504",
+      "minLength": 8,
+      "maxLength": 8,
       "nameTranslations": {
         "sk": "Honduras",
         "se": "Honduras",
@@ -3318,6 +3514,8 @@ class Countries {
       "en_short_name": "Croatia",
       "nationality": "Croatian",
       "dial_code": "+385",
+      "minLength": 12,
+      "maxLength": 12,
       "nameTranslations": {
         "sk": "Chorvátsko",
         "se": "Kroátia",
@@ -3352,6 +3550,8 @@ class Countries {
       "en_short_name": "Haiti",
       "nationality": "Haitian",
       "dial_code": "+509",
+      "minLength": 8,
+      "maxLength": 8,
       "nameTranslations": {
         "sk": "Haiti",
         "se": "Haiti",
@@ -3386,6 +3586,8 @@ class Countries {
       "en_short_name": "Hungary",
       "nationality": "Hungarian, Magyar",
       "dial_code": "+36",
+      "minLength": 9,
+      "maxLength": 9,
       "nameTranslations": {
         "sk": "Maďarsko",
         "se": "Ungár",
@@ -3420,6 +3622,8 @@ class Countries {
       "en_short_name": "Indonesia",
       "nationality": "Indonesian",
       "dial_code": "+62",
+      "minLength": 13,
+      "maxLength": 13,
       "nameTranslations": {
         "sk": "Indonézia",
         "se": "Indonesia",
@@ -3454,6 +3658,8 @@ class Countries {
       "en_short_name": "Ireland",
       "nationality": "Irish",
       "dial_code": "+353",
+      "minLength": 7,
+      "maxLength": 9,
       "nameTranslations": {
         "sk": "Írsko",
         "se": "Irlánda",
@@ -3488,6 +3694,8 @@ class Countries {
       "en_short_name": "Israel",
       "nationality": "Israeli",
       "dial_code": "+972",
+      "minLength": 9,
+      "maxLength": 9,
       "nameTranslations": {
         "sk": "Izrael",
         "se": "Israel",
@@ -3521,7 +3729,9 @@ class Countries {
       "alpha_3_code": "IMN",
       "en_short_name": "Isle of Man",
       "nationality": "Manx",
-      "dial_code": "+44",
+      "dial_code": "+44 1624",
+      "minLength": 6,
+      "maxLength": 6,
       "nameTranslations": {
         "sk": "Ostrov Man",
         "se": "Mann-sullot",
@@ -3556,6 +3766,8 @@ class Countries {
       "en_short_name": "India",
       "nationality": "Indian",
       "dial_code": "+91",
+      "minLength": 10,
+      "maxLength": 10,
       "nameTranslations": {
         "sk": "India",
         "se": "India",
@@ -3590,6 +3802,8 @@ class Countries {
       "en_short_name": "British Indian Ocean Territory",
       "nationality": "BIOT",
       "dial_code": "+246",
+      "minLength": 7,
+      "maxLength": 7,
       "nameTranslations": {
         "sk": "Britské indickooceánske územie",
         "se": "British Indian Ocean Territory",
@@ -3624,6 +3838,8 @@ class Countries {
       "en_short_name": "Iraq",
       "nationality": "Iraqi",
       "dial_code": "+964",
+      "minLength": 10,
+      "maxLength": 10,
       "nameTranslations": {
         "sk": "Irak",
         "se": "Irak",
@@ -3658,6 +3874,8 @@ class Countries {
       "en_short_name": "Iran",
       "nationality": "Iranian, Persian",
       "dial_code": "+98",
+      "minLength": 10,
+      "maxLength": 10,
       "nameTranslations": {
         "sk": "Irán",
         "se": "Iran",
@@ -3692,6 +3910,8 @@ class Countries {
       "en_short_name": "Iceland",
       "nationality": "Icelandic",
       "dial_code": "+354",
+      "minLength": 7,
+      "maxLength": 9,
       "nameTranslations": {
         "sk": "Island",
         "se": "Islánda",
@@ -3726,6 +3946,8 @@ class Countries {
       "en_short_name": "Italy",
       "nationality": "Italian",
       "dial_code": "+39",
+      "minLength": 13,
+      "maxLength": 13,
       "nameTranslations": {
         "sk": "Taliansko",
         "se": "Itália",
@@ -3759,7 +3981,9 @@ class Countries {
       "alpha_3_code": "JEY",
       "en_short_name": "Jersey",
       "nationality": "Channel Island",
-      "dial_code": "+44",
+      "dial_code": "+44 1534",
+      "minLength": 6,
+      "maxLength": 6,
       "nameTranslations": {
         "sk": "Jersey",
         "se": "Jersey",
@@ -3794,6 +4018,8 @@ class Countries {
       "en_short_name": "Jamaica",
       "nationality": "Jamaican",
       "dial_code": "+1876",
+      "minLength": 7,
+      "maxLength": 7,
       "nameTranslations": {
         "sk": "Jamajka",
         "se": "Jamaica",
@@ -3828,6 +4054,8 @@ class Countries {
       "en_short_name": "Jordan",
       "nationality": "Jordanian",
       "dial_code": "+962",
+      "minLength": 9,
+      "maxLength": 9,
       "nameTranslations": {
         "sk": "Jordánsko",
         "se": "Jordánia",
@@ -3862,6 +4090,8 @@ class Countries {
       "en_short_name": "Japan",
       "nationality": "Japanese",
       "dial_code": "+81",
+      "minLength": 10,
+      "maxLength": 10,
       "nameTranslations": {
         "sk": "Japonsko",
         "se": "Japána",
@@ -3896,6 +4126,8 @@ class Countries {
       "en_short_name": "Kenya",
       "nationality": "Kenyan",
       "dial_code": "+254",
+      "minLength": 10,
+      "maxLength": 10,
       "nameTranslations": {
         "sk": "Keňa",
         "se": "Kenia",
@@ -3930,6 +4162,8 @@ class Countries {
       "en_short_name": "Kyrgyzstan",
       "nationality": "Kyrgyzstani, Kyrgyz, Kirgiz, Kirghiz",
       "dial_code": "+996",
+      "minLength": 9,
+      "maxLength": 9,
       "nameTranslations": {
         "sk": "Kirgizsko",
         "se": "Kirgisistan",
@@ -3964,6 +4198,8 @@ class Countries {
       "en_short_name": "Cambodia",
       "nationality": "Cambodian",
       "dial_code": "+855",
+      "minLength": 9,
+      "maxLength": 9,
       "nameTranslations": {
         "sk": "Kambodža",
         "se": "Kambodža",
@@ -3998,6 +4234,8 @@ class Countries {
       "en_short_name": "Kiribati",
       "nationality": "I-Kiribati",
       "dial_code": "+686",
+      "minLength": 5,
+      "maxLength": 5,
       "nameTranslations": {
         "sk": "Kiribati",
         "se": "Kiribati",
@@ -4032,6 +4270,8 @@ class Countries {
       "en_short_name": "Comoros",
       "nationality": "Comoran, Comorian",
       "dial_code": "+269",
+      "minLength": 7,
+      "maxLength": 7,
       "nameTranslations": {
         "sk": "Komory",
         "se": "Komoros",
@@ -4066,6 +4306,8 @@ class Countries {
       "en_short_name": "Saint Kitts and Nevis",
       "nationality": "Kittitian or Nevisian",
       "dial_code": "+1869",
+      "minLength": 7,
+      "maxLength": 7,
       "nameTranslations": {
         "sk": "Svätý Krištof a Nevis",
         "se": "Saint Kitts ja Nevis",
@@ -4100,6 +4342,8 @@ class Countries {
       "en_short_name": "Korea (Democratic People's Republic of)",
       "nationality": "North Korean",
       "dial_code": "+850",
+      "minLength": 10,
+      "maxLength": 10,
       "nameTranslations": {
         "sk": "Severná Kórea",
         "se": "Davvi-Korea",
@@ -4134,6 +4378,8 @@ class Countries {
       "en_short_name": "Korea (Republic of)",
       "nationality": "South Korean",
       "dial_code": "+82",
+      "minLength": 11,
+      "maxLength": 11,
       "nameTranslations": {
         "sk": "Južná Kórea",
         "se": "Mátta-Korea",
@@ -4168,6 +4414,8 @@ class Countries {
       "en_short_name": "Kuwait",
       "nationality": "Kuwaiti",
       "dial_code": "+965",
+      "minLength": 8,
+      "maxLength": 8,
       "nameTranslations": {
         "sk": "Kuvajt",
         "se": "Kuwait",
@@ -4202,6 +4450,8 @@ class Countries {
       "en_short_name": "Cayman Islands",
       "nationality": "Caymanian",
       "dial_code": "+1345",
+      "minLength": 7,
+      "maxLength": 7,
       "nameTranslations": {
         "sk": "Kajmanie ostrovy",
         "se": "Cayman-sullot",
@@ -4236,6 +4486,8 @@ class Countries {
       "en_short_name": "Kazakhstan",
       "nationality": "Kazakhstani, Kazakh",
       "dial_code": "+7",
+      "minLength": 10,
+      "maxLength": 10,
       "nameTranslations": {
         "sk": "Kazachstan",
         "se": "Kasakstan",
@@ -4270,6 +4522,8 @@ class Countries {
       "en_short_name": "Lao People's Democratic Republic",
       "nationality": "Lao, Laotian",
       "dial_code": "+856",
+      "minLength": 9,
+      "maxLength": 10,
       "nameTranslations": {
         "sk": "Laos",
         "se": "Laos",
@@ -4304,6 +4558,8 @@ class Countries {
       "en_short_name": "Lebanon",
       "nationality": "Lebanese",
       "dial_code": "+961",
+      "minLength": 8,
+      "maxLength": 8,
       "nameTranslations": {
         "sk": "Libanon",
         "se": "Libanon",
@@ -4338,6 +4594,8 @@ class Countries {
       "en_short_name": "Saint Lucia",
       "nationality": "Saint Lucian",
       "dial_code": "+1758",
+      "minLength": 7,
+      "maxLength": 7,
       "nameTranslations": {
         "sk": "Svätá Lucia",
         "se": "Saint Lucia",
@@ -4372,6 +4630,8 @@ class Countries {
       "en_short_name": "Liechtenstein",
       "nationality": "Liechtenstein",
       "dial_code": "+423",
+      "minLength": 9,
+      "maxLength": 9,
       "nameTranslations": {
         "sk": "Lichtenštajnsko",
         "se": "Liechtenstein",
@@ -4406,6 +4666,8 @@ class Countries {
       "en_short_name": "Sri Lanka",
       "nationality": "Sri Lankan",
       "dial_code": "+94",
+      "minLength": 9,
+      "maxLength": 9,
       "nameTranslations": {
         "sk": "Srí Lanka",
         "se": "Sri Lanka",
@@ -4440,6 +4702,8 @@ class Countries {
       "en_short_name": "Liberia",
       "nationality": "Liberian",
       "dial_code": "+231",
+      "minLength": 8,
+      "maxLength": 8,
       "nameTranslations": {
         "sk": "Libéria",
         "se": "Liberia",
@@ -4474,6 +4738,8 @@ class Countries {
       "en_short_name": "Lesotho",
       "nationality": "Basotho",
       "dial_code": "+266",
+      "minLength": 8,
+      "maxLength": 8,
       "nameTranslations": {
         "sk": "Lesotho",
         "se": "Lesotho",
@@ -4508,6 +4774,8 @@ class Countries {
       "en_short_name": "Lithuania",
       "nationality": "Lithuanian",
       "dial_code": "+370",
+      "minLength": 8,
+      "maxLength": 8,
       "nameTranslations": {
         "sk": "Litva",
         "se": "Lietuva",
@@ -4542,6 +4810,8 @@ class Countries {
       "en_short_name": "Luxembourg",
       "nationality": "Luxembourg, Luxembourgish",
       "dial_code": "+352",
+      "minLength": 11,
+      "maxLength": 11,
       "nameTranslations": {
         "sk": "Luxembursko",
         "se": "Luxembourg",
@@ -4576,6 +4846,8 @@ class Countries {
       "en_short_name": "Latvia",
       "nationality": "Latvian",
       "dial_code": "+371",
+      "minLength": 8,
+      "maxLength": 8,
       "nameTranslations": {
         "sk": "Lotyšsko",
         "se": "Látvia",
@@ -4610,6 +4882,8 @@ class Countries {
       "en_short_name": "Libya",
       "nationality": "Libyan",
       "dial_code": "+218",
+      "minLength": 9,
+      "maxLength": 9,
       "nameTranslations": {
         "sk": "Líbya",
         "se": "Libya",
@@ -4644,6 +4918,8 @@ class Countries {
       "en_short_name": "Morocco",
       "nationality": "Moroccan",
       "dial_code": "+212",
+      "minLength": 9,
+      "maxLength": 9,
       "nameTranslations": {
         "sk": "Maroko",
         "se": "Marokko",
@@ -4678,6 +4954,8 @@ class Countries {
       "en_short_name": "Monaco",
       "nationality": "Monégasque, Monacan",
       "dial_code": "+377",
+      "minLength": 9,
+      "maxLength": 9,
       "nameTranslations": {
         "sk": "Monako",
         "se": "Monaco",
@@ -4712,6 +4990,8 @@ class Countries {
       "en_short_name": "Moldova (Republic of)",
       "nationality": "Moldovan",
       "dial_code": "+373",
+      "minLength": 8,
+      "maxLength": 8,
       "nameTranslations": {
         "sk": "Moldavsko",
         "se": "Moldávia",
@@ -4746,6 +5026,8 @@ class Countries {
       "en_short_name": "Montenegro",
       "nationality": "Montenegrin",
       "dial_code": "+382",
+      "minLength": 12,
+      "maxLength": 12,
       "nameTranslations": {
         "sk": "Čierna Hora",
         "se": "Montenegro",
@@ -4780,6 +5062,8 @@ class Countries {
       "en_short_name": "Saint Martin (French part)",
       "nationality": "Saint-Martinoise",
       "dial_code": "+590",
+      "minLength": 9,
+      "maxLength": 9,
       "nameTranslations": {
         "sk": "Svätý Martin (fr.)",
         "se": "Frankriikka Saint Martin",
@@ -4814,6 +5098,8 @@ class Countries {
       "en_short_name": "Madagascar",
       "nationality": "Malagasy",
       "dial_code": "+261",
+      "minLength": 10,
+      "maxLength": 10,
       "nameTranslations": {
         "sk": "Madagaskar",
         "se": "Madagaskar",
@@ -4848,6 +5134,8 @@ class Countries {
       "en_short_name": "Marshall Islands",
       "nationality": "Marshallese",
       "dial_code": "+692",
+      "minLength": 7,
+      "maxLength": 7,
       "nameTranslations": {
         "sk": "Marshallove ostrovy",
         "se": "Marshallsullot",
@@ -4882,6 +5170,8 @@ class Countries {
       "en_short_name": "Macedonia (the former Yugoslav Republic of)",
       "nationality": "Macedonian",
       "dial_code": "+389",
+      "minLength": 8,
+      "maxLength": 8,
       "nameTranslations": {
         "sk": "Severné Macedónsko",
         "se": "North Macedonia",
@@ -4916,6 +5206,8 @@ class Countries {
       "en_short_name": "Mali",
       "nationality": "Malian, Malinese",
       "dial_code": "+223",
+      "minLength": 8,
+      "maxLength": 8,
       "nameTranslations": {
         "sk": "Mali",
         "se": "Mali",
@@ -4950,6 +5242,8 @@ class Countries {
       "en_short_name": "Myanmar",
       "nationality": "Burmese",
       "dial_code": "+95",
+      "minLength": 9,
+      "maxLength": 9,
       "nameTranslations": {
         "sk": "Mjanmarsko",
         "se": "Burma",
@@ -4984,6 +5278,8 @@ class Countries {
       "en_short_name": "Mongolia",
       "nationality": "Mongolian",
       "dial_code": "+976",
+      "minLength": 8,
+      "maxLength": 8,
       "nameTranslations": {
         "sk": "Mongolsko",
         "se": "Mongolia",
@@ -5018,6 +5314,8 @@ class Countries {
       "en_short_name": "Macao",
       "nationality": "Macanese, Chinese",
       "dial_code": "+853",
+      "minLength": 8,
+      "maxLength": 8,
       "nameTranslations": {
         "sk": "Macao – OAO Číny",
         "se": "Makáo",
@@ -5052,6 +5350,8 @@ class Countries {
       "en_short_name": "Northern Mariana Islands",
       "nationality": "Northern Marianan",
       "dial_code": "+1670",
+      "minLength": 7,
+      "maxLength": 7,
       "nameTranslations": {
         "sk": "Severné Mariány",
         "se": "Davvi-Mariánat",
@@ -5086,6 +5386,8 @@ class Countries {
       "en_short_name": "Martinique",
       "nationality": "Martiniquais, Martinican",
       "dial_code": "+596",
+      "minLength": 15,
+      "maxLength": 15,
       "nameTranslations": {
         "sk": "Martinik",
         "se": "Martinique",
@@ -5120,6 +5422,8 @@ class Countries {
       "en_short_name": "Mauritania",
       "nationality": "Mauritanian",
       "dial_code": "+222",
+      "minLength": 8,
+      "maxLength": 8,
       "nameTranslations": {
         "sk": "Mauritánia",
         "se": "Mauretánia",
@@ -5154,6 +5458,8 @@ class Countries {
       "en_short_name": "Montserrat",
       "nationality": "Montserratian",
       "dial_code": "+1664",
+      "minLength": 7,
+      "maxLength": 7,
       "nameTranslations": {
         "sk": "Montserrat",
         "se": "Montserrat",
@@ -5188,6 +5494,8 @@ class Countries {
       "en_short_name": "Malta",
       "nationality": "Maltese",
       "dial_code": "+356",
+      "minLength": 8,
+      "maxLength": 8,
       "nameTranslations": {
         "sk": "Malta",
         "se": "Málta",
@@ -5222,6 +5530,8 @@ class Countries {
       "en_short_name": "Mauritius",
       "nationality": "Mauritian",
       "dial_code": "+230",
+      "minLength": 7,
+      "maxLength": 8,
       "nameTranslations": {
         "sk": "Maurícius",
         "se": "Mauritius",
@@ -5256,6 +5566,8 @@ class Countries {
       "en_short_name": "Maldives",
       "nationality": "Maldivian",
       "dial_code": "+960",
+      "minLength": 7,
+      "maxLength": 7,
       "nameTranslations": {
         "sk": "Maldivy",
         "se": "Malediivvat",
@@ -5290,6 +5602,8 @@ class Countries {
       "en_short_name": "Malawi",
       "nationality": "Malawian",
       "dial_code": "+265",
+      "minLength": 7,
+      "maxLength": 9,
       "nameTranslations": {
         "sk": "Malawi",
         "se": "Malawi",
@@ -5324,6 +5638,8 @@ class Countries {
       "en_short_name": "Mexico",
       "nationality": "Mexican",
       "dial_code": "+52",
+      "minLength": 10,
+      "maxLength": 10,
       "nameTranslations": {
         "sk": "Mexiko",
         "se": "Meksiko",
@@ -5358,6 +5674,8 @@ class Countries {
       "en_short_name": "Malaysia",
       "nationality": "Malaysian",
       "dial_code": "+60",
+      "minLength": 11,
+      "maxLength": 11,
       "nameTranslations": {
         "sk": "Malajzia",
         "se": "Malesia",
@@ -5392,6 +5710,8 @@ class Countries {
       "en_short_name": "Mozambique",
       "nationality": "Mozambican",
       "dial_code": "+258",
+      "minLength": 9,
+      "maxLength": 9,
       "nameTranslations": {
         "sk": "Mozambik",
         "se": "Mosambik",
@@ -5426,6 +5746,8 @@ class Countries {
       "en_short_name": "Namibia",
       "nationality": "Namibian",
       "dial_code": "+264",
+      "minLength": 10,
+      "maxLength": 10,
       "nameTranslations": {
         "sk": "Namíbia",
         "se": "Namibia",
@@ -5460,6 +5782,8 @@ class Countries {
       "en_short_name": "New Caledonia",
       "nationality": "New Caledonian",
       "dial_code": "+687",
+      "minLength": 6,
+      "maxLength": 6,
       "nameTranslations": {
         "sk": "Nová Kaledónia",
         "se": "Ođđa-Kaledonia",
@@ -5494,6 +5818,8 @@ class Countries {
       "en_short_name": "Niger",
       "nationality": "Nigerien",
       "dial_code": "+227",
+      "minLength": 8,
+      "maxLength": 8,
       "nameTranslations": {
         "sk": "Niger",
         "se": "Niger",
@@ -5528,6 +5854,8 @@ class Countries {
       "en_short_name": "Norfolk Island",
       "nationality": "Norfolk Island",
       "dial_code": "+672",
+      "minLength": 15,
+      "maxLength": 15,
       "nameTranslations": {
         "sk": "Norfolk",
         "se": "Norfolksullot",
@@ -5562,6 +5890,8 @@ class Countries {
       "en_short_name": "Nigeria",
       "nationality": "Nigerian",
       "dial_code": "+234",
+      "minLength": 10,
+      "maxLength": 11,
       "nameTranslations": {
         "sk": "Nigéria",
         "se": "Nigeria",
@@ -5596,6 +5926,8 @@ class Countries {
       "en_short_name": "Nicaragua",
       "nationality": "Nicaraguan",
       "dial_code": "+505",
+      "minLength": 8,
+      "maxLength": 8,
       "nameTranslations": {
         "sk": "Nikaragua",
         "se": "Nicaragua",
@@ -5630,6 +5962,8 @@ class Countries {
       "en_short_name": "Netherlands",
       "nationality": "Dutch, Netherlandic",
       "dial_code": "+31",
+      "minLength": 9,
+      "maxLength": 9,
       "nameTranslations": {
         "sk": "Holandsko",
         "se": "Vuolleeatnamat",
@@ -5664,6 +5998,8 @@ class Countries {
       "en_short_name": "Norway",
       "nationality": "Norwegian",
       "dial_code": "+47",
+      "minLength": 8,
+      "maxLength": 8,
       "nameTranslations": {
         "sk": "Nórsko",
         "se": "Norga",
@@ -5698,6 +6034,8 @@ class Countries {
       "en_short_name": "Nepal",
       "nationality": "Nepali, Nepalese",
       "dial_code": "+977",
+      "minLength": 10,
+      "maxLength": 10,
       "nameTranslations": {
         "sk": "Nepál",
         "se": "Nepal",
@@ -5732,6 +6070,8 @@ class Countries {
       "en_short_name": "Nauru",
       "nationality": "Nauruan",
       "dial_code": "+674",
+      "minLength": 7,
+      "maxLength": 7,
       "nameTranslations": {
         "sk": "Nauru",
         "se": "Nauru",
@@ -5766,6 +6106,8 @@ class Countries {
       "en_short_name": "Niue",
       "nationality": "Niuean",
       "dial_code": "+683",
+      "minLength": 4,
+      "maxLength": 4,
       "nameTranslations": {
         "sk": "Niue",
         "se": "Niue",
@@ -5800,6 +6142,8 @@ class Countries {
       "en_short_name": "New Zealand",
       "nationality": "New Zealand, NZ",
       "dial_code": "+64",
+      "minLength": 10,
+      "maxLength": 10,
       "nameTranslations": {
         "sk": "Nový Zéland",
         "se": "Ođđa-Selánda",
@@ -5834,6 +6178,8 @@ class Countries {
       "en_short_name": "Oman",
       "nationality": "Omani",
       "dial_code": "+968",
+      "minLength": 8,
+      "maxLength": 8,
       "nameTranslations": {
         "sk": "Omán",
         "se": "Oman",
@@ -5868,6 +6214,8 @@ class Countries {
       "en_short_name": "Panama",
       "nationality": "Panamanian",
       "dial_code": "+507",
+      "minLength": 8,
+      "maxLength": 8,
       "nameTranslations": {
         "sk": "Panama",
         "se": "Panama",
@@ -5902,6 +6250,8 @@ class Countries {
       "en_short_name": "Peru",
       "nationality": "Peruvian",
       "dial_code": "+51",
+      "minLength": 11,
+      "maxLength": 11,
       "nameTranslations": {
         "sk": "Peru",
         "se": "Peru",
@@ -5936,6 +6286,8 @@ class Countries {
       "en_short_name": "French Polynesia",
       "nationality": "French Polynesian",
       "dial_code": "+689",
+      "minLength": 6,
+      "maxLength": 6,
       "nameTranslations": {
         "sk": "Francúzska Polynézia",
         "se": "Frankriikka Polynesia",
@@ -5970,6 +6322,8 @@ class Countries {
       "en_short_name": "Papua New Guinea",
       "nationality": "Papua New Guinean, Papuan",
       "dial_code": "+675",
+      "minLength": 11,
+      "maxLength": 11,
       "nameTranslations": {
         "sk": "Papua-Nová Guinea",
         "se": "Papua-Ođđa-Guinea",
@@ -6004,6 +6358,8 @@ class Countries {
       "en_short_name": "Philippines",
       "nationality": "Philippine, Filipino",
       "dial_code": "+63",
+      "minLength": 10,
+      "maxLength": 10,
       "nameTranslations": {
         "sk": "Filipíny",
         "se": "Filippiinnat",
@@ -6038,6 +6394,8 @@ class Countries {
       "en_short_name": "Pakistan",
       "nationality": "Pakistani",
       "dial_code": "+92",
+      "minLength": 10,
+      "maxLength": 10,
       "nameTranslations": {
         "sk": "Pakistan",
         "se": "Pakistan",
@@ -6072,6 +6430,8 @@ class Countries {
       "en_short_name": "Poland",
       "nationality": "Polish",
       "dial_code": "+48",
+      "minLength": 9,
+      "maxLength": 9,
       "nameTranslations": {
         "sk": "Poľsko",
         "se": "Polen",
@@ -6106,6 +6466,8 @@ class Countries {
       "en_short_name": "Saint Pierre and Miquelon",
       "nationality": "Saint-Pierrais or Miquelonnais",
       "dial_code": "+508",
+      "minLength": 6,
+      "maxLength": 6,
       "nameTranslations": {
         "sk": "Saint Pierre a Miquelon",
         "se": "Saint Pierre ja Miquelon",
@@ -6140,6 +6502,8 @@ class Countries {
       "en_short_name": "Pitcairn",
       "nationality": "Pitcairn Island",
       "dial_code": "+64",
+      "minLength": 10,
+      "maxLength": 10,
       "nameTranslations": {
         "sk": "Pitcairnove ostrovy",
         "se": "Pitcairn",
@@ -6174,6 +6538,8 @@ class Countries {
       "en_short_name": "Puerto Rico",
       "nationality": "Puerto Rican",
       "dial_code": "+1939",
+      "minLength": 15,
+      "maxLength": 15,
       "nameTranslations": {
         "sk": "Portoriko",
         "se": "Puerto Rico",
@@ -6208,6 +6574,8 @@ class Countries {
       "en_short_name": "Palestine, State of",
       "nationality": "Palestinian",
       "dial_code": "+970",
+      "minLength": 9,
+      "maxLength": 9,
       "nameTranslations": {
         "sk": "Palestínske územia",
         "se": "Palestina",
@@ -6242,6 +6610,8 @@ class Countries {
       "en_short_name": "Portugal",
       "nationality": "Portuguese",
       "dial_code": "+351",
+      "minLength": 9,
+      "maxLength": 9,
       "nameTranslations": {
         "sk": "Portugalsko",
         "se": "Portugála",
@@ -6276,6 +6646,8 @@ class Countries {
       "en_short_name": "Palau",
       "nationality": "Palauan",
       "dial_code": "+680",
+      "minLength": 7,
+      "maxLength": 7,
       "nameTranslations": {
         "sk": "Palau",
         "se": "Palau",
@@ -6310,6 +6682,8 @@ class Countries {
       "en_short_name": "Paraguay",
       "nationality": "Paraguayan",
       "dial_code": "+595",
+      "minLength": 10,
+      "maxLength": 10,
       "nameTranslations": {
         "sk": "Paraguaj",
         "se": "Paraguay",
@@ -6344,6 +6718,8 @@ class Countries {
       "en_short_name": "Qatar",
       "nationality": "Qatari",
       "dial_code": "+974",
+      "minLength": 8,
+      "maxLength": 8,
       "nameTranslations": {
         "sk": "Katar",
         "se": "Qatar",
@@ -6378,6 +6754,8 @@ class Countries {
       "en_short_name": "Réunion",
       "nationality": "Réunionese, Réunionnais",
       "dial_code": "+262",
+      "minLength": 9,
+      "maxLength": 9,
       "nameTranslations": {
         "sk": "Réunion",
         "se": "Réunion",
@@ -6412,6 +6790,8 @@ class Countries {
       "en_short_name": "Romania",
       "nationality": "Romanian",
       "dial_code": "+40",
+      "minLength": 9,
+      "maxLength": 9,
       "nameTranslations": {
         "sk": "Rumunsko",
         "se": "Románia",
@@ -6446,6 +6826,8 @@ class Countries {
       "en_short_name": "Serbia",
       "nationality": "Serbian",
       "dial_code": "+381",
+      "minLength": 12,
+      "maxLength": 12,
       "nameTranslations": {
         "sk": "Srbsko",
         "se": "Serbia",
@@ -6480,6 +6862,8 @@ class Countries {
       "en_short_name": "Russian Federation",
       "nationality": "Russian",
       "dial_code": "+7",
+      "minLength": 10,
+      "maxLength": 10,
       "nameTranslations": {
         "sk": "Rusko",
         "se": "Ruošša",
@@ -6514,6 +6898,8 @@ class Countries {
       "en_short_name": "Rwanda",
       "nationality": "Rwandan",
       "dial_code": "+250",
+      "minLength": 9,
+      "maxLength": 9,
       "nameTranslations": {
         "sk": "Rwanda",
         "se": "Rwanda",
@@ -6548,6 +6934,8 @@ class Countries {
       "en_short_name": "Saudi Arabia",
       "nationality": "Saudi, Saudi Arabian",
       "dial_code": "+966",
+      "minLength": 9,
+      "maxLength": 9,
       "nameTranslations": {
         "sk": "Saudská Arábia",
         "se": "Saudi-Arábia",
@@ -6582,6 +6970,8 @@ class Countries {
       "en_short_name": "Solomon Islands",
       "nationality": "Solomon Island",
       "dial_code": "+677",
+      "minLength": 5,
+      "maxLength": 5,
       "nameTranslations": {
         "sk": "Šalamúnove ostrovy",
         "se": "Salomon-sullot",
@@ -6616,6 +7006,8 @@ class Countries {
       "en_short_name": "Seychelles",
       "nationality": "Seychellois",
       "dial_code": "+248",
+      "minLength": 6,
+      "maxLength": 6,
       "nameTranslations": {
         "sk": "Seychely",
         "se": "Seychellsullot",
@@ -6650,6 +7042,8 @@ class Countries {
       "en_short_name": "Sudan",
       "nationality": "Sudanese",
       "dial_code": "+249",
+      "minLength": 9,
+      "maxLength": 9,
       "nameTranslations": {
         "sk": "Sudán",
         "se": "Davvisudan",
@@ -6684,6 +7078,8 @@ class Countries {
       "en_short_name": "Sweden",
       "nationality": "Swedish",
       "dial_code": "+46",
+      "minLength": 7,
+      "maxLength": 13,
       "nameTranslations": {
         "sk": "Švédsko",
         "se": "Ruoŧŧa",
@@ -6718,6 +7114,8 @@ class Countries {
       "en_short_name": "Singapore",
       "nationality": "Singaporean",
       "dial_code": "+65",
+      "minLength": 8,
+      "maxLength": 10,
       "nameTranslations": {
         "sk": "Singapur",
         "se": "Singapore",
@@ -6752,6 +7150,8 @@ class Countries {
       "en_short_name": "Saint Helena, Ascension and Tristan da Cunha",
       "nationality": "Saint Helenian",
       "dial_code": "+290",
+      "minLength": 8,
+      "maxLength": 10,
       "nameTranslations": {
         "sk": "Svätá Helena",
         "se": "Saint Helena",
@@ -6786,6 +7186,8 @@ class Countries {
       "en_short_name": "Slovenia",
       "nationality": "Slovenian, Slovene",
       "dial_code": "+386",
+      "minLength": 8,
+      "maxLength": 8,
       "nameTranslations": {
         "sk": "Slovinsko",
         "se": "Slovenia",
@@ -6820,6 +7222,8 @@ class Countries {
       "en_short_name": "Svalbard and Jan Mayen",
       "nationality": "Svalbard",
       "dial_code": "+47",
+      "minLength": 8,
+      "maxLength": 8,
       "nameTranslations": {
         "sk": "Svalbard a Jan Mayen",
         "se": "Svalbárda ja Jan Mayen",
@@ -6854,6 +7258,8 @@ class Countries {
       "en_short_name": "Slovakia",
       "nationality": "Slovak",
       "dial_code": "+421",
+      "minLength": 9,
+      "maxLength": 9,
       "nameTranslations": {
         "sk": "Slovensko",
         "se": "Slovákia",
@@ -6888,6 +7294,8 @@ class Countries {
       "en_short_name": "Sierra Leone",
       "nationality": "Sierra Leonean",
       "dial_code": "+232",
+      "minLength": 8,
+      "maxLength": 8,
       "nameTranslations": {
         "sk": "Sierra Leone",
         "se": "Sierra Leone",
@@ -6922,6 +7330,8 @@ class Countries {
       "en_short_name": "San Marino",
       "nationality": "Sammarinese",
       "dial_code": "+378",
+      "minLength": 10,
+      "maxLength": 10,
       "nameTranslations": {
         "sk": "San Maríno",
         "se": "San Marino",
@@ -6956,6 +7366,8 @@ class Countries {
       "en_short_name": "Senegal",
       "nationality": "Senegalese",
       "dial_code": "+221",
+      "minLength": 9,
+      "maxLength": 9,
       "nameTranslations": {
         "sk": "Senegal",
         "se": "Senegal",
@@ -6990,6 +7402,8 @@ class Countries {
       "en_short_name": "Somalia",
       "nationality": "Somali, Somalian",
       "dial_code": "+252",
+      "minLength": 8,
+      "maxLength": 8,
       "nameTranslations": {
         "sk": "Somálsko",
         "se": "Somália",
@@ -7024,6 +7438,8 @@ class Countries {
       "en_short_name": "Suriname",
       "nationality": "Surinamese",
       "dial_code": "+597",
+      "minLength": 7,
+      "maxLength": 7,
       "nameTranslations": {
         "sk": "Surinam",
         "se": "Surinam",
@@ -7058,6 +7474,8 @@ class Countries {
       "en_short_name": "South Sudan",
       "nationality": "South Sudanese",
       "dial_code": "+211",
+      "minLength": 9,
+      "maxLength": 9,
       "nameTranslations": {
         "sk": "Južný Sudán",
         "se": "Máttasudan",
@@ -7092,6 +7510,8 @@ class Countries {
       "en_short_name": "Sao Tome and Principe",
       "nationality": "São Toméan",
       "dial_code": "+239",
+      "minLength": 7,
+      "maxLength": 7,
       "nameTranslations": {
         "sk": "Svätý Tomáš a Princov ostrov",
         "se": "São Tomé ja Príncipe",
@@ -7126,6 +7546,8 @@ class Countries {
       "en_short_name": "El Salvador",
       "nationality": "Salvadoran",
       "dial_code": "+503",
+      "minLength": 11,
+      "maxLength": 11,
       "nameTranslations": {
         "sk": "Salvádor",
         "se": "El Salvador",
@@ -7160,6 +7582,8 @@ class Countries {
       "en_short_name": "Sint Maarten",
       "nationality": "Dutch",
       "dial_code": "+1721",
+      "minLength": 10,
+      "maxLength": 10,
       "nameTranslations": {
         "sk": "Sint Maarten",
         "se": "Sint Maarten",
@@ -7194,6 +7618,8 @@ class Countries {
       "en_short_name": "Syrian Arab Republic",
       "nationality": "Syrian",
       "dial_code": "+963",
+      "minLength": 10,
+      "maxLength": 10,
       "nameTranslations": {
         "sk": "Sýria",
         "se": "Syria",
@@ -7228,6 +7654,8 @@ class Countries {
       "en_short_name": "Swaziland",
       "nationality": "Swazi",
       "dial_code": "+268",
+      "minLength": 8,
+      "maxLength": 8,
       "nameTranslations": {
         "sk": "Eswatini",
         "se": "Svazieana",
@@ -7262,6 +7690,8 @@ class Countries {
       "en_short_name": "Turks and Caicos Islands",
       "nationality": "Turks and Caicos Island",
       "dial_code": "+1649",
+      "minLength": 7,
+      "maxLength": 7,
       "nameTranslations": {
         "sk": "Turks a Caicos",
         "se": "Turks ja Caicos-sullot",
@@ -7296,6 +7726,8 @@ class Countries {
       "en_short_name": "Chad",
       "nationality": "Chadian",
       "dial_code": "+235",
+      "minLength": 7,
+      "maxLength": 7,
       "nameTranslations": {
         "sk": "Čad",
         "se": "Tčad",
@@ -7330,6 +7762,8 @@ class Countries {
       "en_short_name": "French Southern Territories",
       "nationality": "French Southern Territories",
       "dial_code": "+262",
+      "minLength": 15,
+      "maxLength": 15,
       "nameTranslations": {
         "sk": "Francúzske južné a antarktické územia",
         "se": "French Southern Territories",
@@ -7364,6 +7798,8 @@ class Countries {
       "en_short_name": "Togo",
       "nationality": "Togolese",
       "dial_code": "+228",
+      "minLength": 8,
+      "maxLength": 8,
       "nameTranslations": {
         "sk": "Togo",
         "se": "Togo",
@@ -7398,6 +7834,8 @@ class Countries {
       "en_short_name": "Thailand",
       "nationality": "Thai",
       "dial_code": "+66",
+      "minLength": 9,
+      "maxLength": 9,
       "nameTranslations": {
         "sk": "Thajsko",
         "se": "Thaieana",
@@ -7432,6 +7870,8 @@ class Countries {
       "en_short_name": "Tajikistan",
       "nationality": "Tajikistani",
       "dial_code": "+992",
+      "minLength": 9,
+      "maxLength": 9,
       "nameTranslations": {
         "sk": "Tadžikistan",
         "se": "Tažikistan",
@@ -7466,6 +7906,8 @@ class Countries {
       "en_short_name": "Tokelau",
       "nationality": "Tokelauan",
       "dial_code": "+690",
+      "minLength": 4,
+      "maxLength": 4,
       "nameTranslations": {
         "sk": "Tokelau",
         "se": "Tokelau",
@@ -7500,6 +7942,8 @@ class Countries {
       "en_short_name": "Timor-Leste",
       "nationality": "Timorese",
       "dial_code": "+670",
+      "minLength": 7,
+      "maxLength": 7,
       "nameTranslations": {
         "sk": "Východný Timor",
         "se": "Nuorta-Timor",
@@ -7534,6 +7978,8 @@ class Countries {
       "en_short_name": "Turkmenistan",
       "nationality": "Turkmen",
       "dial_code": "+993",
+      "minLength": 8,
+      "maxLength": 8,
       "nameTranslations": {
         "sk": "Turkménsko",
         "se": "Turkmenistan",
@@ -7568,6 +8014,8 @@ class Countries {
       "en_short_name": "Tunisia",
       "nationality": "Tunisian",
       "dial_code": "+216",
+      "minLength": 8,
+      "maxLength": 8,
       "nameTranslations": {
         "sk": "Tunisko",
         "se": "Tunisia",
@@ -7602,6 +8050,8 @@ class Countries {
       "en_short_name": "Tonga",
       "nationality": "Tongan",
       "dial_code": "+676",
+      "minLength": 7,
+      "maxLength": 7,
       "nameTranslations": {
         "sk": "Tonga",
         "se": "Tonga",
@@ -7636,6 +8086,8 @@ class Countries {
       "en_short_name": "Turkey",
       "nationality": "Turkish",
       "dial_code": "+90",
+      "minLength": 10,
+      "maxLength": 10,
       "nameTranslations": {
         "sk": "Turecko",
         "se": "Durka",
@@ -7670,6 +8122,8 @@ class Countries {
       "en_short_name": "Trinidad and Tobago",
       "nationality": "Trinidadian or Tobagonian",
       "dial_code": "+1868",
+      "minLength": 7,
+      "maxLength": 7,
       "nameTranslations": {
         "sk": "Trinidad a Tobago",
         "se": "Trinidad ja Tobago",
@@ -7704,6 +8158,8 @@ class Countries {
       "en_short_name": "Tuvalu",
       "nationality": "Tuvaluan",
       "dial_code": "+688",
+      "minLength": 6,
+      "maxLength": 6,
       "nameTranslations": {
         "sk": "Tuvalu",
         "se": "Tuvalu",
@@ -7738,6 +8194,8 @@ class Countries {
       "en_short_name": "Taiwan",
       "nationality": "Chinese, Taiwanese",
       "dial_code": "+886",
+      "minLength": 9,
+      "maxLength": 9,
       "nameTranslations": {
         "sk": "Taiwan",
         "se": "Taiwan",
@@ -7772,6 +8230,8 @@ class Countries {
       "en_short_name": "Tanzania, United Republic of",
       "nationality": "Tanzanian",
       "dial_code": "+255",
+      "minLength": 9,
+      "maxLength": 9,
       "nameTranslations": {
         "sk": "Tanzánia",
         "se": "Tanzánia",
@@ -7806,6 +8266,8 @@ class Countries {
       "en_short_name": "Ukraine",
       "nationality": "Ukrainian",
       "dial_code": "+380",
+      "minLength": 9,
+      "maxLength": 9,
       "nameTranslations": {
         "sk": "Ukrajina",
         "se": "Ukraina",
@@ -7840,6 +8302,8 @@ class Countries {
       "en_short_name": "Uganda",
       "nationality": "Ugandan",
       "dial_code": "+256",
+      "minLength": 9,
+      "maxLength": 9,
       "nameTranslations": {
         "sk": "Uganda",
         "se": "Uganda",
@@ -7874,6 +8338,8 @@ class Countries {
       "en_short_name": "United States of America",
       "nationality": "American",
       "dial_code": "+1",
+      "minLength": 10,
+      "maxLength": 10,
       "nameTranslations": {
         "sk": "Spojené štáty",
         "se": "Amerihká ovttastuvvan stáhtat",
@@ -7908,6 +8374,8 @@ class Countries {
       "en_short_name": "Uruguay",
       "nationality": "Uruguayan",
       "dial_code": "+598",
+      "minLength": 9,
+      "maxLength": 9,
       "nameTranslations": {
         "sk": "Uruguaj",
         "se": "Uruguay",
@@ -7942,6 +8410,8 @@ class Countries {
       "en_short_name": "Uzbekistan",
       "nationality": "Uzbekistani, Uzbek",
       "dial_code": "+998",
+      "minLength": 9,
+      "maxLength": 9,
       "nameTranslations": {
         "sk": "Uzbekistan",
         "se": "Usbekistan",
@@ -7976,6 +8446,8 @@ class Countries {
       "en_short_name": "Vatican City State",
       "nationality": "Vatican",
       "dial_code": "+379",
+      "minLength": 10,
+      "maxLength": 10,
       "nameTranslations": {
         "sk": "Vatikán",
         "se": "Vatikána",
@@ -8010,6 +8482,8 @@ class Countries {
       "en_short_name": "Saint Vincent and the Grenadines",
       "nationality": "Saint Vincentian, Vincentian",
       "dial_code": "+1784",
+      "minLength": 7,
+      "maxLength": 7,
       "nameTranslations": {
         "sk": "Svätý Vincent a Grenadíny",
         "se": "Saint Vincent ja Grenadine",
@@ -8044,6 +8518,8 @@ class Countries {
       "en_short_name": "Venezuela (Bolivarian Republic of)",
       "nationality": "Venezuelan",
       "dial_code": "+58",
+      "minLength": 10,
+      "maxLength": 10,
       "nameTranslations": {
         "sk": "Venezuela",
         "se": "Venezuela",
@@ -8078,6 +8554,8 @@ class Countries {
       "en_short_name": "Virgin Islands (British)",
       "nationality": "British Virgin Island",
       "dial_code": "+1284",
+      "minLength": 7,
+      "maxLength": 7,
       "nameTranslations": {
         "sk": "Britské Panenské ostrovy",
         "se": "Brittania Virgin-sullot",
@@ -8112,6 +8590,8 @@ class Countries {
       "en_short_name": "Virgin Islands (U.S.)",
       "nationality": "U.S. Virgin Island",
       "dial_code": "+1340",
+      "minLength": 7,
+      "maxLength": 7,
       "nameTranslations": {
         "sk": "Americké Panenské ostrovy",
         "se": "AOS Virgin-sullot",
@@ -8146,6 +8626,8 @@ class Countries {
       "en_short_name": "Vietnam",
       "nationality": "Vietnamese",
       "dial_code": "+84",
+      "minLength": 11,
+      "maxLength": 11,
       "nameTranslations": {
         "sk": "Vietnam",
         "se": "Vietnam",
@@ -8180,6 +8662,8 @@ class Countries {
       "en_short_name": "Vanuatu",
       "nationality": "Ni-Vanuatu, Vanuatuan",
       "dial_code": "+678",
+      "minLength": 7,
+      "maxLength": 7,
       "nameTranslations": {
         "sk": "Vanuatu",
         "se": "Vanuatu",
@@ -8214,6 +8698,8 @@ class Countries {
       "en_short_name": "Wallis and Futuna",
       "nationality": "Wallis and Futuna, Wallisian or Futunan",
       "dial_code": "+681",
+      "minLength": 6,
+      "maxLength": 6,
       "nameTranslations": {
         "sk": "Wallis a Futuna",
         "se": "Wallis ja Futuna",
@@ -8248,6 +8734,8 @@ class Countries {
       "en_short_name": "Samoa",
       "nationality": "Samoan",
       "dial_code": "+685",
+      "minLength": 7,
+      "maxLength": 7,
       "nameTranslations": {
         "sk": "Samoa",
         "se": "Samoa",
@@ -8282,6 +8770,8 @@ class Countries {
       "en_short_name": "Yemen",
       "nationality": "Yemeni",
       "dial_code": "+967",
+      "minLength": 9,
+      "maxLength": 9,
       "nameTranslations": {
         "sk": "Jemen",
         "se": "Jemen",
@@ -8316,6 +8806,8 @@ class Countries {
       "en_short_name": "Mayotte",
       "nationality": "Mahoran",
       "dial_code": "+262",
+      "minLength": 9,
+      "maxLength": 9,
       "nameTranslations": {
         "sk": "Mayotte",
         "se": "Mayotte",
@@ -8350,6 +8842,8 @@ class Countries {
       "en_short_name": "South Africa",
       "nationality": "South African",
       "dial_code": "+27",
+      "minLength": 9,
+      "maxLength": 9,
       "nameTranslations": {
         "sk": "Južná Afrika",
         "se": "Mátta-Afrihká",
@@ -8384,6 +8878,8 @@ class Countries {
       "en_short_name": "Zambia",
       "nationality": "Zambian",
       "dial_code": "+260",
+      "minLength": 9,
+      "maxLength": 9,
       "nameTranslations": {
         "sk": "Zambia",
         "se": "Zambia",
@@ -8418,6 +8914,8 @@ class Countries {
       "en_short_name": "Zimbabwe",
       "nationality": "Zimbabwean",
       "dial_code": "+263",
+      "minLength": 9,
+      "maxLength": 9,
       "nameTranslations": {
         "sk": "Zimbabwe",
         "se": "Zimbabwe",

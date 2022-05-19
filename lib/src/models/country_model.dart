@@ -21,12 +21,17 @@ class Country {
   /// The nameTranslation for translation
   final Map<String, String>? nameTranslations;
 
+  final int minLength;
+  final int maxLength;
+
   Country({
     required this.name,
     required this.alpha2Code,
     required this.alpha3Code,
     required this.dialCode,
     required this.flagUri,
+    required this.minLength,
+    required this.maxLength,
     this.nameTranslations,
   });
 
@@ -37,6 +42,8 @@ class Country {
       alpha2Code: data['alpha_2_code'],
       alpha3Code: data['alpha_3_code'],
       dialCode: data['dial_code'],
+      minLength: data['minLength'],
+      maxLength: data["maxLength"],
       flagUri: 'assets/flags/${data['alpha_2_code'].toLowerCase()}.png',
       nameTranslations: data['nameTranslations'] != null
           ? Map<String, String>.from(data['nameTranslations'])
