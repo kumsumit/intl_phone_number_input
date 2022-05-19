@@ -11,7 +11,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'Demo',
-      themeMode: ThemeMode.dark,
+      themeMode: ThemeMode.light,
       darkTheme: darkTheme,
       theme: ThemeData(
         primarySwatch: Colors.blue,
@@ -74,7 +74,7 @@ class _MyHomePageState extends State<MyHomePage> {
               selectorTextStyle: TextStyle(color: Colors.black),
               initialValue: number,
               textFieldController: controller,
-              formatInput: false,
+              formatInput: true,
               keyboardType:
                   TextInputType.numberWithOptions(signed: true, decimal: true),
               inputBorder: OutlineInputBorder(),
