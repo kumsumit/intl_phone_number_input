@@ -31,7 +31,7 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   final GlobalKey<FormState> formKey = GlobalKey<FormState>();
-
+  int count = 0;
   final TextEditingController controller = TextEditingController();
   PhoneNumber number = PhoneNumber(isoCode: 'NG');
 
@@ -39,73 +39,87 @@ class _MyHomePageState extends State<MyHomePage> {
   Widget build(BuildContext context) {
     return Form(
       key: formKey,
-      child: Container(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            InternationalPhoneNumberInput(
-              selectorButtonBottomWidget: Container(
-                color: Colors.white,
-                height: 1,
-                width: 120,
-              ),
-              betweenTextFieldWidget: Icon(
-                Icons.arrow_drop_down_sharp,
-                color: Colors.white,
-              ),
-              locale: "hi",
-              onInputChanged: (PhoneNumber number) {
-                print(number.phoneNumber);
-              },
-              onInputValidated: (bool value) {
-                print(value);
-              },
-              selectorConfig: SelectorConfig(
-                countryComparator: (a, b) {
-                  return a.nameTranslations!["hi"]
-                      .toString()
-                      .compareTo(b.nameTranslations!["hi"].toString());
+      child: Center(
+        child: SizedBox(
+          width: MediaQuery.of(context).size.width - 10,
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              InternationalPhoneNumberInput(
+                errorMessage: "Wrong Input entered",
+                selectorButtonBottomWidget: Container(
+                  color: Colors.white,
+                  height: 1,
+                  width: 120,
+                ),
+                betweenTextFieldWidget: Icon(
+                  Icons.arrow_drop_down_sharp,
+                  color: Colors.white,
+                ),
+                locale: "hi",
+                onInputChanged: (PhoneNumber number) {
+                  print(number.phoneNumber);
+                  // if (number.phoneNumber != null && number.dialCode != null) {
+                  //   setState(() {
+                  //     count = number.phoneNumber!.replaceAll(" ", "").length -
+                  //         number.dialCode!.length;
+                  //   });
+                  // }
                 },
-                // setSelectorButtonAsPrefixIcon: true,
-                selectorType: PhoneInputSelectorType.BOTTOM_SHEET,
+                onInputValidated: (bool value) {
+                  print(value);
+                },
+                selectorConfig: SelectorConfig(
+                  countryComparator: (a, b) {
+                    return a.nameTranslations!["hi"]
+                        .toString()
+                        .compareTo(b.nameTranslations!["hi"].toString());
+                  },
+                  setSelectorButtonAsPrefixIcon: true,
+                  selectorType: PhoneInputSelectorType.BOTTOM_SHEET,
+                ),
+                ignoreBlank: false,
+                autoValidateMode: AutovalidateMode.always,
+                selectorTextStyle: TextStyle(color: Colors.black),
+                initialValue: number,
+                textFieldController: controller,
+                formatInput: true,
+                keyboardType: TextInputType.numberWithOptions(
+                    signed: true, decimal: true),
+                inputBorder: OutlineInputBorder(),
+                onSaved: (PhoneNumber number) {
+                  print('On Saved: $number');
+                },
+                // inputDecoration: InputDecoration(
+                //     labelText: 'Your Name',
+                //     border: const OutlineInputBorder(),
+                //     // Display the number of entered characters
+                //     counterText: '$count /  '),
               ),
-              ignoreBlank: false,
-              autoValidateMode: AutovalidateMode.disabled,
-              selectorTextStyle: TextStyle(color: Colors.black),
-              initialValue: number,
-              textFieldController: controller,
-              formatInput: true,
-              keyboardType:
-                  TextInputType.numberWithOptions(signed: true, decimal: true),
-              inputBorder: OutlineInputBorder(),
-              onSaved: (PhoneNumber number) {
-                print('On Saved: $number');
-              },
-              inputDecoration: InputDecoration(
-                  labelText: 'Your Name',
-                  border: const OutlineInputBorder(),
-                  // Display the number of entered characters
-                  counterText: 'character(s)'),
-            ),
-            ElevatedButton(
-              onPressed: () {
-                formKey.currentState?.validate();
-              },
-              child: Text('Validate'),
-            ),
-            ElevatedButton(
-              onPressed: () {
-                getPhoneNumber('+15417543010');
-              },
-              child: Text('Update'),
-            ),
-            ElevatedButton(
-              onPressed: () {
-                formKey.currentState?.save();
-              },
-              child: Text('Save'),
-            ),
-          ],
+              ElevatedButton(
+                onPressed: () {
+                  if (formKey.currentState!.validate()) {
+                    print("validated");
+                  } else {
+                    print("An error");
+                  }
+                },
+                child: Text('Validate'),
+              ),
+              ElevatedButton(
+                onPressed: () {
+                  getPhoneNumber('+15417543010');
+                },
+                child: Text('Update'),
+              ),
+              ElevatedButton(
+                onPressed: () {
+                  formKey.currentState?.save();
+                },
+                child: Text('Save'),
+              ),
+            ],
+          ),
         ),
       ),
     );
