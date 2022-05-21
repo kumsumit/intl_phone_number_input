@@ -59,15 +59,6 @@ class _MyHomePageState extends State<MyHomePage> {
                 locale: "hi",
                 onInputChanged: (PhoneNumber number) {
                   print(number.phoneNumber);
-                  // if (number.phoneNumber != null && number.dialCode != null) {
-                  //   setState(() {
-                  //     count = number.phoneNumber!.replaceAll(" ", "").length -
-                  //         number.dialCode!.length;
-                  //   });
-                  // }
-                },
-                onInputValidated: (bool value) {
-                  print(value);
                 },
                 selectorConfig: SelectorConfig(
                   countryComparator: (a, b) {
