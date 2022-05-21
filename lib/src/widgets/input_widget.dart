@@ -305,13 +305,14 @@ class _InputWidgetState extends State<InternationalPhoneNumberInput> {
       // Remove potential duplicates
       countries = countries.toSet().toList();
 
-      final CountryComparator? countryComparator =
-          widget.selectorConfig.countryComparator;
-
-      if (countryComparator != null) {
-        countries.sort(countryComparator);
-      }
-
+      final CountryComparator countryComparator =
+          widget.selectorConfig.countryComparator ??
+              (a, b) {
+                return a.nameTranslations![locale]
+                    .toString()
+                    .compareTo(b.nameTranslations![locale].toString());
+              };
+      countries.sort(countryComparator);
       setState(() {
         this.countries = countries;
         this.country = country;
@@ -487,7 +488,7 @@ class _InputWidgetState extends State<InternationalPhoneNumberInput> {
 
   /// Corrects duplicate locale
   String? get locale {
-    if (widget.locale == null) return null;
+    if (widget.locale == null) return "en";
 
     if (widget.locale!.toLowerCase() == 'nb' ||
         widget.locale!.toLowerCase() == 'nn') {
@@ -497,11 +498,11 @@ class _InputWidgetState extends State<InternationalPhoneNumberInput> {
   }
 }
 
-class _InputWidgetView
+class InputWidgetView
     extends WidgetView<InternationalPhoneNumberInput, _InputWidgetState> {
   final _InputWidgetState state;
 
-  _InputWidgetView({Key? key, required this.state})
+  InputWidgetView({Key? key, required this.state})
       : super(key: key, state: state);
 
   @override

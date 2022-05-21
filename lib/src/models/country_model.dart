@@ -15,6 +15,15 @@ class Country {
   /// The dialCode of the [Country]
   final String? dialCode;
 
+  /// The currencyCode of the [Country]
+  final String? currencyCode;
+
+  /// The currencySymbol of the [Country]
+  final String? currencySymbol;
+
+  /// The currencyName of the [Country]
+  final String? currencyName;
+
   /// The flagUri which links to the flag for the [Country] in the library assets
   final String flagUri;
 
@@ -32,6 +41,9 @@ class Country {
     required this.flagUri,
     required this.minLength,
     required this.maxLength,
+    required this.currencyCode,
+    required this.currencyName,
+    required this.currencySymbol,
     this.nameTranslations,
   });
 
@@ -44,6 +56,9 @@ class Country {
       dialCode: data['dial_code'],
       minLength: data['minLength'],
       maxLength: data["maxLength"],
+      currencyCode: data["currency_code"],
+      currencyName: data["currency_name"],
+      currencySymbol: data["currency_symbol"],
       flagUri: 'assets/flags/${data['alpha_2_code'].toLowerCase()}.png',
       nameTranslations: data['nameTranslations'] != null
           ? Map<String, String>.from(data['nameTranslations'])
