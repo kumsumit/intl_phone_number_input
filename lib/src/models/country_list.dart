@@ -1,4 +1,4 @@
-import 'dart:html';
+// import 'dart:html';
 
 /// [Countries] has a static method [countryList] that returns list of Map for most country around the world.
 class Countries {
@@ -9,8 +9,18 @@ class Countries {
   ///  *  en_short_name
   ///  *  nationality
   ///  *  dial_code
-  ///  *  minLength,
-  ///  *  maxLength,
+  ///  *  currency_code
+  ///  *  currency_name
+  ///  *  symbol
+  ///  *  flag
+  ///  *  decimal_digits
+  ///  *  currency_name_plural
+  ///  *  thousands_separator
+  ///  *  decimal_separator
+  ///  *  space_between_amount_and_symbol
+  ///  *  symbol_on_left
+  ///  *  minLength
+  ///  *  maxLength
   ///  *  nameTranslations
   ///
   ///   ```dart
@@ -21,6 +31,16 @@ class Countries {
   ///    "en_short_name": "Nigeria",
   ///    "nationality": "Nigerian",
   ///    "dial_code": "+234",
+  ///    "currency_code": "NGN",
+  ///    "currency_name": "Nigeria Naira",
+  ///    "symbol": "₦",
+  ///    "flag": "NGN",
+  ///    "decimal_digits": 2,
+  ///    "currency_name_plural": "Nigerian nairas",
+  ///    "thousands_separator": ",",
+  ///    "decimal_separator": ".",
+  ///    "space_between_amount_and_symbol": false,
+  ///    "symbol_on_left": true,
   ///    "minLength": 9,
   ///    "maxLength": 9,
   ///    "nameTranslations": {

@@ -30,8 +30,14 @@ class Country {
   /// The nameTranslation for translation
   final Map<String, String>? nameTranslations;
 
+  /// The minLength for phoneNumber
   final int minLength;
+
+  /// The maxLength for phoneNumber
   final int maxLength;
+
+  /// The Currency Selector position
+  final bool symbolOnLeft;
 
   Country({
     required this.name,
@@ -44,6 +50,7 @@ class Country {
     required this.currencyCode,
     required this.currencyName,
     required this.currencySymbol,
+    required this.symbolOnLeft,
     this.nameTranslations,
   });
 
@@ -58,6 +65,7 @@ class Country {
       maxLength: data["maxLength"],
       currencyCode: data["currency_code"],
       currencyName: data["currency_name"],
+      symbolOnLeft: data["symbol_on_left"],
       currencySymbol: data["currency_symbol"],
       flagUri: 'assets/flags/${data['alpha_2_code'].toLowerCase()}.png',
       nameTranslations: data['nameTranslations'] != null
