@@ -1,5 +1,3 @@
-// import 'dart:html';
-
 /// [Countries] has a static method [countryList] that returns list of Map for most country around the world.
 class Countries {
   /// returns `List<Map<String, dynamic>` of countries which contains
