@@ -61,11 +61,11 @@ class _MyHomePageState extends State<MyHomePage> {
                   print(number.phoneNumber);
                 },
                 selectorConfig: SelectorConfig(
-                  countryComparator: (a, b) {
-                    return a.nameTranslations!["hi"]
-                        .toString()
-                        .compareTo(b.nameTranslations!["hi"].toString());
-                  },
+                  // countryComparator: (a, b) {
+                  //   return a.nameTranslations!["hi"]
+                  //       .toString()
+                  //       .compareTo(b.nameTranslations!["hi"].toString());
+                  // },
                   setSelectorButtonAsPrefixIcon: true,
                   selectorType: PhoneInputSelectorType.BOTTOM_SHEET,
                 ),
