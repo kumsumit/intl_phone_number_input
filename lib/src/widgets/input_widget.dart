@@ -53,6 +53,7 @@ class InternationalPhoneNumberInput extends StatefulWidget {
 
   final PhoneNumber? initialValue;
   final String? hintText;
+  final Widget? label;
   final String? errorMessage;
 
   final double selectorButtonOnErrorPadding;
@@ -110,7 +111,6 @@ class InternationalPhoneNumberInput extends StatefulWidget {
     this.errorMessage = 'Invalid phone number',
     this.selectorButtonOnErrorPadding = 24,
     this.spaceBetweenSelectorAndTextField = 12,
-    // this.maxLength = 15,
     this.isEnabled = true,
     this.formatInput = true,
     this.autoFocus = false,
@@ -133,6 +133,7 @@ class InternationalPhoneNumberInput extends StatefulWidget {
     this.countries,
     this.selectorButtonBottomWidget,
     this.betweenTextFieldWidget,
+    this.label,
     this.disableLengthCheck = false,
   }) : super(key: key);
 
@@ -400,7 +401,7 @@ class _InputWidgetState extends State<InternationalPhoneNumberInput> {
   InputDecoration getInputDecoration(InputDecoration? decoration) {
     InputDecoration value = decoration ??
         InputDecoration(
-          labelText: "Phone number",
+          label: widget.label,
           counterText: "$currentLength / $maxLength",
           border: widget.inputBorder ?? UnderlineInputBorder(),
           hintText: widget.hintText,
