@@ -19,7 +19,7 @@ class Item extends StatelessWidget {
     this.useEmoji,
     this.textStyle,
     this.withCountryNames = false,
-    this.leadingPadding = 12,
+    this.leadingPadding = 3,
     this.trailingSpace = true,
   }) : super(key: key);
 
@@ -27,7 +27,7 @@ class Item extends StatelessWidget {
   Widget build(BuildContext context) {
     String dialCode = (country?.dialCode ?? '');
     if (trailingSpace) {
-      dialCode = dialCode.padRight(5, "   ");
+      dialCode = dialCode.padRight(5, " ");
     }
     return Container(
       child: Row(
@@ -40,7 +40,7 @@ class Item extends StatelessWidget {
             showFlag: showFlag,
             useEmoji: useEmoji,
           ),
-          SizedBox(width: 12.0),
+          SizedBox(width: 3.0),
           Text(
             '$dialCode',
             textDirection: TextDirection.ltr,
@@ -67,7 +67,7 @@ class _Flag extends StatelessWidget {
             child: useEmoji!
                 ? Text(
                     Utils.generateFlagEmojiUnicode(country?.alpha2Code ?? ''),
-                    style: Theme.of(context).textTheme.headline5,
+                    style: Theme.of(context).textTheme.labelMedium,
                   )
                 : Image.asset(
                     country!.flagUri,
