@@ -46,7 +46,7 @@ class _MyHomePageState extends State<MyHomePage> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
               InternationalPhoneNumberInput(
-                label: Text("Phone Number"),
+                label: Text("Customer Phone Number"),
                 errorMessage: "Wrong Input entered",
                 selectorButtonBottomWidget: Container(
                   color: Colors.white,
@@ -62,12 +62,15 @@ class _MyHomePageState extends State<MyHomePage> {
                   print(number.phoneNumber);
                 },
                 selectorConfig: SelectorConfig(
+                  useEmoji: true,
+                  leadingPadding: 3,
+                  trailingSpace: true,
                   setSelectorButtonAsPrefixIcon: true,
                   selectorType: PhoneInputSelectorType.BOTTOM_SHEET,
                 ),
                 ignoreBlank: false,
                 autoValidateMode: AutovalidateMode.always,
-                selectorTextStyle: TextStyle(color: Colors.black),
+                selectorTextStyle: TextStyle(color: Colors.black, fontSize: 10),
                 initialValue: number,
                 textFieldController: controller,
                 formatInput: true,
@@ -77,6 +80,8 @@ class _MyHomePageState extends State<MyHomePage> {
                 onSaved: (PhoneNumber number) {
                   print('On Saved: $number');
                 },
+                inputDecoration:
+                    InputDecoration(labelStyle: TextStyle(fontSize: 13)),
                 // inputDecoration: InputDecoration(
                 //     labelText: 'Your Name',
                 //     border: const OutlineInputBorder(),
