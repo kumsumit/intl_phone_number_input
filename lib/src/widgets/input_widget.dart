@@ -399,13 +399,16 @@ class _InputWidgetState extends State<InternationalPhoneNumberInput> {
 
   /// Creates or Select [InputDecoration]
   InputDecoration getInputDecoration(InputDecoration? decoration) {
-    InputDecoration value = decoration ??
-        InputDecoration(
-          label: widget.label,
-          counterText: "$currentLength / $maxLength",
-          border: widget.inputBorder ?? UnderlineInputBorder(),
-          hintText: widget.hintText,
-        );
+    InputDecoration value = decoration != null
+        ? decoration.copyWith(
+            counterText: "$currentLength / $maxLength",
+          )
+        : InputDecoration(
+            label: widget.label,
+            counterText: "$currentLength / $maxLength",
+            border: widget.inputBorder ?? UnderlineInputBorder(),
+            hintText: widget.hintText,
+          );
 
     if (widget.selectorConfig.setSelectorButtonAsPrefixIcon) {
       return value.copyWith(
