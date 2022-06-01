@@ -6,7 +6,6 @@ import 'package:intl_phone_number_input/src/utils/util.dart';
 class Item extends StatelessWidget {
   final Country? country;
   final bool? showFlag;
-  final bool? useEmoji;
   final TextStyle? textStyle;
   final bool withCountryNames;
   final double? leadingPadding;
@@ -16,7 +15,6 @@ class Item extends StatelessWidget {
     Key? key,
     this.country,
     this.showFlag,
-    this.useEmoji,
     this.textStyle,
     this.withCountryNames = false,
     this.leadingPadding = 3,
@@ -38,7 +36,6 @@ class Item extends StatelessWidget {
           _Flag(
             country: country,
             showFlag: showFlag,
-            useEmoji: useEmoji,
           ),
           SizedBox(width: 3.0),
           Text(
@@ -55,29 +52,17 @@ class Item extends StatelessWidget {
 class _Flag extends StatelessWidget {
   final Country? country;
   final bool? showFlag;
-  final bool? useEmoji;
 
-  const _Flag({Key? key, this.country, this.showFlag, this.useEmoji})
-      : super(key: key);
+  const _Flag({Key? key, this.country, this.showFlag}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return country != null && showFlag!
         ? Container(
-            child: useEmoji!
-                ? Text(
-                    Utils.generateFlagEmojiUnicode(country?.alpha2Code ?? ''),
-                    style: Theme.of(context).textTheme.labelMedium,
-                  )
-                : Image.asset(
-                    country!.flagUri,
-                    width: 32.0,
-                    package: 'intl_phone_number_input',
-                    errorBuilder: (context, error, stackTrace) {
-                      return SizedBox.shrink();
-                    },
-                  ),
-          )
+            child: Text(
+            Utils.generateFlagEmojiUnicode(country?.alpha2Code ?? ''),
+            style: Theme.of(context).textTheme.labelMedium,
+          ))
         : SizedBox.shrink();
   }
 }

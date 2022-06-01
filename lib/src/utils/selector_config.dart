@@ -16,9 +16,6 @@ class SelectorConfig {
   /// and list items within the selector
   final bool showFlags;
 
-  /// [useEmoji], uses emoji flags instead of png assets
-  final bool useEmoji;
-
   /// [countryComparator], sort the country list according to the comparator.
   ///
   /// Sorting is disabled by default
@@ -36,7 +33,6 @@ class SelectorConfig {
   const SelectorConfig({
     this.selectorType = PhoneInputSelectorType.DROPDOWN,
     this.showFlags = true,
-    this.useEmoji = false,
     this.countryComparator,
     this.setSelectorButtonAsPrefixIcon = false,
     this.leadingPadding,

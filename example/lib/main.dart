@@ -62,7 +62,6 @@ class _MyHomePageState extends State<MyHomePage> {
                   print(number.phoneNumber);
                 },
                 selectorConfig: SelectorConfig(
-                  useEmoji: true,
                   leadingPadding: 3,
                   trailingSpace: true,
                   setSelectorButtonAsPrefixIcon: true,
@@ -82,11 +81,6 @@ class _MyHomePageState extends State<MyHomePage> {
                 },
                 inputDecoration:
                     InputDecoration(labelStyle: TextStyle(fontSize: 13)),
-                // inputDecoration: InputDecoration(
-                //     labelText: 'Your Name',
-                //     border: const OutlineInputBorder(),
-                //     // Display the number of entered characters
-                //     counterText: '$count /  '),
               ),
               ElevatedButton(
                 onPressed: () {

@@ -44,7 +44,6 @@ class SelectorButton extends StatelessWidget {
                   hint: Item(
                     country: country,
                     showFlag: selectorConfig.showFlags,
-                    useEmoji: selectorConfig.useEmoji,
                     leadingPadding: selectorConfig.leadingPadding,
                     trailingSpace: selectorConfig.trailingSpace,
                     textStyle: selectorTextStyle,
@@ -57,7 +56,6 @@ class SelectorButton extends StatelessWidget {
             : Item(
                 country: country,
                 showFlag: selectorConfig.showFlags,
-                useEmoji: selectorConfig.useEmoji,
                 leadingPadding: selectorConfig.leadingPadding,
                 trailingSpace: selectorConfig.trailingSpace,
                 textStyle: selectorTextStyle,
@@ -86,7 +84,6 @@ class SelectorButton extends StatelessWidget {
             child: Item(
               country: country,
               showFlag: selectorConfig.showFlags,
-              useEmoji: selectorConfig.useEmoji,
               leadingPadding: selectorConfig.leadingPadding,
               trailingSpace: selectorConfig.trailingSpace,
               textStyle: selectorTextStyle,
@@ -104,7 +101,6 @@ class SelectorButton extends StatelessWidget {
           key: Key(TestHelper.countryItemKeyValue(country.alpha2Code)),
           country: country,
           showFlag: selectorConfig.showFlags,
-          useEmoji: selectorConfig.useEmoji,
           textStyle: selectorTextStyle,
           withCountryNames: false,
           trailingSpace: selectorConfig.trailingSpace,
@@ -129,7 +125,6 @@ class SelectorButton extends StatelessWidget {
               locale,
               searchBoxDecoration: searchBoxDecoration,
               showFlags: selectorConfig.showFlags,
-              useEmoji: selectorConfig.useEmoji,
               autoFocus: autoFocusSearchField,
             ),
           ),
@@ -177,7 +172,6 @@ class SelectorButton extends StatelessWidget {
                       searchBoxDecoration: searchBoxDecoration,
                       scrollController: controller,
                       showFlags: selectorConfig.showFlags,
-                      useEmoji: selectorConfig.useEmoji,
                       autoFocus: autoFocusSearchField,
                     ),
                   ),
