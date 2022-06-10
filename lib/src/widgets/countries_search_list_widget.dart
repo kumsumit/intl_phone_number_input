@@ -11,7 +11,6 @@ class CountrySearchListWidget extends StatefulWidget {
   final ScrollController? scrollController;
   final bool autoFocus;
   final bool? showFlags;
-  final bool? useEmoji;
 
   CountrySearchListWidget(
     this.countries,
@@ -19,7 +18,6 @@ class CountrySearchListWidget extends StatefulWidget {
     this.searchBoxDecoration,
     this.scrollController,
     this.showFlags,
-    this.useEmoji,
     this.autoFocus = false,
   });
 
@@ -91,7 +89,6 @@ class _CountrySearchListWidgetState extends State<CountrySearchListWidget> {
                 country: country,
                 locale: widget.locale,
                 showFlags: widget.showFlags!,
-                useEmoji: widget.useEmoji!,
               );
               // return ListTile(
               //   key: Key(TestHelper.countryItemKeyValue(country.alpha2Code)),
@@ -135,21 +132,18 @@ class DirectionalCountryListTile extends StatelessWidget {
   final Country country;
   final String? locale;
   final bool showFlags;
-  final bool useEmoji;
-
   const DirectionalCountryListTile({
     Key? key,
     required this.country,
     required this.locale,
     required this.showFlags,
-    required this.useEmoji,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return ListTile(
       key: Key(TestHelper.countryItemKeyValue(country.alpha2Code)),
-      leading: (showFlags ? _Flag(country: country, useEmoji: useEmoji) : null),
+      leading: (showFlags ? _Flag(country: country) : null),
       title: Align(
         alignment: AlignmentDirectional.centerStart,
         child: Text(
@@ -173,28 +167,17 @@ class DirectionalCountryListTile extends StatelessWidget {
 
 class _Flag extends StatelessWidget {
   final Country? country;
-  final bool? useEmoji;
 
-  const _Flag({Key? key, this.country, this.useEmoji}) : super(key: key);
+  const _Flag({Key? key, this.country}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return country != null
         ? Container(
-            child: useEmoji!
-                ? Text(
-                    Utils.generateFlagEmojiUnicode(country?.alpha2Code ?? ''),
-                    style: Theme.of(context).textTheme.headline5,
-                  )
-                : country?.flagUri != null
-                    ? CircleAvatar(
-                        backgroundImage: AssetImage(
-                          country!.flagUri,
-                          package: 'intl_phone_number_input',
-                        ),
-                      )
-                    : SizedBox.shrink(),
-          )
+            child: Text(
+            Utils.generateFlagEmojiUnicode(country?.alpha2Code ?? ''),
+            style: Theme.of(context).textTheme.headline5,
+          ))
         : SizedBox.shrink();
   }
 }
