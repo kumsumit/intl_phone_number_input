@@ -84,35 +84,11 @@ class _CountrySearchListWidgetState extends State<CountrySearchListWidget> {
             itemCount: filteredCountries.length,
             itemBuilder: (BuildContext context, int index) {
               Country country = filteredCountries[index];
-
               return DirectionalCountryListTile(
                 country: country,
                 locale: widget.locale,
                 showFlags: widget.showFlags!,
               );
-              // return ListTile(
-              //   key: Key(TestHelper.countryItemKeyValue(country.alpha2Code)),
-              //   leading: widget.showFlags!
-              //       ? _Flag(country: country, useEmoji: widget.useEmoji)
-              //       : null,
-              //   title: Align(
-              //     alignment: AlignmentDirectional.centerStart,
-              //     child: Text(
-              //       '${Utils.getCountryName(country, widget.locale)}',
-              //       textDirection: Directionality.of(context),
-              //       textAlign: TextAlign.start,
-              //     ),
-              //   ),
-              //   subtitle: Align(
-              //     alignment: AlignmentDirectional.centerStart,
-              //     child: Text(
-              //       '${country.dialCode ?? ''}',
-              //       textDirection: TextDirection.ltr,
-              //       textAlign: TextAlign.start,
-              //     ),
-              //   ),
-              //   onTap: () => Navigator.of(context).pop(country),
-              // );
             },
           ),
         ),
@@ -173,7 +149,7 @@ class _Flag extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return country != null
-        ? Container(
+        ? SizedBox(
             child: Text(
             Utils.generateFlagEmojiUnicode(country?.alpha2Code ?? ''),
             style: Theme.of(context).textTheme.headline5,

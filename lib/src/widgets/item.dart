@@ -27,24 +27,22 @@ class Item extends StatelessWidget {
     if (trailingSpace) {
       dialCode = dialCode.padRight(5, " ");
     }
-    return Container(
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.start,
-        mainAxisSize: MainAxisSize.min,
-        children: <Widget>[
-          SizedBox(width: leadingPadding),
-          _Flag(
-            country: country,
-            showFlag: showFlag,
-          ),
-          SizedBox(width: 3.0),
-          Text(
-            '$dialCode',
-            textDirection: TextDirection.ltr,
-            style: textStyle,
-          ),
-        ],
-      ),
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.start,
+      mainAxisSize: MainAxisSize.min,
+      children: <Widget>[
+        SizedBox(width: leadingPadding),
+        _Flag(
+          country: country,
+          showFlag: showFlag,
+        ),
+        SizedBox(width: 3.0),
+        Text(
+          '$dialCode',
+          textDirection: TextDirection.ltr,
+          style: textStyle,
+        ),
+      ],
     );
   }
 }
@@ -58,11 +56,10 @@ class _Flag extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return country != null && showFlag!
-        ? Container(
-            child: Text(
+        ? Text(
             Utils.generateFlagEmojiUnicode(country?.alpha2Code ?? ''),
             style: Theme.of(context).textTheme.labelMedium,
-          ))
+          )
         : SizedBox.shrink();
   }
 }

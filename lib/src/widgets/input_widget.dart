@@ -205,18 +205,6 @@ class _InputWidgetState extends State<InternationalPhoneNumberInput> {
         ],
         Flexible(
           child: TextFormField(
-            // validator: (value) {
-            //   if (!widget.disableLengthCheck && value != null) {
-            //     return value.length >= _selectedCountry.minLength &&
-            //             value.length <= _selectedCountry.maxLength
-            //         ? null
-            //         : widget.invalidNumberMessage;
-            //   }
-
-            //   return validatorMessage;
-            // },
-            // maxLength:
-            //     widget.disableLengthCheck ? null : _selectedCountry.maxLength,
             textDirection: widget.textDirection,
             key: widget.fieldKey ?? Key(TestHelper.TextInputKeyValue),
             controller: controller,

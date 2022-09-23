@@ -32,43 +32,41 @@ class _MyHomePageState extends State<MyHomePage> {
   Widget build(BuildContext context) {
     return Form(
       key: formKey,
-      child: Container(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            InternationalPhoneNumberInput(
-              locale: 'hi',
-              onInputChanged: (PhoneNumber number) {
-                print(number.phoneNumber);
-              },
-              onInputValidated: (bool value) {
-                print(value);
-              },
-              ignoreBlank: true,
-              autoValidateMode: AutovalidateMode.disabled,
-              initialValue: PhoneNumber(isoCode: 'NG'),
-              textFieldController: controller,
-              inputBorder: OutlineInputBorder(),
-              selectorConfig: SelectorConfig(
-                selectorType: PhoneInputSelectorType.BOTTOM_SHEET,
-              ),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: <Widget>[
+          InternationalPhoneNumberInput(
+            locale: 'hi',
+            onInputChanged: (PhoneNumber number) {
+              print(number.phoneNumber);
+            },
+            onInputValidated: (bool value) {
+              print(value);
+            },
+            ignoreBlank: true,
+            autoValidateMode: AutovalidateMode.disabled,
+            initialValue: PhoneNumber(isoCode: 'NG'),
+            textFieldController: controller,
+            inputBorder: OutlineInputBorder(),
+            selectorConfig: SelectorConfig(
+              selectorType: PhoneInputSelectorType.BOTTOM_SHEET,
             ),
-            ElevatedButton(
-              onPressed: () {
-                if (formKey.currentState != null) {
-                  formKey.currentState!.validate();
-                }
-              },
-              child: Text('Validate'),
-            ),
-            ElevatedButton(
-              onPressed: () {
-                getPhoneNumber('+15417543010');
-              },
-              child: Text('Update'),
-            ),
-          ],
-        ),
+          ),
+          ElevatedButton(
+            onPressed: () {
+              if (formKey.currentState != null) {
+                formKey.currentState!.validate();
+              }
+            },
+            child: Text('Validate'),
+          ),
+          ElevatedButton(
+            onPressed: () {
+              getPhoneNumber('+15417543010');
+            },
+            child: Text('Update'),
+          ),
+        ],
       ),
     );
   }
