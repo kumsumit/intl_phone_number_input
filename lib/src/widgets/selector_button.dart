@@ -12,6 +12,7 @@ class SelectorButton extends StatelessWidget {
   final Country? country;
   final SelectorConfig selectorConfig;
   final TextStyle? selectorTextStyle;
+  final TextStyle? flagStyle;
   final InputDecoration? searchBoxDecoration;
   final bool autoFocusSearchField;
   final String? locale;
@@ -23,12 +24,13 @@ class SelectorButton extends StatelessWidget {
   const SelectorButton({
     Key? key,
     required this.countries,
-    required this.country,
+    this.country,
     required this.selectorConfig,
-    required this.selectorTextStyle,
+    this.selectorTextStyle,
+    this.flagStyle,
     required this.searchBoxDecoration,
     required this.autoFocusSearchField,
-    required this.locale,
+    this.locale,
     required this.onCountryChanged,
     required this.isEnabled,
     required this.isScrollControlled,

@@ -76,6 +76,7 @@ class InternationalPhoneNumberInput extends StatefulWidget {
   final TextDirection textDirection;
   final TextStyle? textStyle;
   final TextStyle? selectorTextStyle;
+  final TextStyle? flagStyle;
   final InputBorder? inputBorder;
   final InputDecoration? inputDecoration;
   final InputDecoration? searchBoxDecoration;
@@ -120,6 +121,7 @@ class InternationalPhoneNumberInput extends StatefulWidget {
     this.countrySelectorScrollControlled = true,
     this.locale,
     this.textStyle,
+    this.flagStyle,
     this.selectorTextStyle,
     this.inputBorder,
     this.inputDecoration,
