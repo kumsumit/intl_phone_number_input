@@ -27,6 +27,9 @@ class SelectorConfig {
   /// Space before the flag icon
   final double? leadingPadding;
 
+  /// Space before the flag icon
+  final double? trailingPadding;
+
   /// Add white space for short dial code
   final bool trailingSpace;
 
@@ -36,6 +39,7 @@ class SelectorConfig {
     this.countryComparator,
     this.setSelectorButtonAsPrefixIcon = false,
     this.leadingPadding,
+    this.trailingPadding,
     this.trailingSpace = true,
   });
 }

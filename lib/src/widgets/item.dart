@@ -10,6 +10,7 @@ class Item extends StatelessWidget {
   final TextStyle? textStyle;
   final bool withCountryNames;
   final double? leadingPadding;
+  final double? trailingPadding;
   final bool trailingSpace;
 
   const Item({
@@ -20,6 +21,7 @@ class Item extends StatelessWidget {
     this.textStyle,
     this.withCountryNames = false,
     this.leadingPadding = 3,
+    this.trailingPadding = 3,
     this.trailingSpace = true,
   }) : super(key: key);
 
@@ -45,6 +47,7 @@ class Item extends StatelessWidget {
           textDirection: TextDirection.ltr,
           style: textStyle,
         ),
+        SizedBox(width: trailingPadding),
       ],
     );
   }
