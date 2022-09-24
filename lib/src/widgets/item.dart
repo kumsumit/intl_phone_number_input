@@ -66,7 +66,7 @@ class _Flag extends StatelessWidget {
     return country != null && showFlag!
         ? Text(
             Utils.generateFlagEmojiUnicode(country?.alpha2Code ?? ''),
-            style: flagStyle ?? Theme.of(context).textTheme.labelMedium,
+            style: flagStyle ?? Theme.of(context).textTheme.labelLarge,
           )
         : SizedBox.shrink();
   }
