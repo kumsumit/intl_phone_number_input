@@ -22,9 +22,6 @@ class Country {
   /// The currencyName of the [Country]
   final String? currencyName;
 
-  /// The flagUri which links to the flag for the [Country] in the library assets
-  final String flagUri;
-
   /// The nameTranslation for translation
   final Map<String, String>? nameTranslations;
 
@@ -42,7 +39,6 @@ class Country {
     required this.alpha2Code,
     required this.alpha3Code,
     required this.dialCode,
-    required this.flagUri,
     required this.minLength,
     required this.maxLength,
     required this.currencyCode,
@@ -65,7 +61,6 @@ class Country {
       currencyName: data["currency_name"],
       symbolOnLeft: data["symbol_on_left"],
       currencySymbol: data["currency_symbol"],
-      flagUri: 'assets/flags/${data['alpha_2_code'].toLowerCase()}.png',
       nameTranslations: data['nameTranslations'] != null
           ? Map<String, String>.from(data['nameTranslations'])
           : null,
