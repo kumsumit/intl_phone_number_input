@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:intl_phone_number_input/intl_phone_number_input.dart';
 
-void main() => runApp(MyApp());
+void main() => runApp(const MyApp());
 
 class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+
   @override
   Widget build(BuildContext context) {
     var darkTheme = ThemeData.dark().copyWith(primaryColor: Colors.blue);
@@ -17,19 +19,21 @@ class MyApp extends StatelessWidget {
         primarySwatch: Colors.blue,
       ),
       home: Scaffold(
-        appBar: AppBar(title: Text('Demo')),
-        body: MyHomePage(),
+        appBar: AppBar(title: const Text('Demo')),
+        body: const MyHomePage(),
       ),
     );
   }
 }
 
 class MyHomePage extends StatefulWidget {
+  const MyHomePage({super.key});
+
   @override
-  _MyHomePageState createState() => _MyHomePageState();
+  MyHomePageState createState() => MyHomePageState();
 }
 
-class _MyHomePageState extends State<MyHomePage> {
+class MyHomePageState extends State<MyHomePage> {
   final GlobalKey<FormState> formKey = GlobalKey<FormState>();
   int count = 0;
   final TextEditingController controller = TextEditingController();
@@ -46,22 +50,22 @@ class _MyHomePageState extends State<MyHomePage> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
               InternationalPhoneNumberInput(
-                label: Text("Customer Phone Number"),
+                label: const Text("Customer Phone Number"),
                 errorMessage: "Wrong Input entered",
                 selectorButtonBottomWidget: Container(
                   color: Colors.white,
                   height: 1,
                   width: 120,
                 ),
-                betweenTextFieldWidget: Icon(
+                betweenTextFieldWidget: const Icon(
                   Icons.arrow_drop_down_sharp,
                   color: Colors.white,
                 ),
                 locale: "hi",
                 onInputChanged: (PhoneNumber number) {
-                  print(number.phoneNumber);
+                  debugPrint(number.phoneNumber);
                 },
-                selectorConfig: SelectorConfig(
+                selectorConfig: const SelectorConfig(
                   leadingPadding: 3,
                   trailingSpace: true,
                   setSelectorButtonAsPrefixIcon: true,
@@ -69,40 +73,41 @@ class _MyHomePageState extends State<MyHomePage> {
                 ),
                 ignoreBlank: false,
                 autoValidateMode: AutovalidateMode.always,
-                selectorTextStyle: TextStyle(color: Colors.black, fontSize: 10),
+                selectorTextStyle:
+                    const TextStyle(color: Colors.black, fontSize: 10),
                 initialValue: number,
                 textFieldController: controller,
                 formatInput: true,
-                keyboardType: TextInputType.numberWithOptions(
+                keyboardType: const TextInputType.numberWithOptions(
                     signed: true, decimal: true),
-                inputBorder: OutlineInputBorder(),
+                inputBorder: const OutlineInputBorder(),
                 onSaved: (PhoneNumber number) {
-                  print('On Saved: $number');
+                  debugPrint('On Saved: $number');
                 },
                 inputDecoration:
-                    InputDecoration(labelStyle: TextStyle(fontSize: 13)),
+                    const InputDecoration(labelStyle: TextStyle(fontSize: 13)),
               ),
               ElevatedButton(
                 onPressed: () {
                   if (formKey.currentState!.validate()) {
-                    print("validated");
+                    debugPrint("validated");
                   } else {
-                    print("An error");
+                    debugPrint("An error");
                   }
                 },
-                child: Text('Validate'),
+                child: const Text('Validate'),
               ),
               ElevatedButton(
                 onPressed: () {
                   getPhoneNumber('+15417543010');
                 },
-                child: Text('Update'),
+                child: const Text('Update'),
               ),
               ElevatedButton(
                 onPressed: () {
                   formKey.currentState?.save();
                 },
-                child: Text('Save'),
+                child: const Text('Save'),
               ),
             ],
           ),

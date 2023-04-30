@@ -10,7 +10,8 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-
+  phone_numbers_parser:
+    git: https://github.com/sumitsharansatsangi/phone_numbers_parser.git
   libphonenumber:
     git:
       url: https://github.com/kumsumit/flutter-libphonenumber.git

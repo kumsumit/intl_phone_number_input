@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:intl_phone_number_input/intl_phone_number_input.dart';
 
-void main() => runApp(MyBottomSheetApp());
+void main() => runApp(const MyBottomSheetApp());
 
 class MyBottomSheetApp extends StatelessWidget {
+  const MyBottomSheetApp({super.key});
+
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
@@ -12,17 +14,20 @@ class MyBottomSheetApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: Scaffold(appBar: AppBar(title: Text('Demo')), body: MyHomePage()),
+      home: Scaffold(
+          appBar: AppBar(title: const Text('Demo')), body: const MyHomePage()),
     );
   }
 }
 
 class MyHomePage extends StatefulWidget {
+  const MyHomePage({super.key});
+
   @override
-  _MyHomePageState createState() => _MyHomePageState();
+  MyHomePageState createState() => MyHomePageState();
 }
 
-class _MyHomePageState extends State<MyHomePage> {
+class MyHomePageState extends State<MyHomePage> {
   final GlobalKey<FormState> formKey = GlobalKey<FormState>();
 
   final TextEditingController controller = TextEditingController();
@@ -38,17 +43,17 @@ class _MyHomePageState extends State<MyHomePage> {
           InternationalPhoneNumberInput(
             locale: 'hi',
             onInputChanged: (PhoneNumber number) {
-              print(number.phoneNumber);
+              debugPrint(number.phoneNumber);
             },
             onInputValidated: (bool value) {
-              print(value);
+              debugPrint(value.toString());
             },
             ignoreBlank: true,
             autoValidateMode: AutovalidateMode.disabled,
             initialValue: PhoneNumber(isoCode: 'NG'),
             textFieldController: controller,
-            inputBorder: OutlineInputBorder(),
-            selectorConfig: SelectorConfig(
+            inputBorder: const OutlineInputBorder(),
+            selectorConfig: const SelectorConfig(
               selectorType: PhoneInputSelectorType.BOTTOM_SHEET,
             ),
           ),
@@ -58,13 +63,13 @@ class _MyHomePageState extends State<MyHomePage> {
                 formKey.currentState!.validate();
               }
             },
-            child: Text('Validate'),
+            child: const Text('Validate'),
           ),
           ElevatedButton(
             onPressed: () {
               getPhoneNumber('+15417543010');
             },
-            child: Text('Update'),
+            child: const Text('Update'),
           ),
         ],
       ),
