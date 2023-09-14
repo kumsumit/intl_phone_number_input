@@ -5,18 +5,18 @@ publish_to: none
 homepage: https://github.com/natintosh/intl-phone-number-input
 
 environment:
-  sdk: ">=2.19.6 <3.0.0"
+  sdk: ">=3.1.0 <4.0.0"
 
 dependencies:
   flutter:
     sdk: flutter
-  phone_numbers_parser:
-    git: https://github.com/sumitsharansatsangi/phone_numbers_parser.git
+  # phone_numbers_parser:
+  #   git: https://github.com/sumitsharansatsangi/phone_numbers_parser.git
   libphonenumber:
     git:
       url: https://github.com/kumsumit/flutter-libphonenumber.git
   equatable: ^2.0.5
-  collection: ^1.17.0
+  collection: ^1.17.2
 
 dev_dependencies:
   flutter_test:

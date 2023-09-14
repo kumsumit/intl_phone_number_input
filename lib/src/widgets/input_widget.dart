@@ -84,7 +84,7 @@ class InternationalPhoneNumberInput extends StatefulWidget {
   final TextAlign textAlign;
   final TextAlignVertical textAlignVertical;
   final EdgeInsets scrollPadding;
-
+  final void Function()? onTap;
   final FocusNode? focusNode;
   final Iterable<String>? autofillHints;
 
@@ -103,6 +103,7 @@ class InternationalPhoneNumberInput extends StatefulWidget {
     this.onFieldSubmitted,
     this.validator,
     this.onSaved,
+    this.onTap,
     this.fieldKey,
     this.textFieldController,
     this.keyboardAction,
@@ -210,6 +211,7 @@ class _InputWidgetState extends State<InternationalPhoneNumberInput> {
             textDirection: widget.textDirection,
             key: widget.fieldKey ?? Key(TestHelper.TextInputKeyValue),
             controller: controller,
+            onTap: widget.onTap,
             cursorColor: widget.cursorColor,
             focusNode: widget.focusNode,
             enabled: widget.isEnabled,

@@ -13,6 +13,14 @@ class PhoneNumberUtil {
     );
   }
 
+  //   static String formatInternational(
+  //     {required String phoneNumber, required desktop.IsoCode isoCode}) {
+  //   if (phoneNumber.length < 2) {
+  //     return "";
+  //   }
+  //   return desktop.PhoneNumberFormatter.formatNsn(phoneNumber, isoCode);
+  // }
+
   /// [isValidNumber] checks if a [phoneNumber] is valid.
   /// Accepts [phoneNumber] and [isoCode]
   /// Returns [Future<bool>].
