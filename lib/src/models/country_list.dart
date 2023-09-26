@@ -5106,8 +5106,8 @@ class Countries {
       "decimal_separator": ",",
       "space_between_amount_and_symbol": true,
       "symbol_on_left": false,
-      "minLength": 13,
-      "maxLength": 13,
+      "minLength": 9,
+      "maxLength": 10,
       "nameTranslations": {
         "sk": "Taliansko",
         "se": "Itália",
