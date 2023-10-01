@@ -61,7 +61,7 @@ class MyHomePageState extends State<MyHomePage> {
                   Icons.arrow_drop_down_sharp,
                   color: Colors.white,
                 ),
-                locale: "hi",
+                locale: "gu",
                 onInputChanged: (PhoneNumber number) {
                   debugPrint(number.phoneNumber);
                 },
