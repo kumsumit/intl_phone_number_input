@@ -16,6 +16,11 @@ class Country {
   /// The currencyCode of the [Country]
   final String? currencyCode;
 
+  final String? nativeName;
+  final String? continent;
+  final String capital;
+  final List<String>? languages;
+
   /// The currencySymbol of the [Country]
   final String? currencySymbol;
 
@@ -45,26 +50,33 @@ class Country {
     required this.currencyName,
     required this.currencySymbol,
     required this.symbolOnLeft,
+    required this.nativeName,
+    required this.continent,
+    required this.capital,
+    required this.languages,
     this.nameTranslations,
   });
 
   /// Convert [Countries.countryList] to [Country] model
   factory Country.fromJson(Map<String, dynamic> data) {
     return Country(
-      name: data['en_short_name'],
-      alpha2Code: data['alpha_2_code'],
-      alpha3Code: data['alpha_3_code'],
-      dialCode: data['dial_code'],
-      minLength: data['minLength'],
-      maxLength: data["maxLength"],
-      currencyCode: data["currency_code"],
-      currencyName: data["currency_name"],
-      symbolOnLeft: data["symbol_on_left"],
-      currencySymbol: data["currency_symbol"],
-      nameTranslations: data['nameTranslations'] != null
-          ? Map<String, String>.from(data['nameTranslations'])
-          : null,
-    );
+        name: data['en_short_name'],
+        alpha2Code: data['alpha_2_code'],
+        alpha3Code: data['alpha_3_code'],
+        dialCode: data['dial_code'],
+        minLength: data['minLength'],
+        maxLength: data["maxLength"],
+        currencyCode: data["currency_code"],
+        currencyName: data["currency_name"],
+        symbolOnLeft: data["symbol_on_left"],
+        currencySymbol: data["currency_symbol"],
+        nameTranslations: data['nameTranslations'] != null
+            ? Map<String, String>.from(data['nameTranslations'])
+            : null,
+        nativeName: data['nativeName'],
+        continent: data['continent'],
+        capital: data['capital'],
+        languages: List.castFrom<dynamic, String>(data['languages']));
   }
 
   @override

@@ -69,7 +69,7 @@ class Countries {
   ///
   static List<Map<String, dynamic>> get countryList => _countryList;
 
-  static List<Map<String, dynamic>> _countryList = [
+  static final List<Map<String, dynamic>> _countryList = [
     {
       "num_code": "20",
       "alpha_2_code": "AD",
@@ -5334,6 +5334,7 @@ class Countries {
       "name": "British Indian Ocean Territory",
       "nativeName": "British Indian Ocean Territory",
       "continent": "AS",
+      "capital": "Diego Garcia",
       "languages": ["en"],
       "nationality": "BIOT",
       "dial_code": "+246",
@@ -5484,6 +5485,7 @@ class Countries {
       "nativeName": "Ísland",
       "continent": "EU",
       "capital": "Reykjavik",
+      "languages": ["is"],
       "nationality": "Icelandic",
       "dial_code": "+354",
       "currency_code": "ISK",
@@ -5983,6 +5985,7 @@ class Countries {
       "nativeName": "Komori",
       "continent": "AF",
       "capital": "Moroni",
+      "languages": ["ar", "fr"],
       "nationality": "Comoran, Comorian",
       "dial_code": "+269",
       "currency_code": "KMF",
@@ -7082,6 +7085,7 @@ class Countries {
       "nativeName": "Saint-Martin",
       "continent": "NA",
       "capital": "Marigot",
+      "languages": ["en", "fr", "nl"],
       "nationality": "Saint-Martinoise",
       "dial_code": "+590",
       "currency_code": "EUR",
@@ -7632,6 +7636,7 @@ class Countries {
       "nativeName": "Montserrat",
       "continent": "NA",
       "capital": "Plymouth",
+      "languages": ["en"],
       "nationality": "Montserratian",
       "dial_code": "+1664",
       "currency_code": "XCD",
@@ -7681,6 +7686,7 @@ class Countries {
       "nativeName": "Malta",
       "continent": "EU",
       "capital": "Valletta",
+      "languages": ["mt", "en"],
       "nationality": "Maltese",
       "dial_code": "+356",
       "currency_code": "EUR",
@@ -9088,6 +9094,7 @@ class Countries {
       "nativeName": "Pitcairn, Henderson, Ducie and Oeno Islands",
       "continent": "OC",
       "capital": "Adamstown",
+      "languages": ["en"],
       "nationality": "Pitcairn Island",
       "dial_code": "+64",
       "currency_code": "NZD",
