@@ -34,10 +34,11 @@ class MyHomePage extends StatefulWidget {
 }
 
 class MyHomePageState extends State<MyHomePage> {
-  final LabeledGlobalKey<FormState> formKey = LabeledGlobalKey<FormState>("phoneform");
+  final LabeledGlobalKey<FormState> formKey =
+      LabeledGlobalKey<FormState>("phoneform");
   int count = 0;
   final TextEditingController controller = TextEditingController();
-  PhoneNumber number = PhoneNumber(isoCode: 'NG');
+  PhoneNumber number = const PhoneNumber(isoCode: IsoCode.NG, nsn: "");
 
   @override
   Widget build(BuildContext context) {
@@ -63,7 +64,7 @@ class MyHomePageState extends State<MyHomePage> {
                 ),
                 locale: "gu",
                 onInputChanged: (PhoneNumber number) {
-                  debugPrint(number.phoneNumber);
+                  debugPrint(number.international);
                 },
                 selectorConfig: const SelectorConfig(
                   leadingPadding: 3,
@@ -116,9 +117,8 @@ class MyHomePageState extends State<MyHomePage> {
     );
   }
 
-  void getPhoneNumber(String phoneNumber) async {
-    PhoneNumber number =
-        await PhoneNumber.getRegionInfoFromPhoneNumber(phoneNumber, 'US');
+  void getPhoneNumber(String phoneNumber) {
+    PhoneNumber number = PhoneNumber.parse(phoneNumber);
 
     setState(() {
       this.number = number;

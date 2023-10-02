@@ -1,5 +1,6 @@
 import 'package:flutter/services.dart';
-import 'package:intl_phone_number_input/src/utils/phone_number/phone_number_util.dart';
+import 'package:intl_phone_number_input/src/utils/util.dart';
+import 'package:phone_numbers_parser/phone_numbers_parser.dart';
 
 typedef OnInputFormatted<T> = void Function(T value);
 
@@ -46,66 +47,58 @@ class AsYouTypeFormatter extends TextInputFormatter {
               newValue.selection.end == -1 ? 0 : newValue.selection.end)
           .replaceAll(separatorChars, '');
 
-      formatAsYouType(input: textToParse).then(
-        (String? value) {
-          String parsedText = parsePhoneNumber(value);
+      String parsedText =
+          parsePhoneNumber(formatAsYouType(phoneNumber: textToParse));
 
-          int offset =
-              newValue.selection.end == -1 ? 0 : newValue.selection.end;
+      int offset = newValue.selection.end == -1 ? 0 : newValue.selection.end;
 
-          if (separatorChars.hasMatch(parsedText)) {
-            String valueInInputIndex = parsedText[offset - 1];
+      if (separatorChars.hasMatch(parsedText)) {
+        String valueInInputIndex = parsedText[offset - 1];
 
-            if (offset < parsedText.length) {
-              int offsetDifference = parsedText.length - offset;
+        if (offset < parsedText.length) {
+          int offsetDifference = parsedText.length - offset;
 
-              if (offsetDifference < 2) {
-                if (separatorChars.hasMatch(valueInInputIndex)) {
-                  offset += 1;
-                } else {
-                  bool isLastChar;
-                  try {
-                    var _ = newValueText[newValue.selection.end];
-                    isLastChar = false;
-                  } on RangeError {
-                    isLastChar = true;
-                  }
-                  if (isLastChar) {
-                    offset += offsetDifference;
-                  }
-                }
-              } else {
-                if (parsedText.length > offset - 1) {
-                  if (separatorChars.hasMatch(valueInInputIndex)) {
-                    offset += 1;
-                  }
-                }
+          if (offsetDifference < 2) {
+            if (separatorChars.hasMatch(valueInInputIndex)) {
+              offset += 1;
+            } else {
+              bool isLastChar;
+              try {
+                var _ = newValueText[newValue.selection.end];
+                isLastChar = false;
+              } on RangeError {
+                isLastChar = true;
+              }
+              if (isLastChar) {
+                offset += offsetDifference;
               }
             }
-
-            this.onInputFormatted(
-              TextEditingValue(
-                text: parsedText,
-                selection: TextSelection.collapsed(offset: offset),
-              ),
-            );
+          } else {
+            if (parsedText.length > offset - 1) {
+              if (separatorChars.hasMatch(valueInInputIndex)) {
+                offset += 1;
+              }
+            }
           }
-        },
-      );
+        }
+
+        this.onInputFormatted(
+          TextEditingValue(
+            text: parsedText,
+            selection: TextSelection.collapsed(offset: offset),
+          ),
+        );
+      }
     }
     return newValue;
   }
 
   /// Accepts [input], unformatted phone number and
   /// returns a [Future<String>] of the formatted phone number.
-  Future<String?> formatAsYouType({required String input}) async {
-    try {
-      String? formattedPhoneNumber = await PhoneNumberUtil.formatAsYouType(
-          phoneNumber: input, isoCode: isoCode);
-      return formattedPhoneNumber;
-    } on Exception {
-      return '';
-    }
+  String formatAsYouType({required String phoneNumber}) {
+    return PhoneNumber.parse(phoneNumber,
+            destinationCountry: isoCode.toEnum(IsoCode.values))
+        .getFormattedNsn();
   }
 
   /// Accepts a formatted [phoneNumber]

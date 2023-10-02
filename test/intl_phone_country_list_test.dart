@@ -6,7 +6,7 @@ void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
   group('Countries are loaded test', () {
-    test('Json is correctly loaded in to memory', () async {
+    test('Json is correctly loaded in to memory', () {
       expect(Countries.countryList.length, greaterThan(0));
 
       const List<String> expectedTranslations = [

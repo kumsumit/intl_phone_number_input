@@ -12,11 +12,11 @@ dependencies:
     sdk: flutter
   phone_numbers_parser:
     git: https://github.com/sumitsharansatsangi/phone_numbers_parser.git
-  libphonenumber:
-    git:
-      url: https://github.com/kumsumit/flutter-libphonenumber.git
-  equatable: ^2.0.5
-  collection: ^1.17.2
+  # libphonenumber:
+  #   git:
+  #     url: https://github.com/kumsumit/flutter-libphonenumber.git
+  # equatable: ^2.0.5
+  # collection: ^1.17.2
 
 dev_dependencies:
   flutter_test:

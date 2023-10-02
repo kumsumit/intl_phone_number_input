@@ -1,18 +1,16 @@
-import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:intl_phone_number_input/src/models/country_list.dart';
 import 'package:intl_phone_number_input/src/models/country_model.dart';
 import 'package:intl_phone_number_input/src/providers/country_provider.dart';
 import 'package:intl_phone_number_input/src/utils/formatter/as_you_type_formatter.dart';
-import 'package:intl_phone_number_input/src/utils/phone_number.dart';
-import 'package:intl_phone_number_input/src/utils/phone_number/phone_number_util.dart';
 import 'package:intl_phone_number_input/src/utils/selector_config.dart';
 import 'package:intl_phone_number_input/src/utils/test/test_helper.dart';
 import 'package:intl_phone_number_input/src/utils/util.dart';
 import 'package:intl_phone_number_input/src/utils/widget_view.dart';
 import 'package:intl_phone_number_input/src/widgets/selector_button.dart';
+import 'package:phone_numbers_parser/phone_numbers_parser.dart';
+
 
 /// Enum for [SelectorButton] types.
 ///
@@ -257,8 +255,8 @@ class _InputWidgetState extends State<InternationalPhoneNumberInput> {
   @override
   void didUpdateWidget(InternationalPhoneNumberInput oldWidget) {
     loadCountries(previouslySelectedCountry: country);
-    if (oldWidget.initialValue?.hash != widget.initialValue?.hash) {
-      if (country!.alpha2Code != widget.initialValue?.isoCode) {
+    if (oldWidget.initialValue != widget.initialValue) {
+      if (country!.alpha2Code != widget.initialValue?.isoCode.name) {
         loadCountries();
       }
       initialiseWidget();
@@ -267,22 +265,17 @@ class _InputWidgetState extends State<InternationalPhoneNumberInput> {
   }
 
   /// [initialiseWidget] sets initial values of the widget
-  void initialiseWidget() async {
-    if (widget.initialValue != null) {
-      if (widget.initialValue!.phoneNumber != null &&
-          widget.initialValue!.phoneNumber!.isNotEmpty &&
-          (await PhoneNumberUtil.isValidNumber(
-              phoneNumber: widget.initialValue!.phoneNumber!,
-              isoCode: widget.initialValue!.isoCode!))!) {
-        String phoneNumber =
-            await PhoneNumber.getParsableNumber(widget.initialValue!);
+  void initialiseWidget() {
+    if (widget.initialValue != null &&
+        widget.initialValue!.nsn.isNotEmpty &&
+        widget.initialValue!.isValid()) {
+      String phoneNumber = widget.initialValue!.getFormattedNsn();
 
-        controller!.text = widget.formatInput
-            ? phoneNumber
-            : phoneNumber.replaceAll(RegExp(r'[^\d+]'), '');
+      controller!.text = widget.formatInput
+          ? phoneNumber
+          : phoneNumber.replaceAll(RegExp(r'[^\d+]'), '');
 
-        phoneNumberControllerListener();
-      }
+      phoneNumberControllerListener();
     }
   }
 
@@ -294,7 +287,7 @@ class _InputWidgetState extends State<InternationalPhoneNumberInput> {
 
       Country country = previouslySelectedCountry ??
           Utils.getInitialSelectedCountry(
-              countries, widget.initialValue?.isoCode ?? 'IN');
+              countries, widget.initialValue?.isoCode.name ?? 'IN');
       // Remove potential duplicates
       countries = countries.toSet().toList();
 
@@ -320,73 +313,36 @@ class _InputWidgetState extends State<InternationalPhoneNumberInput> {
     if (this.mounted) {
       String parsedPhoneNumberString =
           controller!.text.replaceAll(RegExp(r'[^\d+]'), '');
+      String normalizedPhoneNumber =
+          '${this.country?.dialCode}$parsedPhoneNumberString';
 
-      getParsedPhoneNumber(parsedPhoneNumberString, this.country?.alpha2Code)
-          .then((phoneNumber) {
-        if (phoneNumber == null) {
-          String phoneNumber =
-              '${this.country?.dialCode}$parsedPhoneNumberString';
-
-          if (widget.onInputChanged != null) {
-            final number = PhoneNumber(
-                phoneNumber: phoneNumber,
-                isoCode: this.country?.alpha2Code,
-                dialCode: this.country?.dialCode);
-            widget.onInputChanged!(number);
-            if (number.phoneNumber != null && number.dialCode != null) {
-              setState(() {
-                currentLength = number.phoneNumber!.replaceAll(" ", "").length -
-                    number.dialCode!.length;
-              });
-            }
-          }
-
+      if (this.country != null && this.country!.alpha2Code != null) {
+        final phoneNumber = PhoneNumber.parse(parsedPhoneNumberString,
+            destinationCountry:
+                this.country?.alpha2Code!.toEnum(IsoCode.values));
+        if (phoneNumber.nsn.isEmpty || !phoneNumber.isValid()) {
           if (widget.onInputValidated != null) {
             widget.onInputValidated!(false);
           }
           this.isNotValid = true;
-        } else {
-          if (widget.onInputChanged != null) {
-            final number = PhoneNumber(
-                phoneNumber: phoneNumber,
-                isoCode: this.country?.alpha2Code,
-                dialCode: this.country?.dialCode);
-            widget.onInputChanged!(number);
-            if (number.phoneNumber != null && number.dialCode != null) {
-              setState(() {
-                currentLength = number.phoneNumber!.replaceAll(" ", "").length -
-                    number.dialCode!.length;
-              });
-            }
-          }
-
+        }else{
           if (widget.onInputValidated != null) {
             widget.onInputValidated!(true);
           }
           this.isNotValid = false;
         }
-      });
-    }
-  }
-
-  /// Returns a formatted String of [phoneNumber] with [isoCode], returns `null`
-  /// if [phoneNumber] is not valid or if an [Exception] is caught.
-  Future<String?> getParsedPhoneNumber(
-      String phoneNumber, String? isoCode) async {
-    if (phoneNumber.isNotEmpty && isoCode != null) {
-      try {
-        bool? isValidPhoneNumber = await PhoneNumberUtil.isValidNumber(
-            phoneNumber: phoneNumber, isoCode: isoCode);
-
-        if (isValidPhoneNumber!) {
-          return await PhoneNumberUtil.normalizePhoneNumber(
-              phoneNumber: phoneNumber, isoCode: isoCode);
+        setState(() {
+          currentLength = phoneNumber.nsn.length;
+        });
+        if (widget.onInputChanged != null) {
+          widget.onInputChanged!(phoneNumber);
         }
-      } on Exception {
-        return null;
+      } else {
+        setState(() {
+          currentLength = normalizedPhoneNumber.replaceAll(" ", "").length;
+        });
       }
     }
-    return null;
   }
 
   /// Creates or Select [InputDecoration]
@@ -469,10 +425,8 @@ class _InputWidgetState extends State<InternationalPhoneNumberInput> {
           '${this.country?.dialCode ?? ''}' + parsedPhoneNumberString;
 
       widget.onSaved?.call(
-        PhoneNumber(
-            phoneNumber: phoneNumber,
-            isoCode: this.country?.alpha2Code,
-            dialCode: this.country?.dialCode),
+        PhoneNumber.parse(phoneNumber,
+            callerCountry: this.country!.alpha2Code?.toEnum(IsoCode.values)),
       );
     }
   }

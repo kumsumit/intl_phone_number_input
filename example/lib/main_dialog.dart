@@ -42,14 +42,14 @@ class MyHomePageState extends State<MyHomePage> {
         children: <Widget>[
           InternationalPhoneNumberInput(
             onInputChanged: (PhoneNumber number) {
-              debugPrint(number.phoneNumber);
+              debugPrint(number.international);
             },
             onInputValidated: (bool value) {
               debugPrint(value.toString());
             },
             ignoreBlank: true,
             autoValidateMode: AutovalidateMode.disabled,
-            initialValue: PhoneNumber(isoCode: 'NG'),
+            initialValue:const PhoneNumber(isoCode: IsoCode.NG,nsn: ""),
             textFieldController: controller,
             inputBorder: const OutlineInputBorder(),
             selectorConfig: const SelectorConfig(
@@ -75,16 +75,13 @@ class MyHomePageState extends State<MyHomePage> {
     );
   }
 
-  void getPhoneNumber(String phoneNumber) async {
-    PhoneNumber number =
-        await PhoneNumber.getRegionInfoFromPhoneNumber(phoneNumber, 'US');
-
-    String parsableNumber = await PhoneNumber.getParsableNumber(number);
-    controller.text = parsableNumber;
+  void getPhoneNumber(String phoneNumber){
+    PhoneNumber number = PhoneNumber(isoCode: IsoCode.US, nsn: phoneNumber);
+    controller.text = number.international;
 
     setState(() {
-      if (number.isoCode != null) {
-        initialCountry = number.isoCode ?? "IN";
+      if (number.nsn.isNotEmpty && number.isValid()) {
+        initialCountry = number.isoCode.toString();
       }
     });
   }
