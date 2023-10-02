@@ -21,6 +21,7 @@ class AsYouTypeFormatter extends TextInputFormatter {
 
   /// The [dialCode] of the [Country] formatting the phone number to
   final String dialCode;
+  final int maxLength;
 
   /// [onInputFormatted] is a callback that passes the formatted phone number
   final OnInputFormatted<TextEditingValue> onInputFormatted;
@@ -28,6 +29,7 @@ class AsYouTypeFormatter extends TextInputFormatter {
   AsYouTypeFormatter(
       {required this.isoCode,
       required this.dialCode,
+      required this.maxLength,
       required this.onInputFormatted});
 
   @override
@@ -39,6 +41,12 @@ class AsYouTypeFormatter extends TextInputFormatter {
     if (newValueLength > 0 && newValueLength > oldValueLength) {
       String newValueText = newValue.text;
       String rawText = newValueText.replaceAll(separatorChars, '');
+      if (PhoneNumber(isoCode: isoCode.toEnum(IsoCode.values), nsn: rawText)
+              .nsn
+              .length >
+          maxLength) {
+        return oldValue;
+      }
       String textToParse = dialCode + rawText;
 
       final _ = newValueText
@@ -52,7 +60,8 @@ class AsYouTypeFormatter extends TextInputFormatter {
 
       int offset = newValue.selection.end == -1 ? 0 : newValue.selection.end;
 
-      if (separatorChars.hasMatch(parsedText)) {
+      if (separatorChars.hasMatch(parsedText) &&
+          offset - 2 <= parsedText.length) {
         String valueInInputIndex = parsedText[offset - 1];
 
         if (offset < parsedText.length) {
@@ -81,15 +90,16 @@ class AsYouTypeFormatter extends TextInputFormatter {
             }
           }
         }
-
-        this.onInputFormatted(
-          TextEditingValue(
-            text: parsedText,
-            selection: TextSelection.collapsed(offset: offset),
-          ),
+        final TextEditingValue textEditingValue = TextEditingValue(
+          text: parsedText,
+          selection: TextSelection.collapsed(offset: offset),
         );
+
+        newValue = textEditingValue;
+        this.onInputFormatted(textEditingValue);
       }
     }
+
     return newValue;
   }
 

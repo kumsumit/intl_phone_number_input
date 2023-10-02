@@ -11,7 +11,6 @@ import 'package:intl_phone_number_input/src/utils/widget_view.dart';
 import 'package:intl_phone_number_input/src/widgets/selector_button.dart';
 import 'package:phone_numbers_parser/phone_numbers_parser.dart';
 
-
 /// Enum for [SelectorButton] types.
 ///
 /// Available type includes:
@@ -146,7 +145,8 @@ class _InputWidgetState extends State<InternationalPhoneNumberInput> {
   TextEditingController? controller;
   double selectorButtonBottomPadding = 0;
   int currentLength = 0;
-  int maxLength = 0;
+  int minLength = 0;
+  int maxLength = 15;
   Country? country;
   List<Country> countries = [];
   bool isNotValid = true;
@@ -228,9 +228,13 @@ class _InputWidgetState extends State<InternationalPhoneNumberInput> {
             onSaved: onSaved,
             scrollPadding: widget.scrollPadding,
             inputFormatters: [
-              LengthLimitingTextInputFormatter(
-                  // widget.maxLength
-                  15),
+              // LengthLimitingTextInputFormatter(
+              //   // 15
+              //   maxLength
+              //     // PhoneNumber(isoCode:IsoCode.IN, nsn: nsn).
+              //     ),
+              FilteringTextInputFormatter.allow(RegExp(
+                  '[${Patterns.plus}${Patterns.digits}${Patterns.punctuation}]')),
               widget.formatInput
                   ? AsYouTypeFormatter(
                       isoCode: country?.alpha2Code ?? 'IN',
@@ -238,7 +242,7 @@ class _InputWidgetState extends State<InternationalPhoneNumberInput> {
                       onInputFormatted: (TextEditingValue value) {
                         controller!.value = value;
                       },
-                    )
+                      maxLength: maxLength)
                   : FilteringTextInputFormatter.digitsOnly,
             ],
             onChanged: onChanged,
@@ -302,7 +306,7 @@ class _InputWidgetState extends State<InternationalPhoneNumberInput> {
       setState(() {
         this.countries = countries;
         this.country = country;
-        maxLength = country.maxLength;
+        // maxLength = country.maxLength;
       });
     }
   }
@@ -325,7 +329,7 @@ class _InputWidgetState extends State<InternationalPhoneNumberInput> {
             widget.onInputValidated!(false);
           }
           this.isNotValid = true;
-        }else{
+        } else {
           if (widget.onInputValidated != null) {
             widget.onInputValidated!(true);
           }
@@ -349,11 +353,15 @@ class _InputWidgetState extends State<InternationalPhoneNumberInput> {
   InputDecoration getInputDecoration(InputDecoration? decoration) {
     InputDecoration value = decoration != null
         ? decoration.copyWith(
-            counterText: "$currentLength / $maxLength",
+            counterText: maxLength == minLength
+                ? "$currentLength / $maxLength"
+                : "$currentLength / ($minLength - $maxLength)",
           )
         : InputDecoration(
             label: widget.label,
-            counterText: "$currentLength / $maxLength",
+            counterText: maxLength == minLength
+                ? "$currentLength / $maxLength"
+                : "$currentLength / ($minLength - $maxLength)",
             border: widget.inputBorder ?? UnderlineInputBorder(),
             hintText: widget.hintText,
           );
@@ -411,7 +419,12 @@ class _InputWidgetState extends State<InternationalPhoneNumberInput> {
   void onCountryChanged(Country? country) {
     setState(() {
       this.country = country;
-      if (country != null) this.maxLength = country.maxLength;
+      if (country != null) {
+        final minMax = MinMaxUtils.getMaxMinLengthByIsoCode(
+            country.alpha2Code!.toEnum(IsoCode.values), PhoneNumberType.mobile);
+        this.minLength = minMax.minLength;
+        this.maxLength = minMax.maxLength;
+      }
     });
     phoneNumberControllerListener();
   }
@@ -459,6 +472,7 @@ class InputWidgetView
   Widget build(BuildContext context) {
     final countryCode = state.country?.alpha2Code ?? 'IN';
     final dialCode = state.country?.dialCode ?? 'IN';
+    final maxLength = state.maxLength;
 
     return Row(
       mainAxisAlignment: MainAxisAlignment.start,
@@ -519,9 +533,11 @@ class InputWidgetView
             onSaved: state.onSaved,
             scrollPadding: widget.scrollPadding,
             inputFormatters: [
-              LengthLimitingTextInputFormatter(
-                  // widget.maxLength
-                  state.maxLength),
+              // LengthLimitingTextInputFormatter(
+              //     // widget.maxLength
+              //     state.maxLength),
+              FilteringTextInputFormatter.allow(RegExp(
+                  '[${Patterns.plus}${Patterns.digits}${Patterns.punctuation}]')),
               widget.formatInput
                   ? AsYouTypeFormatter(
                       isoCode: countryCode,
@@ -529,7 +545,7 @@ class InputWidgetView
                       onInputFormatted: (TextEditingValue value) {
                         state.controller!.value = value;
                       },
-                    )
+                      maxLength: maxLength)
                   : FilteringTextInputFormatter.digitsOnly,
             ],
             onChanged: state.onChanged,

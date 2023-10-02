@@ -160,7 +160,7 @@ class SelectorButton extends StatelessWidget {
               builder: (BuildContext context, ScrollController controller) {
                 return Directionality(
                   textDirection: Directionality.of(inheritedContext),
-                  child: Container(
+                  child: DecoratedBox(
                     decoration: ShapeDecoration(
                       color: Theme.of(context).canvasColor,
                       shape: RoundedRectangleBorder(
