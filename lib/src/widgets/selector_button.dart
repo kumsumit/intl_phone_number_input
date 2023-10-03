@@ -18,6 +18,8 @@ class SelectorButton extends StatelessWidget {
   final String? locale;
   final bool isEnabled;
   final bool isScrollControlled;
+  final bool isFlagEmoji;
+  final double flagSize;
 
   final ValueChanged<Country?> onCountryChanged;
 
@@ -34,6 +36,8 @@ class SelectorButton extends StatelessWidget {
     required this.onCountryChanged,
     required this.isEnabled,
     required this.isScrollControlled,
+    required this.flagSize,
+    required this.isFlagEmoji,
   }) : super(key: key);
 
   @override
@@ -49,6 +53,8 @@ class SelectorButton extends StatelessWidget {
                     leadingPadding: selectorConfig.leadingPadding,
                     trailingSpace: selectorConfig.trailingSpace,
                     textStyle: selectorTextStyle,
+                    flagSize: flagSize,
+                    isFlagEmoji: isFlagEmoji,
                   ),
                   value: country,
                   items: mapCountryToDropdownItem(countries),
@@ -62,6 +68,8 @@ class SelectorButton extends StatelessWidget {
                 trailingPadding: selectorConfig.trailingPadding,
                 trailingSpace: selectorConfig.trailingSpace,
                 textStyle: selectorTextStyle,
+                flagSize: flagSize,
+                isFlagEmoji: isFlagEmoji,
               )
         : MaterialButton(
             key: Key(TestHelper.DropdownButtonKeyValue),
@@ -90,11 +98,13 @@ class SelectorButton extends StatelessWidget {
               leadingPadding: selectorConfig.leadingPadding,
               trailingSpace: selectorConfig.trailingSpace,
               textStyle: selectorTextStyle,
+              flagSize: flagSize,
+              isFlagEmoji: isFlagEmoji,
             ),
           );
   }
 
-  /// Converts the list [countries] to `DropdownMenuItem`
+  /// Converts the list [countries] to `DropdownMenuItem` 09931265823
   List<DropdownMenuItem<Country>> mapCountryToDropdownItem(
       List<Country> countries) {
     return countries.map((country) {
@@ -107,6 +117,8 @@ class SelectorButton extends StatelessWidget {
           textStyle: selectorTextStyle,
           withCountryNames: false,
           trailingSpace: selectorConfig.trailingSpace,
+          flagSize: flagSize,
+          isFlagEmoji: isFlagEmoji,
         ),
       );
     }).toList();
@@ -129,6 +141,8 @@ class SelectorButton extends StatelessWidget {
               searchBoxDecoration: searchBoxDecoration,
               showFlags: selectorConfig.showFlags,
               autoFocus: autoFocusSearchField,
+              isFlagEmoji: isFlagEmoji,
+              flagSize: flagSize,
             ),
           ),
         ),
@@ -177,6 +191,8 @@ class SelectorButton extends StatelessWidget {
                       scrollController: controller,
                       showFlags: selectorConfig.showFlags,
                       autoFocus: autoFocusSearchField,
+                      isFlagEmoji: isFlagEmoji,
+                      flagSize: flagSize,
                     ),
                   ),
                 );

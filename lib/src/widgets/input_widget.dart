@@ -86,6 +86,8 @@ class InternationalPhoneNumberInput extends StatefulWidget {
   final Iterable<String>? autofillHints;
 
   final List<String>? countries;
+  final bool isFlagEmoji;
+  final double flagSize;
 
   /// Disable view Min/Max Length check
   final bool disableLengthCheck;
@@ -135,6 +137,8 @@ class InternationalPhoneNumberInput extends StatefulWidget {
     this.betweenTextFieldWidget,
     this.label,
     this.disableLengthCheck = false,
+    this.flagSize = 20,
+    this.isFlagEmoji = true,
   }) : super(key: key);
 
   @override
@@ -190,6 +194,8 @@ class _InputWidgetState extends State<InternationalPhoneNumberInput> {
                     isEnabled: widget.isEnabled,
                     autoFocusSearchField: widget.autoFocusSearch,
                     isScrollControlled: widget.countrySelectorScrollControlled,
+                    flagSize: widget.flagSize,
+                    isFlagEmoji: widget.isFlagEmoji,
                   ),
                   if (widget.betweenTextFieldWidget != null)
                     widget.betweenTextFieldWidget!,
@@ -381,6 +387,8 @@ class _InputWidgetState extends State<InternationalPhoneNumberInput> {
           isEnabled: widget.isEnabled,
           autoFocusSearchField: widget.autoFocusSearch,
           isScrollControlled: widget.countrySelectorScrollControlled,
+          flagSize: widget.flagSize,
+          isFlagEmoji: widget.isFlagEmoji,
         ),
       ));
     }
@@ -496,6 +504,8 @@ class InputWidgetView
                     isEnabled: widget.isEnabled,
                     autoFocusSearchField: widget.autoFocusSearch,
                     isScrollControlled: widget.countrySelectorScrollControlled,
+                    flagSize: widget.flagSize,
+                    isFlagEmoji: widget.isFlagEmoji,
                   ),
                   if (widget.betweenTextFieldWidget != null)
                     widget.betweenTextFieldWidget!,
