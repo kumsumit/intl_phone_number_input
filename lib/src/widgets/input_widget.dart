@@ -161,6 +161,14 @@ class _InputWidgetState extends State<InternationalPhoneNumberInput> {
     loadCountries();
     controller = widget.textFieldController ?? TextEditingController();
     initialiseWidget();
+    setState(() {
+      if (widget.initialValue != null) {
+        final minMax = MinMaxUtils.getMaxMinLengthByIsoCode(
+            widget.initialValue!.isoCode, PhoneNumberType.mobile);
+        this.minLength = minMax.minLength;
+        this.maxLength = minMax.maxLength;
+      }
+    });
   }
 
   @override
