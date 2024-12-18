@@ -143,6 +143,8 @@ class SelectorButton extends StatelessWidget {
               autoFocus: autoFocusSearchField,
               isFlagEmoji: isFlagEmoji,
               flagSize: flagSize,
+              titleStyle: selectorConfig.titleStyle,
+              subtitleStyle: selectorConfig.subtitleStyle,
             ),
           ),
         ),
@@ -193,6 +195,8 @@ class SelectorButton extends StatelessWidget {
                       autoFocus: autoFocusSearchField,
                       isFlagEmoji: isFlagEmoji,
                       flagSize: flagSize,
+                      titleStyle: selectorConfig.titleStyle,
+                      subtitleStyle: selectorConfig.subtitleStyle,
                     ),
                   ),
                 );

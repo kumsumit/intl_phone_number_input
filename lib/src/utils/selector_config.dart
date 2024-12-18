@@ -35,6 +35,12 @@ class SelectorConfig {
 
   /// Use safe area for selectorType=BOTTOM_SHEET
   final bool useBottomSheetSafeArea;
+  
+  //Use this to set the style of the title  of the country list
+  final TextStyle? titleStyle;
+
+  //Use this to set the style of the subtitle of the country list
+  final TextStyle? subtitleStyle;
 
   const SelectorConfig({
     this.selectorType = PhoneInputSelectorType.DROPDOWN,
@@ -45,5 +51,7 @@ class SelectorConfig {
     this.trailingPadding,
     this.trailingSpace = true,
     this.useBottomSheetSafeArea = false,
+    this.titleStyle,
+    this.subtitleStyle,
   });
 }

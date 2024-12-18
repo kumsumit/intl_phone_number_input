@@ -14,6 +14,8 @@ class CountrySearchListWidget extends StatefulWidget {
   final bool? showFlags;
   final bool isFlagEmoji;
   final double flagSize;
+  final TextStyle? titleStyle;
+  final TextStyle? subtitleStyle;
 
   CountrySearchListWidget(
     this.countries,
@@ -24,6 +26,8 @@ class CountrySearchListWidget extends StatefulWidget {
     this.autoFocus = false,
     required this.flagSize,
     required this.isFlagEmoji,
+    required this.titleStyle,
+    required this.subtitleStyle,
   });
 
   @override
@@ -95,6 +99,8 @@ class _CountrySearchListWidgetState extends State<CountrySearchListWidget> {
                 showFlags: widget.showFlags!,
                 isFlagEmoji: widget.isFlagEmoji,
                 flagSize: widget.flagSize,
+                titleStyle: widget.titleStyle,
+                subtitleStyle: widget.subtitleStyle,
               );
             },
           ),
@@ -117,13 +123,18 @@ class DirectionalCountryListTile extends StatelessWidget {
   final bool showFlags;
   final double flagSize;
   final bool isFlagEmoji;
+  final TextStyle? titleStyle;
+  final TextStyle? subtitleStyle;
   const DirectionalCountryListTile(
       {super.key,
       required this.country,
       required this.locale,
       required this.showFlags,
       this.flagSize = 20,
-      this.isFlagEmoji = true});
+      this.isFlagEmoji = true,
+      this.titleStyle,
+      this.subtitleStyle
+      });
 
   @override
   Widget build(BuildContext context) {
@@ -141,6 +152,7 @@ class DirectionalCountryListTile extends StatelessWidget {
         child: Text(
           '${Utils.getCountryName(country, locale)}',
           textDirection: Directionality.of(context),
+          style: titleStyle,
           textAlign: TextAlign.start,
         ),
       ),
@@ -150,6 +162,7 @@ class DirectionalCountryListTile extends StatelessWidget {
           '${country.dialCode ?? ''}',
           textDirection: TextDirection.ltr,
           textAlign: TextAlign.start,
+          style: subtitleStyle,
         ),
       ),
       onTap: () => Navigator.of(context).pop(country),

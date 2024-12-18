@@ -71,6 +71,8 @@ class MyHomePageState extends State<MyHomePage> {
                   trailingSpace: true,
                   setSelectorButtonAsPrefixIcon: true,
                   selectorType: PhoneInputSelectorType.BOTTOM_SHEET,
+                  titleStyle: TextStyle(color: Colors.black, fontSize: 10),
+                  subtitleStyle: TextStyle(color: Colors.black, fontSize: 10),
                 ),
                 ignoreBlank: false,
                 autoValidateMode: AutovalidateMode.always,
