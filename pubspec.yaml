@@ -5,7 +5,7 @@ version: 0.7.3+1
 homepage: https://github.com/natintosh/intl-phone-number-input
 
 environment:
-  sdk: ">=3.4.3 <4.0.0"
+  sdk: ">=3.8.1 <4.0.0"
 
 dependencies:
   flutter:
@@ -17,7 +17,7 @@ dependencies:
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  lints: ^5.0.0  
+  lints: ^6.0.0  
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
 
