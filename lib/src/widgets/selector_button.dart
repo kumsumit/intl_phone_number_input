@@ -44,33 +44,31 @@ class SelectorButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return selectorConfig.selectorType == PhoneInputSelectorType.DROPDOWN
         ? countries.isNotEmpty && countries.length > 1
-            ? DropdownButtonHideUnderline(
-                child: DropdownButton<Country>(
-                  key: Key(TestHelper.DropdownButtonKeyValue),
-                  hint: Item(
-                    country: country,
-                    showFlag: selectorConfig.showFlags,
-                    leadingPadding: selectorConfig.leadingPadding,
-                    trailingSpace: selectorConfig.trailingSpace,
-                    textStyle: selectorTextStyle,
-                    flagSize: flagSize,
-                    isFlagEmoji: isFlagEmoji,
+              ? DropdownButtonHideUnderline(
+                  child: DropdownButton<Country>(
+                    key: Key(TestHelper.DropdownButtonKeyValue),
+                    hint: Item(
+                      country: country,
+                      showFlag: selectorConfig.showFlags,
+                      leadingPadding: selectorConfig.leadingPadding,
+                      trailingSpace: selectorConfig.trailingSpace,
+                      textStyle: selectorTextStyle,
+                      flagSize: flagSize,
+                    ),
+                    value: country,
+                    items: mapCountryToDropdownItem(countries),
+                    onChanged: isEnabled ? onCountryChanged : null,
                   ),
-                  value: country,
-                  items: mapCountryToDropdownItem(countries),
-                  onChanged: isEnabled ? onCountryChanged : null,
-                ),
-              )
-            : Item(
-                country: country,
-                showFlag: selectorConfig.showFlags,
-                leadingPadding: selectorConfig.leadingPadding,
-                trailingPadding: selectorConfig.trailingPadding,
-                trailingSpace: selectorConfig.trailingSpace,
-                textStyle: selectorTextStyle,
-                flagSize: flagSize,
-                isFlagEmoji: isFlagEmoji,
-              )
+                )
+              : Item(
+                  country: country,
+                  showFlag: selectorConfig.showFlags,
+                  leadingPadding: selectorConfig.leadingPadding,
+                  trailingPadding: selectorConfig.trailingPadding,
+                  trailingSpace: selectorConfig.trailingSpace,
+                  textStyle: selectorTextStyle,
+                  flagSize: flagSize,
+                )
         : MaterialButton(
             key: Key(TestHelper.DropdownButtonKeyValue),
             padding: EdgeInsets.zero,
@@ -81,10 +79,14 @@ class SelectorButton extends StatelessWidget {
                     if (selectorConfig.selectorType ==
                         PhoneInputSelectorType.BOTTOM_SHEET) {
                       selected = await showCountrySelectorBottomSheet(
-                          context, countries);
+                        context,
+                        countries,
+                      );
                     } else {
-                      selected =
-                          await showCountrySelectorDialog(context, countries);
+                      selected = await showCountrySelectorDialog(
+                        context,
+                        countries,
+                      );
                     }
 
                     if (selected != null) {
@@ -99,14 +101,14 @@ class SelectorButton extends StatelessWidget {
               trailingSpace: selectorConfig.trailingSpace,
               textStyle: selectorTextStyle,
               flagSize: flagSize,
-              isFlagEmoji: isFlagEmoji,
             ),
           );
   }
 
   /// Converts the list [countries] to `DropdownMenuItem` 09931265823
   List<DropdownMenuItem<Country>> mapCountryToDropdownItem(
-      List<Country> countries) {
+    List<Country> countries,
+  ) {
     return countries.map((country) {
       return DropdownMenuItem<Country>(
         value: country,
@@ -118,7 +120,6 @@ class SelectorButton extends StatelessWidget {
           withCountryNames: false,
           trailingSpace: selectorConfig.trailingSpace,
           flagSize: flagSize,
-          isFlagEmoji: isFlagEmoji,
         ),
       );
     }).toList();
@@ -126,7 +127,9 @@ class SelectorButton extends StatelessWidget {
 
   /// shows a Dialog with list [countries] if the [PhoneInputSelectorType.DIALOG] is selected
   Future<Country?> showCountrySelectorDialog(
-      BuildContext inheritedContext, List<Country> countries) {
+    BuildContext inheritedContext,
+    List<Country> countries,
+  ) {
     return showDialog(
       context: inheritedContext,
       barrierDismissible: true,
@@ -154,56 +157,62 @@ class SelectorButton extends StatelessWidget {
 
   /// shows a Dialog with list [countries] if the [PhoneInputSelectorType.BOTTOM_SHEET] is selected
   Future<Country?> showCountrySelectorBottomSheet(
-      BuildContext inheritedContext, List<Country> countries) {
+    BuildContext inheritedContext,
+    List<Country> countries,
+  ) {
     return showModalBottomSheet(
       context: inheritedContext,
       clipBehavior: Clip.hardEdge,
       isScrollControlled: isScrollControlled,
       backgroundColor: Colors.transparent,
       shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.only(
-              topLeft: Radius.circular(12), topRight: Radius.circular(12))),
+        borderRadius: BorderRadius.only(
+          topLeft: Radius.circular(12),
+          topRight: Radius.circular(12),
+        ),
+      ),
       useSafeArea: selectorConfig.useBottomSheetSafeArea,
       builder: (BuildContext context) {
-        return Stack(children: [
-          GestureDetector(
-            onTap: () => Navigator.pop(context),
-          ),
-          Padding(
-            padding: EdgeInsets.only(
-                bottom: MediaQuery.of(context).viewInsets.bottom),
-            child: DraggableScrollableSheet(
-              builder: (BuildContext context, ScrollController controller) {
-                return Directionality(
-                  textDirection: Directionality.of(inheritedContext),
-                  child: DecoratedBox(
-                    decoration: ShapeDecoration(
-                      color: Theme.of(context).canvasColor,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.only(
-                          topLeft: Radius.circular(12),
-                          topRight: Radius.circular(12),
+        return Stack(
+          children: [
+            GestureDetector(onTap: () => Navigator.pop(context)),
+            Padding(
+              padding: EdgeInsets.only(
+                bottom: MediaQuery.of(context).viewInsets.bottom,
+              ),
+              child: DraggableScrollableSheet(
+                builder: (BuildContext context, ScrollController controller) {
+                  return Directionality(
+                    textDirection: Directionality.of(inheritedContext),
+                    child: DecoratedBox(
+                      decoration: ShapeDecoration(
+                        color: Theme.of(context).canvasColor,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.only(
+                            topLeft: Radius.circular(12),
+                            topRight: Radius.circular(12),
+                          ),
                         ),
                       ),
+                      child: CountrySearchListWidget(
+                        countries,
+                        locale,
+                        searchBoxDecoration: searchBoxDecoration,
+                        scrollController: controller,
+                        showFlags: selectorConfig.showFlags,
+                        autoFocus: autoFocusSearchField,
+                        isFlagEmoji: isFlagEmoji,
+                        flagSize: flagSize,
+                        titleStyle: selectorConfig.titleStyle,
+                        subtitleStyle: selectorConfig.subtitleStyle,
+                      ),
                     ),
-                    child: CountrySearchListWidget(
-                      countries,
-                      locale,
-                      searchBoxDecoration: searchBoxDecoration,
-                      scrollController: controller,
-                      showFlags: selectorConfig.showFlags,
-                      autoFocus: autoFocusSearchField,
-                      isFlagEmoji: isFlagEmoji,
-                      flagSize: flagSize,
-                      titleStyle: selectorConfig.titleStyle,
-                      subtitleStyle: selectorConfig.subtitleStyle,
-                    ),
-                  ),
-                );
-              },
+                  );
+                },
+              ),
             ),
-          ),
-        ]);
+          ],
+        );
       },
     );
   }

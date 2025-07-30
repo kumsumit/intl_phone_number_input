@@ -164,7 +164,9 @@ class _InputWidgetState extends State<InternationalPhoneNumberInput> {
     setState(() {
       if (widget.initialValue != null) {
         final minMax = MinMaxUtils.getMaxMinLengthByIsoCode(
-            widget.initialValue!.isoCode, PhoneNumberType.mobile);
+          widget.initialValue!.isoCode,
+          PhoneNumberType.mobile,
+        );
         this.minLength = minMax.minLength;
         this.maxLength = minMax.maxLength;
       }
@@ -209,11 +211,9 @@ class _InputWidgetState extends State<InternationalPhoneNumberInput> {
                     widget.betweenTextFieldWidget!,
                 ],
               ),
-              SizedBox(
-                height: selectorButtonBottomPadding,
-              ),
+              SizedBox(height: selectorButtonBottomPadding),
               if (widget.selectorButtonBottomWidget != null)
-                widget.selectorButtonBottomWidget!
+                widget.selectorButtonBottomWidget!,
             ],
           ),
           SizedBox(width: widget.spaceBetweenSelectorAndTextField),
@@ -247,8 +247,11 @@ class _InputWidgetState extends State<InternationalPhoneNumberInput> {
               //   maxLength
               //     // PhoneNumber(isoCode:IsoCode.IN, nsn: nsn).
               //     ),
-              FilteringTextInputFormatter.allow(RegExp(
-                  '[${Patterns.plus}${Patterns.digits}${Patterns.punctuation}]')),
+              FilteringTextInputFormatter.allow(
+                RegExp(
+                  '[${Patterns.plus}${Patterns.digits}${Patterns.punctuation}]',
+                ),
+              ),
               widget.formatInput
                   ? AsYouTypeFormatter(
                       isoCode: country?.alpha2Code ?? 'IN',
@@ -256,12 +259,13 @@ class _InputWidgetState extends State<InternationalPhoneNumberInput> {
                       onInputFormatted: (TextEditingValue value) {
                         controller!.value = value;
                       },
-                      maxLength: maxLength)
+                      maxLength: maxLength,
+                    )
                   : FilteringTextInputFormatter.digitsOnly,
             ],
             onChanged: onChanged,
           ),
-        )
+        ),
       ],
     );
 
@@ -300,22 +304,26 @@ class _InputWidgetState extends State<InternationalPhoneNumberInput> {
   /// loads countries from [Countries.countryList] and selected Country
   void loadCountries({Country? previouslySelectedCountry}) {
     if (this.mounted) {
-      List<Country> countries =
-          CountryProvider.getCountriesData(countries: widget.countries);
+      List<Country> countries = CountryProvider.getCountriesData(
+        countries: widget.countries,
+      );
 
-      Country country = previouslySelectedCountry ??
+      Country country =
+          previouslySelectedCountry ??
           Utils.getInitialSelectedCountry(
-              countries, widget.initialValue?.isoCode.name ?? 'IN');
+            countries,
+            widget.initialValue?.isoCode.name ?? 'IN',
+          );
       // Remove potential duplicates
       countries = countries.toSet().toList();
 
       final CountryComparator countryComparator =
           widget.selectorConfig.countryComparator ??
-              (a, b) {
-                return a.nameTranslations![locale]
-                    .toString()
-                    .compareTo(b.nameTranslations![locale].toString());
-              };
+          (a, b) {
+            return a.nameTranslations![locale].toString().compareTo(
+              b.nameTranslations![locale].toString(),
+            );
+          };
       countries.sort(countryComparator);
       setState(() {
         this.countries = countries;
@@ -329,15 +337,18 @@ class _InputWidgetState extends State<InternationalPhoneNumberInput> {
   /// the `ValueCallback` [widget.onInputValidated]
   void phoneNumberControllerListener() {
     if (this.mounted) {
-      String parsedPhoneNumberString =
-          controller!.text.replaceAll(RegExp(r'[^\d+]'), '');
+      String parsedPhoneNumberString = controller!.text.replaceAll(
+        RegExp(r'[^\d+]'),
+        '',
+      );
       String normalizedPhoneNumber =
           '${this.country?.dialCode}$parsedPhoneNumberString';
 
       if (this.country != null && this.country!.alpha2Code != null) {
-        final phoneNumber = PhoneNumber.parse(parsedPhoneNumberString,
-            destinationCountry:
-                this.country?.alpha2Code!.toEnum(IsoCode.values));
+        final phoneNumber = PhoneNumber.parse(
+          parsedPhoneNumberString,
+          destinationCountry: this.country?.alpha2Code!.toEnum(IsoCode.values),
+        );
         if (phoneNumber.nsn.isEmpty || !phoneNumber.isValid()) {
           if (widget.onInputValidated != null) {
             widget.onInputValidated!(false);
@@ -382,23 +393,24 @@ class _InputWidgetState extends State<InternationalPhoneNumberInput> {
 
     if (widget.selectorConfig.setSelectorButtonAsPrefixIcon) {
       return value.copyWith(
-          prefixIcon: Padding(
-        padding: const EdgeInsets.only(left: 8.0),
-        child: SelectorButton(
-          country: country,
-          countries: countries,
-          onCountryChanged: onCountryChanged,
-          selectorConfig: widget.selectorConfig,
-          selectorTextStyle: widget.selectorTextStyle,
-          searchBoxDecoration: widget.searchBoxDecoration,
-          locale: locale,
-          isEnabled: widget.isEnabled,
-          autoFocusSearchField: widget.autoFocusSearch,
-          isScrollControlled: widget.countrySelectorScrollControlled,
-          flagSize: widget.flagSize,
-          isFlagEmoji: widget.isFlagEmoji,
+        prefixIcon: Padding(
+          padding: const EdgeInsets.only(left: 8.0),
+          child: SelectorButton(
+            country: country,
+            countries: countries,
+            onCountryChanged: onCountryChanged,
+            selectorConfig: widget.selectorConfig,
+            selectorTextStyle: widget.selectorTextStyle,
+            searchBoxDecoration: widget.searchBoxDecoration,
+            locale: locale,
+            isEnabled: widget.isEnabled,
+            autoFocusSearchField: widget.autoFocusSearch,
+            isScrollControlled: widget.countrySelectorScrollControlled,
+            flagSize: widget.flagSize,
+            isFlagEmoji: widget.isFlagEmoji,
+          ),
         ),
-      ));
+      );
     }
 
     return value;
@@ -437,7 +449,9 @@ class _InputWidgetState extends State<InternationalPhoneNumberInput> {
       this.country = country;
       if (country != null) {
         final minMax = MinMaxUtils.getMaxMinLengthByIsoCode(
-            country.alpha2Code!.toEnum(IsoCode.values), PhoneNumberType.mobile);
+          country.alpha2Code!.toEnum(IsoCode.values),
+          PhoneNumberType.mobile,
+        );
         this.minLength = minMax.minLength;
         this.maxLength = minMax.maxLength;
       }
@@ -447,15 +461,19 @@ class _InputWidgetState extends State<InternationalPhoneNumberInput> {
 
   void _phoneNumberSaved() {
     if (this.mounted) {
-      String parsedPhoneNumberString =
-          controller!.text.replaceAll(RegExp(r'[^\d+]'), '');
+      String parsedPhoneNumberString = controller!.text.replaceAll(
+        RegExp(r'[^\d+]'),
+        '',
+      );
 
       String phoneNumber =
           '${this.country?.dialCode ?? ''}' + parsedPhoneNumberString;
 
       widget.onSaved?.call(
-        PhoneNumber.parse(phoneNumber,
-            callerCountry: this.country!.alpha2Code?.toEnum(IsoCode.values)),
+        PhoneNumber.parse(
+          phoneNumber,
+          callerCountry: this.country!.alpha2Code?.toEnum(IsoCode.values),
+        ),
       );
     }
   }
@@ -482,7 +500,7 @@ class InputWidgetView
   final _InputWidgetState state;
 
   InputWidgetView({Key? key, required this.state})
-      : super(key: key, state: state);
+    : super(key: key, state: state);
 
   @override
   Widget build(BuildContext context) {
@@ -519,11 +537,9 @@ class InputWidgetView
                     widget.betweenTextFieldWidget!,
                 ],
               ),
-              SizedBox(
-                height: state.selectorButtonBottomPadding,
-              ),
+              SizedBox(height: state.selectorButtonBottomPadding),
               if (widget.selectorButtonBottomWidget != null)
-                widget.selectorButtonBottomWidget!
+                widget.selectorButtonBottomWidget!,
             ],
           ),
           SizedBox(width: widget.spaceBetweenSelectorAndTextField),
@@ -554,8 +570,11 @@ class InputWidgetView
               // LengthLimitingTextInputFormatter(
               //     // widget.maxLength
               //     state.maxLength),
-              FilteringTextInputFormatter.allow(RegExp(
-                  '[${Patterns.plus}${Patterns.digits}${Patterns.punctuation}]')),
+              FilteringTextInputFormatter.allow(
+                RegExp(
+                  '[${Patterns.plus}${Patterns.digits}${Patterns.punctuation}]',
+                ),
+              ),
               widget.formatInput
                   ? AsYouTypeFormatter(
                       isoCode: countryCode,
@@ -563,12 +582,13 @@ class InputWidgetView
                       onInputFormatted: (TextEditingValue value) {
                         state.controller!.value = value;
                       },
-                      maxLength: maxLength)
+                      maxLength: maxLength,
+                    )
                   : FilteringTextInputFormatter.digitsOnly,
             ],
             onChanged: state.onChanged,
           ),
-        )
+        ),
       ],
     );
   }

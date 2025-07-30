@@ -35,7 +35,7 @@ class SelectorConfig {
 
   /// Use safe area for selectorType=BOTTOM_SHEET
   final bool useBottomSheetSafeArea;
-  
+
   //Use this to set the style of the title  of the country list
   final TextStyle? titleStyle;
 

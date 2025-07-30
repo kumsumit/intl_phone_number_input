@@ -89,7 +89,7 @@ class MyHomePageState extends State<MyHomePage> {
                 },
                 inputDecoration:
                     const InputDecoration(labelStyle: TextStyle(fontSize: 13)),
-                isFlagEmoji: false,    
+                isFlagEmoji: false,
               ),
               ElevatedButton(
                 onPressed: () {

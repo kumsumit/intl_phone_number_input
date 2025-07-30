@@ -8,7 +8,6 @@ class Item extends StatelessWidget {
   final Country? country;
   final bool? showFlag;
   final double flagSize;
-  final bool isFlagEmoji;
   final TextStyle? textStyle;
   final bool withCountryNames;
   final double? leadingPadding;
@@ -20,7 +19,6 @@ class Item extends StatelessWidget {
     this.country,
     this.showFlag,
     required this.flagSize,
-  required  this.isFlagEmoji,
     this.textStyle,
     this.withCountryNames = false,
     this.leadingPadding = 3,
@@ -39,18 +37,9 @@ class Item extends StatelessWidget {
       mainAxisSize: MainAxisSize.min,
       children: <Widget>[
         SizedBox(width: leadingPadding),
-        if(country != null)
-        Flag(
-          country: country!,
-          isFlagEmoji: isFlagEmoji,
-          flagSize: flagSize,
-        ),
+        if (country != null) Flag(country: country!, flagSize: flagSize),
         SizedBox(width: 3.0),
-        Text(
-          '$dialCode',
-          textDirection: TextDirection.ltr,
-          style: textStyle,
-        ),
+        Text('$dialCode', textDirection: TextDirection.ltr, style: textStyle),
         SizedBox(width: trailingPadding),
       ],
     );

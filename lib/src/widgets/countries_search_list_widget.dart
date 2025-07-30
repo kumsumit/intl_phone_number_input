@@ -1,4 +1,4 @@
-import 'package:circle_flags/circle_flags.dart';
+// import 'package:circle_flags/circle_flags.dart';
 import 'package:flutter/material.dart';
 import 'package:intl_phone_number_input/src/models/country_model.dart';
 import 'package:intl_phone_number_input/src/utils/test/test_helper.dart';
@@ -97,7 +97,6 @@ class _CountrySearchListWidgetState extends State<CountrySearchListWidget> {
                 country: country,
                 locale: widget.locale,
                 showFlags: widget.showFlags!,
-                isFlagEmoji: widget.isFlagEmoji,
                 flagSize: widget.flagSize,
                 titleStyle: widget.titleStyle,
                 subtitleStyle: widget.subtitleStyle,
@@ -122,31 +121,23 @@ class DirectionalCountryListTile extends StatelessWidget {
   final String? locale;
   final bool showFlags;
   final double flagSize;
-  final bool isFlagEmoji;
   final TextStyle? titleStyle;
   final TextStyle? subtitleStyle;
-  const DirectionalCountryListTile(
-      {super.key,
-      required this.country,
-      required this.locale,
-      required this.showFlags,
-      this.flagSize = 20,
-      this.isFlagEmoji = true,
-      this.titleStyle,
-      this.subtitleStyle
-      });
+  const DirectionalCountryListTile({
+    super.key,
+    required this.country,
+    required this.locale,
+    required this.showFlags,
+    this.flagSize = 20,
+    this.titleStyle,
+    this.subtitleStyle,
+  });
 
   @override
   Widget build(BuildContext context) {
     return ListTile(
       key: Key(TestHelper.countryItemKeyValue(country.alpha2Code)),
-      leading: (showFlags
-          ? Flag(
-              country: country,
-              flagSize: flagSize,
-              isFlagEmoji: isFlagEmoji,
-            )
-          : null),
+      leading: (showFlags ? Flag(country: country, flagSize: flagSize) : null),
       title: Align(
         alignment: AlignmentDirectional.centerStart,
         child: Text(
@@ -173,22 +164,13 @@ class DirectionalCountryListTile extends StatelessWidget {
 class Flag extends StatelessWidget {
   final Country country;
   final double flagSize;
-  final bool isFlagEmoji;
-  const Flag(
-      {required this.country,
-      required this.flagSize,
-      required this.isFlagEmoji});
+  const Flag({required this.country, required this.flagSize});
 
   @override
   Widget build(BuildContext context) {
-    return isFlagEmoji
-        ? Text(
-            Utils.generateFlagEmojiUnicode(country.alpha2Code ?? 'IN'),
-            style: Theme.of(context).textTheme.headlineSmall,
-          )
-        : CircleFlag(
-            country.alpha2Code ?? "IN",
-            size: flagSize,
-          );
+    return Text(
+      Utils.generateFlagEmojiUnicode(country.alpha2Code ?? 'IN'),
+      style: Theme.of(context).textTheme.headlineSmall,
+    );
   }
 }

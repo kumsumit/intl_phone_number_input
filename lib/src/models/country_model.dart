@@ -60,23 +60,24 @@ class Country {
   /// Convert [Countries.countryList] to [Country] model
   factory Country.fromJson(Map<String, dynamic> data) {
     return Country(
-        name: data['en_short_name'],
-        alpha2Code: data['alpha_2_code'],
-        alpha3Code: data['alpha_3_code'],
-        dialCode: data['dial_code'],
-        minLength: data['minLength'],
-        maxLength: data["maxLength"],
-        currencyCode: data["currency_code"],
-        currencyName: data["currency_name"],
-        symbolOnLeft: data["symbol_on_left"],
-        currencySymbol: data["currency_symbol"],
-        nameTranslations: data['nameTranslations'] != null
-            ? Map<String, String>.from(data['nameTranslations'])
-            : null,
-        nativeName: data['nativeName'],
-        continent: data['continent'],
-        capital: data['capital'],
-        languages: List.castFrom<dynamic, String>(data['languages']));
+      name: data['en_short_name'],
+      alpha2Code: data['alpha_2_code'],
+      alpha3Code: data['alpha_3_code'],
+      dialCode: data['dial_code'],
+      minLength: data['minLength'],
+      maxLength: data["maxLength"],
+      currencyCode: data["currency_code"],
+      currencyName: data["currency_name"],
+      symbolOnLeft: data["symbol_on_left"],
+      currencySymbol: data["currency_symbol"],
+      nameTranslations: data['nameTranslations'] != null
+          ? Map<String, String>.from(data['nameTranslations'])
+          : null,
+      nativeName: data['nativeName'],
+      continent: data['continent'],
+      capital: data['capital'],
+      languages: List.castFrom<dynamic, String>(data['languages']),
+    );
   }
 
   @override
@@ -91,7 +92,8 @@ class Country {
   int get hashCode => Object.hashAll([alpha2Code, alpha3Code, dialCode]);
 
   @override
-  String toString() => '[Country] { '
+  String toString() =>
+      '[Country] { '
       'name: $name, '
       'alpha2: $alpha2Code, '
       'alpha3: $alpha3Code, '

@@ -33,7 +33,7 @@ void main() {
         'ru',
         'yue',
         'ku',
-        'hi'
+        'hi',
       ];
 
       Countries.countryList.forEach((Map<String, dynamic> data) {
@@ -43,10 +43,14 @@ void main() {
         expect(country.alpha2Code!.length, greaterThan(0));
         expect(country.alpha3Code!.length, greaterThan(0));
         expect(country.dialCode!.length, greaterThan(0));
-        expect(country.nameTranslations!.length,
-            equals(expectedTranslations.length));
-        expectedTranslations.forEach((language) =>
-            expect(country.nameTranslations!.containsKey(language), true));
+        expect(
+          country.nameTranslations!.length,
+          equals(expectedTranslations.length),
+        );
+        expectedTranslations.forEach(
+          (language) =>
+              expect(country.nameTranslations!.containsKey(language), true),
+        );
       });
     });
   });

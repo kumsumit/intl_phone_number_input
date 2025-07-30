@@ -12,7 +12,6 @@ dependencies:
     sdk: flutter
   phone_numbers_parser:
     git: https://github.com/sumitsharansatsangi/phone_numbers_parser.git
-  circle_flags: ^5.0.0
 
 dev_dependencies:
   flutter_test:

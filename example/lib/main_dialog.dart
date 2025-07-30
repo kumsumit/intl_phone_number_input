@@ -49,7 +49,7 @@ class MyHomePageState extends State<MyHomePage> {
             },
             ignoreBlank: true,
             autoValidateMode: AutovalidateMode.disabled,
-            initialValue:const PhoneNumber(isoCode: IsoCode.NG,nsn: ""),
+            initialValue: const PhoneNumber(isoCode: IsoCode.NG, nsn: ""),
             textFieldController: controller,
             inputBorder: const OutlineInputBorder(),
             selectorConfig: const SelectorConfig(
@@ -75,7 +75,7 @@ class MyHomePageState extends State<MyHomePage> {
     );
   }
 
-  void getPhoneNumber(String phoneNumber){
+  void getPhoneNumber(String phoneNumber) {
     PhoneNumber number = PhoneNumber(isoCode: IsoCode.US, nsn: phoneNumber);
     controller.text = number.international;
 

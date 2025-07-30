@@ -13,8 +13,9 @@ class AsYouTypeFormatter extends TextInputFormatter {
   /// The [allowedChars] contains [RegExp] for allowable phone number characters.
   final RegExp allowedChars = RegExp(r'[\d+]');
 
-  final RegExp bracketsBetweenDigitsOrSpace =
-      RegExp(r'(?![\s\d])([()])(?=[\d\s])');
+  final RegExp bracketsBetweenDigitsOrSpace = RegExp(
+    r'(?![\s\d])([()])(?=[\d\s])',
+  );
 
   /// The [isoCode] of the [Country] formatting the phone number to
   final String isoCode;
@@ -26,24 +27,28 @@ class AsYouTypeFormatter extends TextInputFormatter {
   /// [onInputFormatted] is a callback that passes the formatted phone number
   final OnInputFormatted<TextEditingValue> onInputFormatted;
 
-  AsYouTypeFormatter(
-      {required this.isoCode,
-      required this.dialCode,
-      required this.maxLength,
-      required this.onInputFormatted});
+  AsYouTypeFormatter({
+    required this.isoCode,
+    required this.dialCode,
+    required this.maxLength,
+    required this.onInputFormatted,
+  });
 
   @override
   TextEditingValue formatEditUpdate(
-      TextEditingValue oldValue, TextEditingValue newValue) {
+    TextEditingValue oldValue,
+    TextEditingValue newValue,
+  ) {
     int oldValueLength = oldValue.text.length;
     int newValueLength = newValue.text.length;
 
     if (newValueLength > 0 && newValueLength > oldValueLength) {
       String newValueText = newValue.text;
       String rawText = newValueText.replaceAll(separatorChars, '');
-      if (PhoneNumber(isoCode: isoCode.toEnum(IsoCode.values), nsn: rawText)
-              .nsn
-              .length >
+      if (PhoneNumber(
+            isoCode: isoCode.toEnum(IsoCode.values),
+            nsn: rawText,
+          ).nsn.length >
           maxLength) {
         return oldValue;
       }
@@ -51,12 +56,14 @@ class AsYouTypeFormatter extends TextInputFormatter {
 
       final _ = newValueText
           .substring(
-              oldValue.selection.start == -1 ? 0 : oldValue.selection.start,
-              newValue.selection.end == -1 ? 0 : newValue.selection.end)
+            oldValue.selection.start == -1 ? 0 : oldValue.selection.start,
+            newValue.selection.end == -1 ? 0 : newValue.selection.end,
+          )
           .replaceAll(separatorChars, '');
 
-      String parsedText =
-          parsePhoneNumber(formatAsYouType(phoneNumber: textToParse));
+      String parsedText = parsePhoneNumber(
+        formatAsYouType(phoneNumber: textToParse),
+      );
 
       int offset = newValue.selection.end == -1 ? 0 : newValue.selection.end;
 
@@ -106,21 +113,25 @@ class AsYouTypeFormatter extends TextInputFormatter {
   /// Accepts [input], unformatted phone number and
   /// returns a [Future<String>] of the formatted phone number.
   String formatAsYouType({required String phoneNumber}) {
-    return PhoneNumber.parse(phoneNumber,
-            destinationCountry: isoCode.toEnum(IsoCode.values))
-        .getFormattedNsn();
+    return PhoneNumber.parse(
+      phoneNumber,
+      destinationCountry: isoCode.toEnum(IsoCode.values),
+    ).getFormattedNsn();
   }
 
   /// Accepts a formatted [phoneNumber]
   /// returns a [String] of `phoneNumber` with the dialCode replaced with an empty String
   String parsePhoneNumber(String? phoneNumber) {
-    final filteredPhoneNumber =
-        phoneNumber?.replaceAll(bracketsBetweenDigitsOrSpace, '');
+    final filteredPhoneNumber = phoneNumber?.replaceAll(
+      bracketsBetweenDigitsOrSpace,
+      '',
+    );
 
     if (dialCode.length > 4) {
       if (isPartOfNorthAmericanNumberingPlan(dialCode)) {
         String northAmericaDialCode = '+1';
-        String countryDialCodeWithSpace = northAmericaDialCode +
+        String countryDialCodeWithSpace =
+            northAmericaDialCode +
             ' ' +
             dialCode.replaceFirst(northAmericaDialCode, '');
 

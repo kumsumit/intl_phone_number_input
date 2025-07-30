@@ -11,7 +11,7 @@ void main() {
           isoCode: "",
           dialCode: "",
           onInputFormatted: (_) {},
-          maxLength: 15
+          maxLength: 15,
         );
       }, throwsAssertionError);
       expect(() {
@@ -19,7 +19,7 @@ void main() {
           isoCode: "",
           dialCode: "",
           onInputFormatted: (_) {},
-          maxLength: 15
+          maxLength: 15,
         );
       }, throwsAssertionError);
     });
