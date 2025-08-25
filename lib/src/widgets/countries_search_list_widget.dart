@@ -12,7 +12,6 @@ class CountrySearchListWidget extends StatefulWidget {
   final ScrollController? scrollController;
   final bool autoFocus;
   final bool? showFlags;
-  final bool isFlagEmoji;
   final double flagSize;
   final TextStyle? titleStyle;
   final TextStyle? subtitleStyle;
@@ -25,7 +24,6 @@ class CountrySearchListWidget extends StatefulWidget {
     this.showFlags,
     this.autoFocus = false,
     required this.flagSize,
-    required this.isFlagEmoji,
     required this.titleStyle,
     required this.subtitleStyle,
   });
@@ -170,7 +168,7 @@ class Flag extends StatelessWidget {
   Widget build(BuildContext context) {
     return Text(
       Utils.generateFlagEmojiUnicode(country.alpha2Code ?? 'IN'),
-      style: Theme.of(context).textTheme.headlineSmall,
+      style: Theme.of(context).textTheme.headlineSmall?.copyWith(fontSize: flagSize),
     );
   }
 }
