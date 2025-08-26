@@ -116,7 +116,7 @@ class AsYouTypeFormatter extends TextInputFormatter {
     return PhoneNumber.parse(
       phoneNumber,
       destinationCountry: isoCode.toEnum(IsoCode.values),
-    ).getFormattedNsn();
+    ).formatNsn();
   }
 
   /// Accepts a formatted [phoneNumber]

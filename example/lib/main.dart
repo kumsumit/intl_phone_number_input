@@ -8,7 +8,7 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    var darkTheme = ThemeData.dark().copyWith(primaryColor: Colors.blue);
+    var darkTheme = ThemeData.dark().copyWith(primaryColor: Colors.blue,);
 
     return MaterialApp(
       debugShowCheckedModeBanner: false,
@@ -53,8 +53,8 @@ class MyHomePageState extends State<MyHomePage> {
               InternationalPhoneNumberInput(
                 label: const Text("Customer Phone Number"),
                 errorMessage: "Wrong Input entered",
-                selectorButtonBottomWidget: Container(
-                  color: Colors.white,
+                selectorButtonBottomWidget: SizedBox(
+                  // color: Colors.white,r
                   height: 1,
                   width: 120,
                 ),
@@ -90,6 +90,7 @@ class MyHomePageState extends State<MyHomePage> {
                 inputDecoration:
                     const InputDecoration(labelStyle: TextStyle(fontSize: 13)),
               ),
+             
               ElevatedButton(
                 onPressed: () {
                   if (formKey.currentState!.validate()) {

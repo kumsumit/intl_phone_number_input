@@ -286,7 +286,9 @@ class _InputWidgetState extends State<InternationalPhoneNumberInput> {
     if (widget.initialValue != null &&
         widget.initialValue!.nsn.isNotEmpty &&
         widget.initialValue!.isValid()) {
-      String phoneNumber = widget.initialValue!.formatNsn(isoCode: widget.initialValue?.isoCode);
+      String phoneNumber = widget.initialValue!.formatNsn(
+        isoCode: widget.initialValue?.isoCode,
+      );
 
       controller!.text = widget.formatInput
           ? phoneNumber
@@ -331,7 +333,8 @@ class _InputWidgetState extends State<InternationalPhoneNumberInput> {
   /// Listener that validates changes from the widget, returns a bool to
   /// the `ValueCallback` [widget.onInputValidated]
   void phoneNumberControllerListener() {
-    if (this.mounted) {
+    if (this.mounted && controller != null && controller!.text.isNotEmpty) {
+      
       String parsedPhoneNumberString = controller!.text.replaceAll(
         RegExp(r'[^\d+]'),
         '',
@@ -375,7 +378,7 @@ class _InputWidgetState extends State<InternationalPhoneNumberInput> {
     }
 
     // Sort for consistency
-    acceptedLengths.sort();
+    // acceptedLengths.sort();
 
     if (acceptedLengths.length == 1) {
       // Single exact length
@@ -409,10 +412,9 @@ class _InputWidgetState extends State<InternationalPhoneNumberInput> {
     return "$currentLength / [${acceptedLengths.join(', ')}]";
   }
 
-
   /// Creates or Select [InputDecoration]
   InputDecoration getInputDecoration(InputDecoration? decoration) {
-   InputDecoration value = (decoration != null
+    InputDecoration value = (decoration != null
         ? decoration.copyWith(
             counterText: formatAcceptedLengths(acceptedLengths, currentLength),
           )
@@ -479,7 +481,7 @@ class _InputWidgetState extends State<InternationalPhoneNumberInput> {
     setState(() {
       this.country = country;
       if (country != null) {
-         this.acceptedLengths =
+        this.acceptedLengths =
             metadataLengthsByIsoCode[widget.initialValue!.isoCode]!.mobile;
       }
     });
