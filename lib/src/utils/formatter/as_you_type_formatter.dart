@@ -22,7 +22,7 @@ class AsYouTypeFormatter extends TextInputFormatter {
 
   /// The [dialCode] of the [Country] formatting the phone number to
   final String dialCode;
-  final int maxLength;
+  final List<int> acceptedLengths;
 
   /// [onInputFormatted] is a callback that passes the formatted phone number
   final OnInputFormatted<TextEditingValue> onInputFormatted;
@@ -30,7 +30,7 @@ class AsYouTypeFormatter extends TextInputFormatter {
   AsYouTypeFormatter({
     required this.isoCode,
     required this.dialCode,
-    required this.maxLength,
+    required this.acceptedLengths,
     required this.onInputFormatted,
   });
 
@@ -45,11 +45,11 @@ class AsYouTypeFormatter extends TextInputFormatter {
     if (newValueLength > 0 && newValueLength > oldValueLength) {
       String newValueText = newValue.text;
       String rawText = newValueText.replaceAll(separatorChars, '');
-      if (PhoneNumber(
-            isoCode: isoCode.toEnum(IsoCode.values),
-            nsn: rawText,
-          ).nsn.length >
-          maxLength) {
+      if (!acceptedLengths.contains(
+        PhoneNumber(
+          isoCode: isoCode.toEnum(IsoCode.values),
+          nsn: rawText,
+        ).nsn.length)) {
         return oldValue;
       }
       String textToParse = dialCode + rawText;

@@ -9,6 +9,7 @@ import 'package:intl_phone_number_input/src/utils/test/test_helper.dart';
 import 'package:intl_phone_number_input/src/utils/util.dart';
 import 'package:intl_phone_number_input/src/utils/widget_view.dart';
 import 'package:intl_phone_number_input/src/widgets/selector_button.dart';
+import 'package:phone_numbers_parser/metadata.dart';
 import 'package:phone_numbers_parser/phone_numbers_parser.dart';
 
 /// Enum for [SelectorButton] types.
@@ -147,8 +148,7 @@ class _InputWidgetState extends State<InternationalPhoneNumberInput> {
   TextEditingController? controller;
   double selectorButtonBottomPadding = 0;
   int currentLength = 0;
-  int minLength = 0;
-  int maxLength = 15;
+  List<int> acceptedLengths = [];
   Country? country;
   List<Country> countries = [];
   bool isNotValid = true;
@@ -161,12 +161,10 @@ class _InputWidgetState extends State<InternationalPhoneNumberInput> {
     initialiseWidget();
     setState(() {
       if (widget.initialValue != null) {
-        final minMax = MinMaxUtils.getMaxMinLengthByIsoCode(
-          widget.initialValue!.isoCode,
-          PhoneNumberType.mobile,
-        );
-        this.minLength = minMax.minLength;
-        this.maxLength = minMax.maxLength;
+        if (metadataLengthsByIsoCode[widget.initialValue!.isoCode] != null) {
+          this.acceptedLengths =
+              metadataLengthsByIsoCode[widget.initialValue!.isoCode]!.mobile;
+        }
       }
     });
   }
@@ -256,7 +254,7 @@ class _InputWidgetState extends State<InternationalPhoneNumberInput> {
                       onInputFormatted: (TextEditingValue value) {
                         controller!.value = value;
                       },
-                      maxLength: maxLength,
+                      acceptedLengths: acceptedLengths,
                     )
                   : FilteringTextInputFormatter.digitsOnly,
             ],
@@ -288,7 +286,7 @@ class _InputWidgetState extends State<InternationalPhoneNumberInput> {
     if (widget.initialValue != null &&
         widget.initialValue!.nsn.isNotEmpty &&
         widget.initialValue!.isValid()) {
-      String phoneNumber = widget.initialValue!.getFormattedNsn();
+      String phoneNumber = widget.initialValue!.formatNsn(isoCode: widget.initialValue?.isoCode);
 
       controller!.text = widget.formatInput
           ? phoneNumber
@@ -371,22 +369,59 @@ class _InputWidgetState extends State<InternationalPhoneNumberInput> {
     }
   }
 
+  String formatAcceptedLengths(List<int> acceptedLengths, int currentLength) {
+    if (acceptedLengths.isEmpty) {
+      return "$currentLength"; // fallback if nothing provided
+    }
+
+    // Sort for consistency
+    acceptedLengths.sort();
+
+    if (acceptedLengths.length == 1) {
+      // Single exact length
+      return "$currentLength / ${acceptedLengths.first}";
+    }
+
+    // Check if consecutive range
+    bool isConsecutive = true;
+    for (int i = 1; i < acceptedLengths.length; i++) {
+      if (acceptedLengths[i] != acceptedLengths[i - 1] + 1) {
+        isConsecutive = false;
+        break;
+      }
+    }
+
+    if (isConsecutive) {
+      // Display as range
+      return "$currentLength / (${acceptedLengths.first}–${acceptedLengths.last})";
+    }
+
+    if (acceptedLengths.length <= 3) {
+      // Small non-consecutive list → "or"
+      final allButLast = acceptedLengths
+          .take(acceptedLengths.length - 1)
+          .join(", ");
+      final last = acceptedLengths.last;
+      return "$currentLength / ($allButLast or $last)";
+    }
+
+    // Fallback: larger messy list → just show them as comma separated
+    return "$currentLength / [${acceptedLengths.join(', ')}]";
+  }
+
+
   /// Creates or Select [InputDecoration]
   InputDecoration getInputDecoration(InputDecoration? decoration) {
-    InputDecoration value = decoration != null
+   InputDecoration value = (decoration != null
         ? decoration.copyWith(
-            counterText: maxLength == minLength
-                ? "$currentLength / $maxLength"
-                : "$currentLength / ($minLength - $maxLength)",
+            counterText: formatAcceptedLengths(acceptedLengths, currentLength),
           )
         : InputDecoration(
             label: widget.label,
-            counterText: maxLength == minLength
-                ? "$currentLength / $maxLength"
-                : "$currentLength / ($minLength - $maxLength)",
-            border: widget.inputBorder ?? UnderlineInputBorder(),
+            counterText: formatAcceptedLengths(acceptedLengths, currentLength),
+            border: widget.inputBorder ?? const UnderlineInputBorder(),
             hintText: widget.hintText,
-          );
+          ));
 
     if (widget.selectorConfig.setSelectorButtonAsPrefixIcon) {
       return value.copyWith(
@@ -444,12 +479,8 @@ class _InputWidgetState extends State<InternationalPhoneNumberInput> {
     setState(() {
       this.country = country;
       if (country != null) {
-        final minMax = MinMaxUtils.getMaxMinLengthByIsoCode(
-          country.alpha2Code!.toEnum(IsoCode.values),
-          PhoneNumberType.mobile,
-        );
-        this.minLength = minMax.minLength;
-        this.maxLength = minMax.maxLength;
+         this.acceptedLengths =
+            metadataLengthsByIsoCode[widget.initialValue!.isoCode]!.mobile;
       }
     });
     phoneNumberControllerListener();
@@ -502,7 +533,7 @@ class InputWidgetView
   Widget build(BuildContext context) {
     final countryCode = state.country?.alpha2Code ?? 'IN';
     final dialCode = state.country?.dialCode ?? 'IN';
-    final maxLength = state.maxLength;
+    final acceptedLengths = state.acceptedLengths;
 
     return Row(
       mainAxisAlignment: MainAxisAlignment.start,
@@ -577,7 +608,7 @@ class InputWidgetView
                       onInputFormatted: (TextEditingValue value) {
                         state.controller!.value = value;
                       },
-                      maxLength: maxLength,
+                      acceptedLengths: acceptedLengths,
                     )
                   : FilteringTextInputFormatter.digitsOnly,
             ],

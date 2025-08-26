@@ -11,7 +11,9 @@ dependencies:
   flutter:
     sdk: flutter
   phone_numbers_parser:
-    git: https://github.com/sumitsharansatsangi/phone_numbers_parser.git
+    git: 
+      url: https://github.com/sumitsharansatsangi/phone_numbers_parser.git
+      ref: main
 
 dev_dependencies:
   flutter_test:
