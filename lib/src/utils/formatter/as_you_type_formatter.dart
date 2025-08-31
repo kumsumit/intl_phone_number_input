@@ -1,6 +1,5 @@
 import 'package:flutter/services.dart';
-import 'package:intl_phone_number_input/src/utils/util.dart';
-import 'package:phone_numbers_parser/phone_numbers_parser.dart';
+import 'package:phone_parser/phone_parser.dart';
 
 typedef OnInputFormatted<T> = void Function(T value);
 
@@ -35,79 +34,56 @@ class AsYouTypeFormatter extends TextInputFormatter {
   });
 
   @override
+ @override
   TextEditingValue formatEditUpdate(
     TextEditingValue oldValue,
     TextEditingValue newValue,
   ) {
-    int oldValueLength = oldValue.text.length;
-    int newValueLength = newValue.text.length;
+    final newValueText = newValue.text;
+    final rawText = newValueText.replaceAll(separatorChars, '');
 
-    if (newValueLength > 0 && newValueLength > oldValueLength) {
-      String newValueText = newValue.text;
-      String rawText = newValueText.replaceAll(separatorChars, '');
-      if (!acceptedLengths.contains(
-        PhoneNumber(
-          isoCode: isoCode.toEnum(IsoCode.values),
-          nsn: rawText,
-        ).nsn.length)) {
-        return oldValue;
-      }
-      String textToParse = dialCode + rawText;
+    // ✅ Always allow empty text
+    if (rawText.isEmpty) {
+      return newValue;
+    }
 
-      final _ = newValueText
-          .substring(
-            oldValue.selection.start == -1 ? 0 : oldValue.selection.start,
-            newValue.selection.end == -1 ? 0 : newValue.selection.end,
-          )
-          .replaceAll(separatorChars, '');
+    // ✅ Allow input to continue even if not yet in acceptedLengths
+    // Only enforce max length, not exact match
+    if (acceptedLengths.isNotEmpty &&
+        rawText.length > acceptedLengths.reduce((a, b) => a > b ? a : b)) {
+      return oldValue;
+    }
 
-      String parsedText = parsePhoneNumber(
-        formatAsYouType(phoneNumber: textToParse),
-      );
+    // Build full text with dial code
+    final textToParse = dialCode + rawText;
 
-      int offset = newValue.selection.end == -1 ? 0 : newValue.selection.end;
+    // Format the text
+    final parsedText = parsePhoneNumber(
+      formatAsYouType(phoneNumber: textToParse),
+    );
 
-      if (separatorChars.hasMatch(parsedText) &&
-          offset - 2 <= parsedText.length) {
-        String valueInInputIndex = parsedText[offset - 1];
+    // Fix selection safely
+    int offset = newValue.selection.end;
+    if (offset < 0) offset = 0;
+    if (offset > parsedText.length) offset = parsedText.length;
 
-        if (offset < parsedText.length) {
-          int offsetDifference = parsedText.length - offset;
-
-          if (offsetDifference < 2) {
-            if (separatorChars.hasMatch(valueInInputIndex)) {
-              offset += 1;
-            } else {
-              bool isLastChar;
-              try {
-                var _ = newValueText[newValue.selection.end];
-                isLastChar = false;
-              } on RangeError {
-                isLastChar = true;
-              }
-              if (isLastChar) {
-                offset += offsetDifference;
-              }
-            }
-          } else {
-            if (parsedText.length > offset - 1) {
-              if (separatorChars.hasMatch(valueInInputIndex)) {
-                offset += 1;
-              }
-            }
-          }
-        }
-        final TextEditingValue textEditingValue = TextEditingValue(
-          text: parsedText,
-          selection: TextSelection.collapsed(offset: offset),
-        );
-
-        newValue = textEditingValue;
-        this.onInputFormatted(textEditingValue);
+    // Adjust offset if cursor lands on a separator
+    if (offset > 0 && offset <= parsedText.length) {
+      final valueAtOffset = parsedText[offset - 1];
+      if (separatorChars.hasMatch(valueAtOffset)) {
+        offset = (offset + 1).clamp(0, parsedText.length);
       }
     }
 
-    return newValue;
+    final textEditingValue = TextEditingValue(
+      text: parsedText,
+      selection: TextSelection.collapsed(offset: offset),
+    );
+
+    // Always call your callback
+    onInputFormatted(textEditingValue);
+
+    return textEditingValue;
   }
 
   /// Accepts [input], unformatted phone number and
@@ -115,7 +91,7 @@ class AsYouTypeFormatter extends TextInputFormatter {
   String formatAsYouType({required String phoneNumber}) {
     return PhoneNumber.parse(
       phoneNumber,
-      destinationCountry: isoCode.toEnum(IsoCode.values),
+      destinationCountry: isoCode,
     ).formatNsn();
   }
 

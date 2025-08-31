@@ -1,3 +1,4 @@
+import 'package:example/country_list.dart';
 import 'package:flutter/material.dart';
 import 'package:intl_phone_number_input/intl_phone_number_input.dart';
 
@@ -33,6 +34,15 @@ class MyHomePageState extends State<MyHomePage> {
   final TextEditingController controller = TextEditingController();
   String initialCountry = 'NG';
 
+late final  List<Country> countries; //= Countries.countryList.map((country) => Country.fromJson(country)).toList();
+late final Country defaultCountry;
+  @override
+  void initState() {
+    super.initState();
+    countries = Countries.countryList.map((country) => Country.fromJson(country)).toList();
+    defaultCountry = countries.firstWhere((element) => element.alpha2Code == "IN");
+  }
+
   @override
   Widget build(BuildContext context) {
     return Form(
@@ -41,6 +51,11 @@ class MyHomePageState extends State<MyHomePage> {
         mainAxisAlignment: MainAxisAlignment.center,
         children: <Widget>[
           InternationalPhoneNumberInput(
+            countries: countries,
+            defaultCountry: defaultCountry,
+            filterFunction: (value) {
+              return countries.where((c) => c.matches(value)).toList();
+            },
             locale: 'hi',
             onInputChanged: (PhoneNumber number) {
               debugPrint(number.international);
@@ -50,7 +65,7 @@ class MyHomePageState extends State<MyHomePage> {
             },
             ignoreBlank: true,
             autoValidateMode: AutovalidateMode.disabled,
-            initialValue: const PhoneNumber(isoCode: IsoCode.NG, nsn: ""),
+            initialValue: const PhoneNumber(isoCode: "NG", nsn: ""),
             textFieldController: controller,
             inputBorder: const OutlineInputBorder(),
             selectorConfig: const SelectorConfig(
@@ -77,7 +92,7 @@ class MyHomePageState extends State<MyHomePage> {
   }
 
   void getPhoneNumber(String phoneNumber) {
-    PhoneNumber number = PhoneNumber(isoCode: IsoCode.US, nsn: phoneNumber);
+    PhoneNumber number = PhoneNumber(isoCode: "US", nsn: phoneNumber);
     controller.text = number.international;
 
     setState(() {

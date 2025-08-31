@@ -1,7 +1,6 @@
 // import 'package:circle_flags/circle_flags.dart';
 import 'package:flutter/material.dart';
 import 'package:intl_phone_number_input/src/models/country_model.dart';
-import 'package:intl_phone_number_input/src/utils/test/test_helper.dart';
 import 'package:intl_phone_number_input/src/utils/util.dart';
 
 /// Creates a list of Countries with a search textfield.
@@ -15,6 +14,7 @@ class CountrySearchListWidget extends StatefulWidget {
   final double flagSize;
   final TextStyle? titleStyle;
   final TextStyle? subtitleStyle;
+  final List<Country> Function(String value) filterFunction;
 
   CountrySearchListWidget(
     this.countries,
@@ -26,6 +26,7 @@ class CountrySearchListWidget extends StatefulWidget {
     required this.flagSize,
     required this.titleStyle,
     required this.subtitleStyle,
+    required this.filterFunction,
   });
 
   @override
@@ -40,11 +41,7 @@ class _CountrySearchListWidgetState extends State<CountrySearchListWidget> {
   @override
   void initState() {
     final String value = _searchController.text.trim();
-    filteredCountries = Utils.filterCountries(
-      countries: widget.countries,
-      locale: widget.locale,
-      value: value,
-    );
+    filteredCountries = widget.filterFunction(value);
     super.initState();
   }
 
@@ -68,19 +65,14 @@ class _CountrySearchListWidgetState extends State<CountrySearchListWidget> {
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 16),
           child: TextFormField(
-            key: Key(TestHelper.CountrySearchInputKeyValue),
             decoration: getSearchBoxDecoration(),
             controller: _searchController,
             autofocus: widget.autoFocus,
             onChanged: (value) {
               final String value = _searchController.text.trim();
-              return setState(
-                () => filteredCountries = Utils.filterCountries(
-                  countries: widget.countries,
-                  locale: widget.locale,
-                  value: value,
-                ),
-              );
+              return setState(() {
+                filteredCountries = widget.filterFunction(value);
+              });
             },
           ),
         ),
@@ -134,12 +126,10 @@ class DirectionalCountryListTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ListTile(
-      key: Key(TestHelper.countryItemKeyValue(country.alpha2Code)),
       leading: (showFlags ? Flag(country: country, flagSize: flagSize) : null),
       title: Align(
         alignment: AlignmentDirectional.centerStart,
-        child: Text(
-          '${Utils.getCountryName(country, locale)}',
+        child: Text(country.name,
           textDirection: Directionality.of(context),
           style: titleStyle,
           textAlign: TextAlign.start,
@@ -148,7 +138,7 @@ class DirectionalCountryListTile extends StatelessWidget {
       subtitle: Align(
         alignment: AlignmentDirectional.centerStart,
         child: Text(
-          '${country.dialCode ?? ''}',
+          '${country.dialCode}',
           textDirection: TextDirection.ltr,
           textAlign: TextAlign.start,
           style: subtitleStyle,
@@ -167,8 +157,10 @@ class Flag extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Text(
-      Utils.generateFlagEmojiUnicode(country.alpha2Code ?? 'IN'),
-      style: Theme.of(context).textTheme.headlineSmall?.copyWith(fontSize: flagSize),
+      Utils.generateFlagEmojiUnicode(country.alpha2Code),
+      style: Theme.of(
+        context,
+      ).textTheme.headlineSmall?.copyWith(fontSize: flagSize),
     );
   }
 }

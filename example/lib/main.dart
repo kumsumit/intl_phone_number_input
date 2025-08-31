@@ -1,23 +1,30 @@
+import 'dart:io';
+
+import 'package:example/country_list.dart';
 import 'package:flutter/material.dart';
 import 'package:intl_phone_number_input/intl_phone_number_input.dart';
+import 'package:path_provider/path_provider.dart';
 
-void main() => runApp(const MyApp());
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  final Directory appDocDir = await getApplicationDocumentsDirectory();
+  await MetadataFinder.readMetadataJson(appDocDir.path);
+  runApp(const MyApp());
+}
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
   @override
   Widget build(BuildContext context) {
-    var darkTheme = ThemeData.dark().copyWith(primaryColor: Colors.blue,);
+    var darkTheme = ThemeData.dark().copyWith(primaryColor: Colors.blue);
 
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'Demo',
       themeMode: ThemeMode.light,
       darkTheme: darkTheme,
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-      ),
+      theme: ThemeData(primarySwatch: Colors.blue),
       home: Scaffold(
         appBar: AppBar(title: const Text('Demo')),
         body: const MyHomePage(),
@@ -34,11 +41,26 @@ class MyHomePage extends StatefulWidget {
 }
 
 class MyHomePageState extends State<MyHomePage> {
-  final LabeledGlobalKey<FormState> formKey =
-      LabeledGlobalKey<FormState>("phoneform");
+  final LabeledGlobalKey<FormState> formKey = LabeledGlobalKey<FormState>(
+    "phoneform",
+  );
   int count = 0;
   final TextEditingController controller = TextEditingController();
-  PhoneNumber number = const PhoneNumber(isoCode: IsoCode.NG, nsn: "");
+  PhoneNumber number = const PhoneNumber(isoCode: "NG", nsn: "");
+
+late final List<Country>
+  countries; //= Countries.countryList.map((country) => Country.fromJson(country)).toList();
+  late final Country defaultCountry;
+  @override
+  void initState() {
+    super.initState();
+    countries = Countries.countryList
+        .map((country) => Country.fromJson(country))
+        .toList();
+    defaultCountry = countries.firstWhere(
+      (element) => element.alpha2Code == "IN",
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -51,6 +73,11 @@ class MyHomePageState extends State<MyHomePage> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
               InternationalPhoneNumberInput(
+                countries: countries,
+                defaultCountry: defaultCountry,
+                filterFunction: (value) {
+                  return countries.where((c) => c.matches(value)).toList();
+                },
                 label: const Text("Customer Phone Number"),
                 errorMessage: "Wrong Input entered",
                 selectorButtonBottomWidget: SizedBox(
@@ -76,21 +103,26 @@ class MyHomePageState extends State<MyHomePage> {
                 ),
                 ignoreBlank: false,
                 autoValidateMode: AutovalidateMode.always,
-                selectorTextStyle:
-                    const TextStyle(color: Colors.black, fontSize: 10),
+                selectorTextStyle: const TextStyle(
+                  color: Colors.black,
+                  fontSize: 10,
+                ),
                 initialValue: number,
                 textFieldController: controller,
                 formatInput: true,
                 keyboardType: const TextInputType.numberWithOptions(
-                    signed: true, decimal: true),
+                  signed: true,
+                  decimal: true,
+                ),
                 inputBorder: const OutlineInputBorder(),
                 onSaved: (PhoneNumber number) {
                   debugPrint('On Saved: $number');
                 },
-                inputDecoration:
-                    const InputDecoration(labelStyle: TextStyle(fontSize: 13)),
+                inputDecoration: const InputDecoration(
+                  labelStyle: TextStyle(fontSize: 13),
+                ),
               ),
-             
+
               ElevatedButton(
                 onPressed: () {
                   if (formKey.currentState!.validate()) {

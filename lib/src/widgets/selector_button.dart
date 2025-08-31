@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl_phone_number_input/src/models/country_model.dart';
 import 'package:intl_phone_number_input/src/utils/selector_config.dart';
-import 'package:intl_phone_number_input/src/utils/test/test_helper.dart';
 import 'package:intl_phone_number_input/src/widgets/countries_search_list_widget.dart';
 import 'package:intl_phone_number_input/src/widgets/input_widget.dart';
 import 'package:intl_phone_number_input/src/widgets/item.dart';
@@ -20,7 +19,8 @@ class SelectorButton extends StatelessWidget {
   final bool isScrollControlled;
   final double flagSize;
 
-  final ValueChanged<Country?> onCountryChanged;
+  final ValueChanged<Country> onCountryChanged;
+  final List<Country> Function(String value) filterFunction;
 
   const SelectorButton({
     Key? key,
@@ -36,6 +36,7 @@ class SelectorButton extends StatelessWidget {
     required this.isEnabled,
     required this.isScrollControlled,
     required this.flagSize,
+    required this.filterFunction,
   }) : super(key: key);
 
   @override
@@ -44,7 +45,6 @@ class SelectorButton extends StatelessWidget {
         ? countries.isNotEmpty && countries.length > 1
               ? DropdownButtonHideUnderline(
                   child: DropdownButton<Country>(
-                    key: Key(TestHelper.DropdownButtonKeyValue),
                     hint: Item(
                       country: country,
                       showFlag: selectorConfig.showFlags,
@@ -55,7 +55,11 @@ class SelectorButton extends StatelessWidget {
                     ),
                     value: country,
                     items: mapCountryToDropdownItem(countries),
-                    onChanged: isEnabled ? onCountryChanged : null,
+                    onChanged: (val){
+                     if(val != null && isEnabled){
+                       onCountryChanged(val);
+                     }
+                    },
                   ),
                 )
               : Item(
@@ -68,7 +72,6 @@ class SelectorButton extends StatelessWidget {
                   flagSize: flagSize,
                 )
         : MaterialButton(
-            key: Key(TestHelper.DropdownButtonKeyValue),
             padding: EdgeInsets.zero,
             minWidth: 0,
             onPressed: countries.isNotEmpty && countries.length > 1 && isEnabled
@@ -111,7 +114,6 @@ class SelectorButton extends StatelessWidget {
       return DropdownMenuItem<Country>(
         value: country,
         child: Item(
-          key: Key(TestHelper.countryItemKeyValue(country.alpha2Code)),
           country: country,
           showFlag: selectorConfig.showFlags,
           textStyle: selectorTextStyle,
@@ -145,6 +147,7 @@ class SelectorButton extends StatelessWidget {
               flagSize: flagSize,
               titleStyle: selectorConfig.titleStyle,
               subtitleStyle: selectorConfig.subtitleStyle,
+              filterFunction: filterFunction,
             ),
           ),
         ),
@@ -201,6 +204,7 @@ class SelectorButton extends StatelessWidget {
                         flagSize: flagSize,
                         titleStyle: selectorConfig.titleStyle,
                         subtitleStyle: selectorConfig.subtitleStyle,
+                        filterFunction: filterFunction,
                       ),
                     ),
                   );

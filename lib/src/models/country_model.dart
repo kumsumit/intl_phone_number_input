@@ -2,59 +2,59 @@
 /// information about the country
 class Country {
   /// The name of the [Country]
-  final String? name;
+  final String name;
 
   /// The alpha 2 isoCode of the [Country]
-  final String? alpha2Code;
+  final String alpha2Code;
 
   /// The alpha 3 isoCode of the [Country]
-  final String? alpha3Code;
+  final String alpha3Code;
 
   /// The dialCode of the [Country]
-  final String? dialCode;
+  final String dialCode;
 
-  /// The currencyCode of the [Country]
-  final String? currencyCode;
+  // /// The currencyCode of the [Country]
+  // final String? currencyCode;
 
-  final String? nativeName;
-  final String? continent;
-  final String capital;
-  final List<String>? languages;
+  // final String? nativeName;
+  // final String? continent;
+  // final String capital;
+  // final List<String>? languages;
 
-  /// The currencySymbol of the [Country]
-  final String? currencySymbol;
+  // /// The currencySymbol of the [Country]
+  // final String? currencySymbol;
 
-  /// The currencyName of the [Country]
-  final String? currencyName;
+  // /// The currencyName of the [Country]
+  // final String? currencyName;
 
-  /// The nameTranslation for translation
-  final Map<String, String>? nameTranslations;
+  // /// The nameTranslation for translation
+  // final Map<String, String>? nameTranslations;
 
-  /// The minLength for phoneNumber
-  final int minLength;
+  // /// The minLength for phoneNumber
+  // final int minLength;
 
-  /// The maxLength for phoneNumber
-  final int maxLength;
+  // /// The maxLength for phoneNumber
+  // final int maxLength;
 
-  /// The Currency Selector position
-  final bool symbolOnLeft;
+  // /// The Currency Selector position
+  // final bool symbolOnLeft;
 
   Country({
     required this.name,
     required this.alpha2Code,
     required this.alpha3Code,
     required this.dialCode,
-    required this.minLength,
-    required this.maxLength,
-    required this.currencyCode,
-    required this.currencyName,
-    required this.currencySymbol,
-    required this.symbolOnLeft,
-    required this.nativeName,
-    required this.continent,
-    required this.capital,
-    required this.languages,
-    this.nameTranslations,
+    // required this.minLength,
+    // required this.maxLength,
+    // required this.currencyCode,
+    // required this.currencyName,
+    // required this.currencySymbol,
+    // required this.symbolOnLeft,
+    // required this.nativeName,
+    // required this.continent,
+    // required this.capital,
+    // required this.languages,
+    // this.nameTranslations,
   });
 
   /// Convert [Countries.countryList] to [Country] model
@@ -64,19 +64,19 @@ class Country {
       alpha2Code: data['alpha_2_code'],
       alpha3Code: data['alpha_3_code'],
       dialCode: data['dial_code'],
-      minLength: data['minLength'],
-      maxLength: data["maxLength"],
-      currencyCode: data["currency_code"],
-      currencyName: data["currency_name"],
-      symbolOnLeft: data["symbol_on_left"],
-      currencySymbol: data["currency_symbol"],
-      nameTranslations: data['nameTranslations'] != null
-          ? Map<String, String>.from(data['nameTranslations'])
-          : null,
-      nativeName: data['nativeName'],
-      continent: data['continent'],
-      capital: data['capital'],
-      languages: List.castFrom<dynamic, String>(data['languages']),
+      // minLength: data['minLength'],
+      // maxLength: data["maxLength"],
+      // currencyCode: data["currency_code"],
+      // currencyName: data["currency_name"],
+      // symbolOnLeft: data["symbol_on_left"],
+      // currencySymbol: data["currency_symbol"],
+      // nameTranslations: data['nameTranslations'] != null
+      //     ? Map<String, String>.from(data['nameTranslations'])
+      //     : null,
+      // nativeName: data['nativeName'],
+      // continent: data['continent'],
+      // capital: data['capital'],
+      // languages: List.castFrom<dynamic, String>(data['languages']),
     );
   }
 
@@ -99,4 +99,12 @@ class Country {
       'alpha3: $alpha3Code, '
       'dialCode: $dialCode '
       '}';
+
+  bool matches(String value) {
+    final query = value.toLowerCase();
+    return name.toLowerCase().contains(query) ||
+        alpha2Code.toLowerCase().contains(query) ||
+        alpha3Code.toLowerCase().contains(query) ||
+        dialCode.toLowerCase().contains(query);
+  }
 }
