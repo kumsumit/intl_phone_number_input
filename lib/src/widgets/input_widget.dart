@@ -26,9 +26,6 @@ enum PhoneInputSelectorType { DROPDOWN, BOTTOM_SHEET, DIALOG }
 /// [selectorButtonOnErrorPadding] is a double which is used to align the selector
 /// button with the input field when an error occurs
 ///
-/// [locale] accepts a country locale which will be used to translation, if the
-/// translation exist
-///
 /// [countries] accepts list of string on Country isoCode, if specified filters
 /// available countries to match the [countries] specified.
 class InternationalPhoneNumberInput extends StatefulWidget {
@@ -71,7 +68,6 @@ class InternationalPhoneNumberInput extends StatefulWidget {
   final bool ignoreBlank;
   final bool countrySelectorScrollControlled;
 
-  final String? locale;
   final TextDirection textDirection;
   final TextStyle? textStyle;
   final TextStyle? selectorTextStyle;
@@ -121,7 +117,6 @@ class InternationalPhoneNumberInput extends StatefulWidget {
     this.autoValidateMode = AutovalidateMode.disabled,
     this.ignoreBlank = false,
     this.countrySelectorScrollControlled = true,
-    this.locale,
     this.textStyle,
     this.flagStyle,
     this.selectorTextStyle,
@@ -221,7 +216,6 @@ class InputWidgetState extends State<InternationalPhoneNumberInput> {
                     selectorConfig: widget.selectorConfig,
                     selectorTextStyle: widget.selectorTextStyle,
                     searchBoxDecoration: widget.searchBoxDecoration,
-                    locale: locale,
                     isEnabled: widget.isEnabled,
                     autoFocusSearchField: widget.autoFocusSearch,
                     isScrollControlled: widget.countrySelectorScrollControlled,
@@ -448,7 +442,6 @@ class InputWidgetState extends State<InternationalPhoneNumberInput> {
             selectorConfig: widget.selectorConfig,
             selectorTextStyle: widget.selectorTextStyle,
             searchBoxDecoration: widget.searchBoxDecoration,
-            locale: locale,
             isEnabled: widget.isEnabled,
             autoFocusSearchField: widget.autoFocusSearch,
             isScrollControlled: widget.countrySelectorScrollControlled,
@@ -513,17 +506,6 @@ class InputWidgetState extends State<InternationalPhoneNumberInput> {
     _phoneNumberSaved();
   }
 
-  /// Corrects duplicate locale
-  String? get locale {
-    if (widget.locale == null) return "en";
-
-    if (widget.locale!.toLowerCase() == 'nb' ||
-        widget.locale!.toLowerCase() == 'nn') {
-      return 'no';
-    }
-    return widget.locale;
-  }
-
 }
 
 class InputWidgetView
@@ -557,7 +539,6 @@ class InputWidgetView
                     selectorConfig: widget.selectorConfig,
                     selectorTextStyle: widget.selectorTextStyle,
                     searchBoxDecoration: widget.searchBoxDecoration,
-                    locale: state.locale,
                     isEnabled: widget.isEnabled,
                     autoFocusSearchField: widget.autoFocusSearch,
                     isScrollControlled: widget.countrySelectorScrollControlled,

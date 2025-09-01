@@ -7,7 +7,6 @@ import 'package:intl_phone_number_input/src/utils/util.dart';
 class CountrySearchListWidget extends StatefulWidget {
   final List<Country> countries;
   final InputDecoration? searchBoxDecoration;
-  final String? locale;
   final ScrollController? scrollController;
   final bool autoFocus;
   final bool? showFlags;
@@ -17,8 +16,7 @@ class CountrySearchListWidget extends StatefulWidget {
   final List<Country> Function(String value) filterFunction;
 
   CountrySearchListWidget(
-    this.countries,
-    this.locale, {
+    this.countries, {
     this.searchBoxDecoration,
     this.scrollController,
     this.showFlags,
@@ -85,7 +83,6 @@ class _CountrySearchListWidgetState extends State<CountrySearchListWidget> {
               Country country = filteredCountries[index];
               return DirectionalCountryListTile(
                 country: country,
-                locale: widget.locale,
                 showFlags: widget.showFlags!,
                 flagSize: widget.flagSize,
                 titleStyle: widget.titleStyle,
@@ -108,7 +105,6 @@ class _CountrySearchListWidgetState extends State<CountrySearchListWidget> {
 
 class DirectionalCountryListTile extends StatelessWidget {
   final Country country;
-  final String? locale;
   final bool showFlags;
   final double flagSize;
   final TextStyle? titleStyle;
@@ -116,7 +112,6 @@ class DirectionalCountryListTile extends StatelessWidget {
   const DirectionalCountryListTile({
     super.key,
     required this.country,
-    required this.locale,
     required this.showFlags,
     this.flagSize = 20,
     this.titleStyle,

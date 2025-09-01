@@ -14,7 +14,6 @@ class SelectorButton extends StatelessWidget {
   final TextStyle? flagStyle;
   final InputDecoration? searchBoxDecoration;
   final bool autoFocusSearchField;
-  final String? locale;
   final bool isEnabled;
   final bool isScrollControlled;
   final double flagSize;
@@ -31,7 +30,6 @@ class SelectorButton extends StatelessWidget {
     this.flagStyle,
     required this.searchBoxDecoration,
     required this.autoFocusSearchField,
-    this.locale,
     required this.onCountryChanged,
     required this.isEnabled,
     required this.isScrollControlled,
@@ -140,7 +138,6 @@ class SelectorButton extends StatelessWidget {
             width: double.maxFinite,
             child: CountrySearchListWidget(
               countries,
-              locale,
               searchBoxDecoration: searchBoxDecoration,
               showFlags: selectorConfig.showFlags,
               autoFocus: autoFocusSearchField,
@@ -196,7 +193,6 @@ class SelectorButton extends StatelessWidget {
                       ),
                       child: CountrySearchListWidget(
                         countries,
-                        locale,
                         searchBoxDecoration: searchBoxDecoration,
                         scrollController: controller,
                         showFlags: selectorConfig.showFlags,
