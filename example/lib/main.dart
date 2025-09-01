@@ -85,7 +85,6 @@ late final List<Country>
                   height: 1,
                   width: 120,
                 ),
-                locale: "gu",
                 betweenTextFieldWidget: const Icon(
                   Icons.arrow_drop_down_sharp,
                   color: Colors.white,

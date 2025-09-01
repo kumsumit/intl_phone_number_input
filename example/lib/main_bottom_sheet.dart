@@ -56,7 +56,6 @@ late final Country defaultCountry;
             filterFunction: (value) {
               return countries.where((c) => c.matches(value)).toList();
             },
-            locale: 'hi',
             onInputChanged: (PhoneNumber number) {
               debugPrint(number.international);
             },
