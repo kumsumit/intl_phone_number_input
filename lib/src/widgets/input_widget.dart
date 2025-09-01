@@ -146,13 +146,23 @@ class InternationalPhoneNumberInput extends StatefulWidget {
 }
 
 class InputWidgetState extends State<InternationalPhoneNumberInput> {
-  TextEditingController? controller;
+  late TextEditingController controller;
   double selectorButtonBottomPadding = 0;
   int currentLength = 0;
   List<int> acceptedLengths = [];
   late Country country;
   List<Country> countries = [];
   bool isNotValid = true;
+  String errorText = "";
+
+
+
+  @override
+  void dispose() {
+    controller.removeListener(phoneNumberControllerListener);
+    controller.dispose();
+    super.dispose();
+  }
 
   @override
   void initState() {
@@ -162,6 +172,7 @@ class InputWidgetState extends State<InternationalPhoneNumberInput> {
     countries = widget.countries;
     controller = widget.textFieldController ?? TextEditingController();
     initialiseWidget();
+    controller.addListener(phoneNumberControllerListener);
     setState(() {
       if (widget.initialValue != null) {
         if (MetadataFinder.findMetadataLengthForIsoCode(
@@ -187,8 +198,8 @@ class InputWidgetState extends State<InternationalPhoneNumberInput> {
 
   @override
   Widget build(BuildContext context) {
-    final errorText = validator(controller?.text);
-    this.selectorButtonBottomPadding = errorText != null
+    errorText = validator(controller.text)?? "";
+    this.selectorButtonBottomPadding = errorText.isEmpty
         ? widget.selectorButtonOnErrorPadding
         : 0;
 
@@ -263,7 +274,7 @@ class InputWidgetState extends State<InternationalPhoneNumberInput> {
                       isoCode: country.alpha2Code,
                       dialCode: country.dialCode,
                       onInputFormatted: (TextEditingValue value) {
-                        controller!.value = value;
+                        controller.value = value;
                       },
                       acceptedLengths: acceptedLengths,
                     )
@@ -300,7 +311,7 @@ class InputWidgetState extends State<InternationalPhoneNumberInput> {
         isoCode: widget.initialValue?.isoCode,
       );
 
-      controller!.text = widget.formatInput
+      controller.text = widget.formatInput
           ? phoneNumber
           : phoneNumber.replaceAll(RegExp(r'[^\d+]'), '');
 
@@ -342,8 +353,8 @@ class InputWidgetState extends State<InternationalPhoneNumberInput> {
   /// Listener that validates changes from the widget, returns a bool to
   /// the `ValueCallback` [widget.onInputValidated]
   void phoneNumberControllerListener() {
-    if (this.mounted && controller != null && controller!.text.isNotEmpty) {
-      String parsedPhoneNumberString = controller!.text.replaceAll(
+    if (this.mounted &&  controller.text.isNotEmpty) {
+      String parsedPhoneNumberString = controller.text.replaceAll(
         RegExp(r'[^\d+]'),
         '',
       );
@@ -367,6 +378,7 @@ class InputWidgetState extends State<InternationalPhoneNumberInput> {
       }
       setState(() {
         currentLength = phoneNumber.nsn.length;
+        errorText = validator(controller.text) ?? "";
       });
       if (widget.onInputChanged != null) {
         widget.onInputChanged!(phoneNumber);
@@ -483,7 +495,7 @@ class InputWidgetState extends State<InternationalPhoneNumberInput> {
 
   void _phoneNumberSaved() {
     if (this.mounted) {
-      String parsedPhoneNumberString = controller!.text.replaceAll(
+      String parsedPhoneNumberString = controller.text.replaceAll(
         RegExp(r'[^\d+]'),
         '',
       );
@@ -511,52 +523,6 @@ class InputWidgetState extends State<InternationalPhoneNumberInput> {
     }
     return widget.locale;
   }
-
- /// call this when you programmatically set phone (e.g. from SmartAuth)
-  void setPhoneProgrammatically(String nsn, {String? isoCode}) {
-    // optionally switch country if isoCode provided
-    if (isoCode != null && isoCode != country.alpha2Code) {
-      final newCountry = countries.firstWhere(
-        (c) => c.alpha2Code == isoCode,
-        orElse: () => country,
-      );
-      setState(() {
-        country = newCountry;
-        acceptedLengths =
-            MetadataFinder.findMetadataLengthForIsoCode(
-              newCountry.alpha2Code,
-            )["mobile"] ??
-            [];
-      });
-    }
-
-    // make a raw edit value
-    final raw = TextEditingValue(
-      text: nsn,
-      selection: TextSelection.collapsed(offset: nsn.length),
-    );
-
-    // Use the same AsYouTypeFormatter to produce a formatted TextEditingValue
-    final formatter = AsYouTypeFormatter(
-      isoCode: country.alpha2Code,
-      dialCode: country.dialCode,
-      acceptedLengths: acceptedLengths,
-      onInputFormatted:
-          (_) {}, // callback not needed here; we use the returned value
-    );
-
-    final formatted = formatter.formatEditUpdate(controller!.value, raw);
-
-    // set the controller to the formatted value and notify widget logic
-    controller!.value = formatted;
-    controller!.selection = TextSelection.collapsed(
-      offset: controller!.text.length,
-    );
-
-    // run same validation listener that updates counter & validity
-    phoneNumberControllerListener();
-  }
-
 
 }
 
@@ -645,7 +611,7 @@ class InputWidgetView
                       isoCode: countryCode,
                       dialCode: dialCode,
                       onInputFormatted: (TextEditingValue value) {
-                        state.controller!.value = value;
+                        state.controller.value = value;
                       },
                       acceptedLengths: acceptedLengths,
                     )
