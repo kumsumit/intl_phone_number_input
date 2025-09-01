@@ -142,10 +142,10 @@ class InternationalPhoneNumberInput extends StatefulWidget {
   }) : super(key: key);
 
   @override
-  State<StatefulWidget> createState() => _InputWidgetState();
+  State<StatefulWidget> createState() => InputWidgetState();
 }
 
-class _InputWidgetState extends State<InternationalPhoneNumberInput> {
+class InputWidgetState extends State<InternationalPhoneNumberInput> {
   TextEditingController? controller;
   double selectorButtonBottomPadding = 0;
   int currentLength = 0;
@@ -450,6 +450,8 @@ class _InputWidgetState extends State<InternationalPhoneNumberInput> {
     return value;
   }
 
+
+
   /// Validate the phone number when a change occurs
   void onChanged(String value) {
     phoneNumberControllerListener();
@@ -509,11 +511,58 @@ class _InputWidgetState extends State<InternationalPhoneNumberInput> {
     }
     return widget.locale;
   }
+
+ /// call this when you programmatically set phone (e.g. from SmartAuth)
+  void setPhoneProgrammatically(String nsn, {String? isoCode}) {
+    // optionally switch country if isoCode provided
+    if (isoCode != null && isoCode != country.alpha2Code) {
+      final newCountry = countries.firstWhere(
+        (c) => c.alpha2Code == isoCode,
+        orElse: () => country,
+      );
+      setState(() {
+        country = newCountry;
+        acceptedLengths =
+            MetadataFinder.findMetadataLengthForIsoCode(
+              newCountry.alpha2Code,
+            )["mobile"] ??
+            [];
+      });
+    }
+
+    // make a raw edit value
+    final raw = TextEditingValue(
+      text: nsn,
+      selection: TextSelection.collapsed(offset: nsn.length),
+    );
+
+    // Use the same AsYouTypeFormatter to produce a formatted TextEditingValue
+    final formatter = AsYouTypeFormatter(
+      isoCode: country.alpha2Code,
+      dialCode: country.dialCode,
+      acceptedLengths: acceptedLengths,
+      onInputFormatted:
+          (_) {}, // callback not needed here; we use the returned value
+    );
+
+    final formatted = formatter.formatEditUpdate(controller!.value, raw);
+
+    // set the controller to the formatted value and notify widget logic
+    controller!.value = formatted;
+    controller!.selection = TextSelection.collapsed(
+      offset: controller!.text.length,
+    );
+
+    // run same validation listener that updates counter & validity
+    phoneNumberControllerListener();
+  }
+
+
 }
 
 class InputWidgetView
-    extends WidgetView<InternationalPhoneNumberInput, _InputWidgetState> {
-  final _InputWidgetState state;
+    extends WidgetView<InternationalPhoneNumberInput, InputWidgetState> {
+  final InputWidgetState state;
 
   InputWidgetView({Key? key, required this.state})
     : super(key: key, state: state);
