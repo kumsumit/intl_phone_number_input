@@ -150,8 +150,6 @@ class InputWidgetState extends State<InternationalPhoneNumberInput> {
   bool isNotValid = true;
   String errorText = "";
 
-
-
   @override
   void dispose() {
     controller.removeListener(phoneNumberControllerListener);
@@ -186,14 +184,14 @@ class InputWidgetState extends State<InternationalPhoneNumberInput> {
   @override
   void setState(fn) {
     if (this.mounted) {
-      debugPrint("Main setState");
+      // debugPrint("Main setState");
       super.setState(fn);
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    errorText = validator(controller.text)?? "";
+    errorText = validator(controller.text) ?? "";
     this.selectorButtonBottomPadding = errorText.isEmpty
         ? widget.selectorButtonOnErrorPadding
         : 0;
@@ -336,8 +334,7 @@ class InputWidgetState extends State<InternationalPhoneNumberInput> {
           };
       countries.sort(countryComparator);
       setState(() {
-        debugPrint("Countries setState");
-
+        // debugPrint("Countries setState");
         this.countries = countries;
         this.country = country;
       });
@@ -347,7 +344,7 @@ class InputWidgetState extends State<InternationalPhoneNumberInput> {
   /// Listener that validates changes from the widget, returns a bool to
   /// the `ValueCallback` [widget.onInputValidated]
   void phoneNumberControllerListener() {
-    if (this.mounted &&  controller.text.isNotEmpty) {
+    if (this.mounted && controller.text.isNotEmpty) {
       String parsedPhoneNumberString = controller.text.replaceAll(
         RegExp(r'[^\d+]'),
         '',
@@ -455,8 +452,6 @@ class InputWidgetState extends State<InternationalPhoneNumberInput> {
     return value;
   }
 
-
-
   /// Validate the phone number when a change occurs
   void onChanged(String value) {
     phoneNumberControllerListener();
@@ -466,10 +461,18 @@ class InputWidgetState extends State<InternationalPhoneNumberInput> {
   ///
 
   String? validator(String? value) {
+    // debugPrint("Validator called with: $value");
     final bool hasContent = value?.isNotEmpty ?? false;
     final bool shouldValidateBlank = !widget.ignoreBlank;
     final bool isInvalid =
         this.isNotValid && (hasContent || shouldValidateBlank);
+    final isParsed = PhoneNumber.parse(
+      value ?? "",
+      callerCountry: country.alpha2Code,
+    );
+    if (isParsed.isValid()) {
+      return null;
+    }
     return isInvalid ? widget.errorMessage : null;
   }
 
@@ -505,7 +508,6 @@ class InputWidgetState extends State<InternationalPhoneNumberInput> {
   void onSaved(String? value) {
     _phoneNumberSaved();
   }
-
 }
 
 class InputWidgetView
