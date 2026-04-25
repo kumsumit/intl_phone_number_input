@@ -2,6 +2,8 @@ import 'package:intl_phone_number_input/src/models/country_model.dart';
 
 /// [Utils] class contains utility methods for `intl_phone_number_input` library
 class Utils {
+  static final Map<String, String> _flagCache = <String, String>{};
+
   ///  Returns a [Country] form list of [countries] passed that matches [countryCode].
   ///  Returns the first [Country] in the list if no match is available.
   static Country getInitialSelectedCountry(
@@ -14,16 +16,31 @@ class Utils {
     );
   }
 
+  /// Returns the subset of [countries] that match the provided [query].
+  static List<Country> filterCountries(
+    List<Country> countries,
+    String query,
+  ) {
+    final normalizedQuery = query.trim();
+    if (normalizedQuery.isEmpty) {
+      return List<Country>.from(countries);
+    }
+
+    return countries
+        .where((country) => country.matches(normalizedQuery))
+        .toList(growable: false);
+  }
+
   /// Returns a [String] which will be the unicode of a Flag Emoji,
   /// from a country [countryCode] passed as a parameter.
   static String generateFlagEmojiUnicode(String countryCode) {
-    final base = 127397;
+    return _flagCache.putIfAbsent(countryCode, () {
+      final base = 127397;
 
-    return countryCode.codeUnits
-        .map((e) => String.fromCharCode(base + e))
-        .toList()
-        .reduce((value, element) => value + element)
-        .toString();
+      return countryCode.codeUnits
+          .map((e) => String.fromCharCode(base + e))
+          .join();
+    });
   }
 }
 

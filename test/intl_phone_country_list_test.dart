@@ -1,5 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:intl_phone_number_input/src/models/country_model.dart';
+import 'package:intl_phone_number_input/src/utils/country_detector.dart';
+import 'package:intl_phone_number_input/src/utils/util.dart';
 
 void main() {
   group('Country', () {
@@ -28,6 +30,41 @@ void main() {
 
       expect(country, sameCountry);
       expect(country.hashCode, sameCountry.hashCode);
+    });
+
+    test('uses shared utility filtering', () {
+      final countries = <Country>[
+        country,
+        Country(
+          name: 'United States',
+          alpha2Code: 'US',
+          alpha3Code: 'USA',
+          dialCode: '+1',
+        ),
+      ];
+
+      final result = Utils.filterCountries(countries, 'uni');
+
+      expect(result.map((item) => item.alpha2Code), ['US']);
+    });
+  });
+
+  group('CountryDetector', () {
+    test('returns nearby boundary countries for a known country code', () {
+      final result = CountryDetector.possibleBoundaryCountriesFor('IN');
+
+      expect(result, isNotEmpty);
+      expect(result, isNot(contains('IN')));
+    });
+
+    test('ranks countries by distance from the detected country', () {
+      final result = CountryDetector.rankCountriesByDistanceFrom('US', [
+        'IN',
+        'CA',
+        'MX',
+      ]);
+
+      expect(result.take(2), ['MX', 'CA']);
     });
   });
 }

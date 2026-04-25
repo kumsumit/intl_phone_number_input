@@ -14,7 +14,9 @@ class CountrySearchListWidget extends StatefulWidget {
   final TextStyle? flagStyle;
   final TextStyle? titleStyle;
   final TextStyle? subtitleStyle;
-  final List<Country> Function(String value) filterFunction;
+  final String searchHintText;
+  final String emptySearchMessage;
+  final List<Country> Function(String value)? filterFunction;
 
   CountrySearchListWidget(
     this.countries, {
@@ -26,7 +28,9 @@ class CountrySearchListWidget extends StatefulWidget {
     this.flagStyle,
     required this.titleStyle,
     required this.subtitleStyle,
-    required this.filterFunction,
+    required this.searchHintText,
+    required this.emptySearchMessage,
+    this.filterFunction,
   });
 
   @override
@@ -39,9 +43,8 @@ class _CountrySearchListWidgetState extends State<CountrySearchListWidget> {
 
   @override
   void initState() {
-    final String value = _searchController.text.trim();
-    filteredCountries = widget.filterFunction(value);
     super.initState();
+    filteredCountries = _filterCountries(_searchController.text);
   }
 
   @override
@@ -50,10 +53,27 @@ class _CountrySearchListWidgetState extends State<CountrySearchListWidget> {
     super.dispose();
   }
 
+  @override
+  void didUpdateWidget(covariant CountrySearchListWidget oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.countries != widget.countries ||
+        oldWidget.filterFunction != widget.filterFunction) {
+      filteredCountries = _filterCountries(_searchController.text);
+    }
+  }
+
+  List<Country> _filterCountries(String value) {
+    final query = value.trim();
+    final filterFunction = widget.filterFunction;
+    return filterFunction != null
+        ? filterFunction(query)
+        : Utils.filterCountries(widget.countries, query);
+  }
+
   /// Returns [InputDecoration] of the search box
   InputDecoration getSearchBoxDecoration() {
     return widget.searchBoxDecoration ??
-        InputDecoration(labelText: 'Search by country name or dial code');
+        InputDecoration(labelText: widget.searchHintText);
   }
 
   @override
@@ -68,30 +88,40 @@ class _CountrySearchListWidgetState extends State<CountrySearchListWidget> {
             controller: _searchController,
             autofocus: widget.autoFocus,
             onChanged: (value) {
-              final String value = _searchController.text.trim();
-              return setState(() {
-                filteredCountries = widget.filterFunction(value);
+              setState(() {
+                filteredCountries = _filterCountries(value);
               });
             },
           ),
         ),
         Flexible(
-          child: ListView.builder(
-            controller: widget.scrollController,
-            shrinkWrap: true,
-            itemCount: filteredCountries.length,
-            itemBuilder: (BuildContext context, int index) {
-              Country country = filteredCountries[index];
-              return DirectionalCountryListTile(
-                country: country,
-                showFlags: widget.showFlags!,
-                flagSize: widget.flagSize,
-                flagStyle: widget.flagStyle,
-                titleStyle: widget.titleStyle,
-                subtitleStyle: widget.subtitleStyle,
-              );
-            },
-          ),
+          child: filteredCountries.isEmpty
+              ? Center(
+                  child: Padding(
+                    padding: const EdgeInsets.all(24),
+                    child: Text(
+                      widget.emptySearchMessage,
+                      style: widget.subtitleStyle,
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
+                )
+              : ListView.builder(
+                  controller: widget.scrollController,
+                  shrinkWrap: true,
+                  itemCount: filteredCountries.length,
+                  itemBuilder: (BuildContext context, int index) {
+                    Country country = filteredCountries[index];
+                    return DirectionalCountryListTile(
+                      country: country,
+                      showFlags: widget.showFlags!,
+                      flagSize: widget.flagSize,
+                      flagStyle: widget.flagStyle,
+                      titleStyle: widget.titleStyle,
+                      subtitleStyle: widget.subtitleStyle,
+                    );
+                  },
+                ),
         ),
       ],
     );

@@ -138,6 +138,129 @@ void main() {
       expect(validatedValues, isNotEmpty);
       expect(validatedValues.last, isFalse);
     });
+
+    testWidgets('uses the built-in country filter when none is provided', (
+      tester,
+    ) async {
+      final multiCountries = <Country>[
+        Country(
+          name: 'India',
+          alpha2Code: 'IN',
+          alpha3Code: 'IND',
+          dialCode: '+91',
+        ),
+        Country(
+          name: 'United States',
+          alpha2Code: 'US',
+          alpha3Code: 'USA',
+          dialCode: '+1',
+        ),
+      ];
+
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Scaffold(
+            body: InternationalPhoneNumberInput(
+              countries: multiCountries,
+              defaultCountry: multiCountries.first,
+              selectorConfig: const SelectorConfig(
+                selectorType: PhoneInputSelectorType.DIALOG,
+              ),
+              formatInput: false,
+            ),
+          ),
+        ),
+      );
+
+      await tester.tap(find.byType(MaterialButton));
+      await tester.pumpAndSettle();
+      await tester.enterText(find.byType(TextFormField).last, 'United');
+      await tester.pumpAndSettle();
+
+      expect(find.text('United States'), findsOneWidget);
+      expect(find.text('India'), findsNothing);
+    });
+
+    testWidgets('can auto-detect and prioritize the detected country', (
+      tester,
+    ) async {
+      final multiCountries = <Country>[
+        Country(
+          name: 'India',
+          alpha2Code: 'IN',
+          alpha3Code: 'IND',
+          dialCode: '+91',
+        ),
+        Country(
+          name: 'United States',
+          alpha2Code: 'US',
+          alpha3Code: 'USA',
+          dialCode: '+1',
+        ),
+        Country(
+          name: 'Canada',
+          alpha2Code: 'CA',
+          alpha3Code: 'CAN',
+          dialCode: '+1',
+        ),
+        Country(
+          name: 'Mexico',
+          alpha2Code: 'MX',
+          alpha3Code: 'MEX',
+          dialCode: '+52',
+        ),
+        Country(
+          name: 'India',
+          alpha2Code: 'IN',
+          alpha3Code: 'IND',
+          dialCode: '+91',
+        ),
+      ];
+
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Scaffold(
+            body: InternationalPhoneNumberInput(
+              countries: multiCountries,
+              defaultCountry: multiCountries.first,
+              autoDetectCountry: true,
+              prioritizeDetectedCountry: true,
+              countryDetector: () async => const CountryResult(
+                countryCode: 'US',
+                confidence: 80,
+                allVotes: {
+                  'US': 80,
+                  'CA': 35,
+                  'MX': 20,
+                },
+              ),
+              selectorConfig: const SelectorConfig(
+                selectorType: PhoneInputSelectorType.DIALOG,
+              ),
+              formatInput: false,
+            ),
+          ),
+        ),
+      );
+
+      await tester.pumpAndSettle();
+      await tester.tap(find.byType(MaterialButton));
+      await tester.pumpAndSettle();
+
+      final countryTiles = tester.widgetList<ListTile>(find.byType(ListTile)).toList();
+      final countryNames = countryTiles.map((tile) {
+        final title = tile.title! as Align;
+        final text = title.child! as Text;
+        return text.data;
+      }).toList();
+
+      expect(countryNames.take(4), [
+        'United States',
+        'Canada',
+        'Mexico',
+        'India',
+      ]);
+    });
   });
 }
 
@@ -145,14 +268,14 @@ class _Harness extends StatefulWidget {
   const _Harness({
     required this.countries,
     required this.defaultCountry,
-    required this.filterFunction,
     required this.initialValue,
     required this.formatInput,
+    this.filterFunction,
   });
 
   final List<Country> countries;
   final Country defaultCountry;
-  final List<Country> Function(String value) filterFunction;
+  final List<Country> Function(String value)? filterFunction;
   final PhoneNumber initialValue;
   final bool formatInput;
 

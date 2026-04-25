@@ -4,6 +4,7 @@ import 'package:flutter/foundation.dart';
 // import 'package:intl_phone_number_input/src/models/country_list.dart';
 import 'package:intl_phone_number_input/src/models/country_model.dart';
 // import 'package:intl_phone_number_input/src/providers/country_provider.dart';
+import 'package:intl_phone_number_input/src/utils/country_detector.dart';
 import 'package:intl_phone_number_input/src/utils/formatter/as_you_type_formatter.dart';
 import 'package:intl_phone_number_input/src/utils/selector_config.dart';
 import 'package:intl_phone_number_input/src/utils/util.dart';
@@ -17,6 +18,12 @@ import 'package:phone_parser/phone_parser.dart';
 ///   * [PhoneInputSelectorType.BOTTOM_SHEET]
 ///   * [PhoneInputSelectorType.DIALOG]
 enum PhoneInputSelectorType { DROPDOWN, BOTTOM_SHEET, DIALOG }
+
+final Map<String, List<int>> _acceptedLengthCache = <String, List<int>>{};
+
+enum CountryDetectionMode { localSignals, networkSignals }
+
+typedef CountryDetectorCallback = Future<CountryResult> Function();
 
 /// A [TextFormField] for [InternationalPhoneNumberInput].
 ///
@@ -32,7 +39,13 @@ class InternationalPhoneNumberInput extends StatefulWidget {
   final SelectorConfig selectorConfig;
   final List<Country> countries;
   final Country defaultCountry;
-  final List<Country> Function(String value) filterFunction;
+  final List<Country> Function(String value)? filterFunction;
+  final bool autoDetectCountry;
+  final CountryDetectionMode countryDetectionMode;
+  final CountryDetectorCallback? countryDetector;
+  final ValueChanged<CountryResult>? onAutoCountryDetected;
+  final bool prioritizeDetectedCountry;
+  final bool includeDetectedCountryNeighbors;
 
   final ValueChanged<PhoneNumber>? onInputChanged;
   final ValueChanged<bool>? onInputValidated;
@@ -91,7 +104,13 @@ class InternationalPhoneNumberInput extends StatefulWidget {
     super.key,
     required this.countries,
     required this.defaultCountry,
-    required this.filterFunction,
+    this.filterFunction,
+    this.autoDetectCountry = false,
+    this.countryDetectionMode = CountryDetectionMode.localSignals,
+    this.countryDetector,
+    this.onAutoCountryDetected,
+    this.prioritizeDetectedCountry = false,
+    this.includeDetectedCountryNeighbors = false,
     this.selectorConfig = const SelectorConfig(),
     this.onInputChanged,
     this.onInputValidated,
@@ -150,6 +169,8 @@ class InputWidgetState extends State<InternationalPhoneNumberInput> {
   List<Country> countries = [];
   bool isNotValid = true;
   String errorText = "";
+  bool _hasUserSelectedCountry = false;
+  bool _autoDetectionStarted = false;
 
   @override
   void dispose() {
@@ -165,6 +186,7 @@ class InputWidgetState extends State<InternationalPhoneNumberInput> {
     _attachController(widget.textFieldController);
     acceptedLengths = _acceptedLengthsFor(widget.initialValue?.isoCode);
     initialiseWidget();
+    _maybeAutoDetectCountry();
   }
 
   @override
@@ -177,8 +199,9 @@ class InputWidgetState extends State<InternationalPhoneNumberInput> {
 
   @override
   Widget build(BuildContext context) {
-    errorText = validator(controller.text) ?? "";
-    selectorButtonBottomPadding = errorText.isEmpty
+    final selectorErrorText =
+        widget.validator?.call(controller.text) ?? errorText;
+    selectorButtonBottomPadding = selectorErrorText.isEmpty
         ? widget.selectorButtonOnErrorPadding
         : 0;
 
@@ -238,7 +261,7 @@ class InputWidgetState extends State<InternationalPhoneNumberInput> {
             onFieldSubmitted: widget.onFieldSubmitted,
             autovalidateMode: widget.autoValidateMode,
             autofillHints: widget.autofillHints,
-            validator: widget.validator ?? validator,
+            validator: widget.validator ?? _defaultValidator,
             onSaved: onSaved,
             scrollPadding: widget.scrollPadding,
             inputFormatters: [
@@ -284,11 +307,16 @@ class InputWidgetState extends State<InternationalPhoneNumberInput> {
     final defaultCountryChanged = oldWidget.defaultCountry != widget.defaultCountry;
     final initialValueChanged = oldWidget.initialValue != widget.initialValue;
     final formatChanged = oldWidget.formatInput != widget.formatInput;
+    final autoDetectChanged =
+        oldWidget.autoDetectCountry != widget.autoDetectCountry ||
+        oldWidget.countryDetectionMode != widget.countryDetectionMode ||
+        oldWidget.countryDetector != widget.countryDetector;
 
     if (!countriesChanged &&
         !defaultCountryChanged &&
         !initialValueChanged &&
-        !formatChanged) {
+        !formatChanged &&
+        !autoDetectChanged) {
       return;
     }
 
@@ -305,6 +333,11 @@ class InputWidgetState extends State<InternationalPhoneNumberInput> {
       initialiseWidget();
     } else {
       phoneNumberControllerListener();
+    }
+
+    if (autoDetectChanged) {
+      _autoDetectionStarted = false;
+      _maybeAutoDetectCountry();
     }
   }
 
@@ -326,13 +359,22 @@ class InputWidgetState extends State<InternationalPhoneNumberInput> {
   }
 
   List<int> _acceptedLengthsFor(String? isoCode) {
+    final cacheKey = isoCode ?? country.alpha2Code;
+    final cachedValue = _acceptedLengthCache[cacheKey];
+    if (cachedValue != null) {
+      return cachedValue;
+    }
+
     try {
       final lengths = MetadataFinder.findMetadataLengthForIsoCode(
-        isoCode ?? country.alpha2Code,
+        cacheKey,
       );
-      return lengths["mobile"] ?? [];
+      final acceptedLengths = List<int>.unmodifiable(lengths["mobile"] ?? const <int>[]);
+      _acceptedLengthCache[cacheKey] = acceptedLengths;
+      return acceptedLengths;
     } catch (_) {
-      return [];
+      _acceptedLengthCache[cacheKey] = const <int>[];
+      return const <int>[];
     }
   }
 
@@ -366,6 +408,130 @@ class InputWidgetState extends State<InternationalPhoneNumberInput> {
     }
 
     return nextCountries.first;
+  }
+
+  Future<void> _maybeAutoDetectCountry() async {
+    if (!widget.autoDetectCountry ||
+        _autoDetectionStarted ||
+        _hasUserSelectedCountry ||
+        _hasExplicitInitialCountry()) {
+      return;
+    }
+
+    _autoDetectionStarted = true;
+    final detector = widget.countryDetector ?? _defaultCountryDetector;
+
+    try {
+      final result = await detector();
+      widget.onAutoCountryDetected?.call(result);
+      if (!mounted || result.countryCode == null || result.countryCode!.isEmpty) {
+        return;
+      }
+
+      final detectedCountry = _findCountryByIsoCode(result.countryCode!);
+      if (detectedCountry == null) {
+        return;
+      }
+
+      setState(() {
+        country = detectedCountry;
+        acceptedLengths = _acceptedLengthsFor(detectedCountry.alpha2Code);
+        countries = _prioritizeCountriesForDetection(result);
+      });
+
+      phoneNumberControllerListener();
+    } catch (_) {
+      // Detection is best-effort only.
+    }
+  }
+
+  bool _hasExplicitInitialCountry() {
+    final initial = widget.initialValue;
+    return initial != null && initial.isoCode.isNotEmpty;
+  }
+
+  Future<CountryResult> _defaultCountryDetector() {
+    switch (widget.countryDetectionMode) {
+      case CountryDetectionMode.localSignals:
+        return CountryDetector.detectSync();
+      case CountryDetectionMode.networkSignals:
+        return CountryDetector.detect();
+    }
+  }
+
+  Country? _findCountryByIsoCode(String isoCode) {
+    final normalizedIsoCode = isoCode.trim().toUpperCase();
+    for (final item in widget.countries) {
+      if (item.alpha2Code.toUpperCase() == normalizedIsoCode) {
+        return item;
+      }
+    }
+    return null;
+  }
+
+  List<Country> _prioritizeCountriesForDetection(CountryResult result) {
+    if (!widget.prioritizeDetectedCountry) {
+      return widget.countries;
+    }
+
+    final detectedIsoCode = result.countryCode?.toUpperCase();
+    if (detectedIsoCode == null || detectedIsoCode.isEmpty) {
+      return widget.countries;
+    }
+
+    final voteOrderedCodes = result.allVotes.keys
+        .map((code) => code.toUpperCase())
+        .where((code) => code != detectedIsoCode)
+        .toList(growable: false);
+
+    final remainingCodes = widget.countries
+        .map((country) => country.alpha2Code.toUpperCase())
+        .where((code) => code != detectedIsoCode && !voteOrderedCodes.contains(code))
+        .toList(growable: false);
+
+    final distanceOrderedCodes = CountryDetector.rankCountriesByDistanceFrom(
+      detectedIsoCode,
+      remainingCodes,
+    );
+
+    final prioritizedCodes = <String>[
+      detectedIsoCode,
+      ...voteOrderedCodes,
+      if (widget.includeDetectedCountryNeighbors)
+        ...CountryDetector
+            .possibleBoundaryCountriesFor(detectedIsoCode)
+            .map((code) => code.toUpperCase())
+            .where(
+              (code) =>
+                  code != detectedIsoCode &&
+                  !voteOrderedCodes.contains(code) &&
+                  !distanceOrderedCodes.contains(code),
+            ),
+      ...distanceOrderedCodes,
+    ];
+
+    final byCode = <String, Country>{
+      for (final item in widget.countries) item.alpha2Code.toUpperCase(): item,
+    };
+
+    final ordered = <Country>[];
+    final seen = <String>{};
+
+    for (final code in prioritizedCodes) {
+      final country = byCode[code];
+      if (country != null && seen.add(code)) {
+        ordered.add(country);
+      }
+    }
+
+    for (final item in widget.countries) {
+      final code = item.alpha2Code.toUpperCase();
+      if (seen.add(code)) {
+        ordered.add(item);
+      }
+    }
+
+    return ordered;
   }
 
   /// [initialiseWidget] sets initial values of the widget
@@ -410,7 +576,7 @@ class InputWidgetState extends State<InternationalPhoneNumberInput> {
       setState(() {
         currentLength = 0;
         isNotValid = !isValidWhenBlank;
-        errorText = validator(controller.text) ?? "";
+        errorText = _defaultValidator(controller.text) ?? "";
       });
       return;
     }
@@ -431,7 +597,7 @@ class InputWidgetState extends State<InternationalPhoneNumberInput> {
       setState(() {
         currentLength = parsedPhoneNumberString.replaceAll('+', '').length;
         isNotValid = true;
-        errorText = validator(controller.text) ?? "";
+        errorText = _defaultValidator(controller.text) ?? "";
       });
       return;
     }
@@ -445,7 +611,7 @@ class InputWidgetState extends State<InternationalPhoneNumberInput> {
     }
     setState(() {
       currentLength = phoneNumber.nsn.length;
-      errorText = validator(controller.text) ?? "";
+      errorText = _defaultValidator(controller.text) ?? "";
     });
     widget.onInputChanged?.call(phoneNumber);
   }
@@ -529,7 +695,7 @@ class InputWidgetState extends State<InternationalPhoneNumberInput> {
   /// Validate and returns a validation error when [FormState] validate is called.
   ///
 
-  String? validator(String? value) {
+  String? _defaultValidator(String? value) {
     // debugPrint("Validator called with: $value");
     final bool hasContent = value?.isNotEmpty ?? false;
     final bool shouldValidateBlank = !widget.ignoreBlank;
@@ -551,6 +717,7 @@ class InputWidgetState extends State<InternationalPhoneNumberInput> {
 
   /// Changes Selector Button Country and Validate Change.
   void onCountryChanged(Country country) {
+    _hasUserSelectedCountry = true;
     setState(() {
       this.country = country;
       acceptedLengths = _acceptedLengthsFor(country.alpha2Code);

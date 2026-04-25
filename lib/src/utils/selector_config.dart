@@ -42,6 +42,12 @@ class SelectorConfig {
   //Use this to set the style of the subtitle of the country list
   final TextStyle? subtitleStyle;
 
+  /// Search field hint shown in the country selector.
+  final String searchHintText;
+
+  /// Message shown when no country matches the current query.
+  final String emptySearchMessage;
+
   const SelectorConfig({
     this.selectorType = PhoneInputSelectorType.DROPDOWN,
     this.showFlags = true,
@@ -53,5 +59,7 @@ class SelectorConfig {
     this.useBottomSheetSafeArea = false,
     this.titleStyle,
     this.subtitleStyle,
+    this.searchHintText = 'Search by country name or dial code',
+    this.emptySearchMessage = 'No matching countries',
   });
 }

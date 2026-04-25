@@ -19,7 +19,7 @@ class SelectorButton extends StatelessWidget {
   final double flagSize;
 
   final ValueChanged<Country> onCountryChanged;
-  final List<Country> Function(String value) filterFunction;
+  final List<Country> Function(String value)? filterFunction;
 
   const SelectorButton({
     super.key,
@@ -148,6 +148,8 @@ class SelectorButton extends StatelessWidget {
               flagStyle: flagStyle,
               titleStyle: selectorConfig.titleStyle,
               subtitleStyle: selectorConfig.subtitleStyle,
+              searchHintText: selectorConfig.searchHintText,
+              emptySearchMessage: selectorConfig.emptySearchMessage,
               filterFunction: filterFunction,
             ),
           ),
@@ -205,6 +207,8 @@ class SelectorButton extends StatelessWidget {
                         flagStyle: flagStyle,
                         titleStyle: selectorConfig.titleStyle,
                         subtitleStyle: selectorConfig.subtitleStyle,
+                        searchHintText: selectorConfig.searchHintText,
+                        emptySearchMessage: selectorConfig.emptySearchMessage,
                         filterFunction: filterFunction,
                       ),
                     ),
