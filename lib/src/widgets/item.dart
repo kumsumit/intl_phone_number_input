@@ -9,22 +9,22 @@ class Item extends StatelessWidget {
   final bool? showFlag;
   final double flagSize;
   final TextStyle? textStyle;
-  final bool withCountryNames;
+  final TextStyle? flagStyle;
   final double? leadingPadding;
   final double? trailingPadding;
   final bool trailingSpace;
 
   const Item({
-    Key? key,
+    super.key,
     this.country,
     this.showFlag,
     required this.flagSize,
     this.textStyle,
-    this.withCountryNames = false,
+    this.flagStyle,
     this.leadingPadding = 3,
     this.trailingPadding = 3,
     this.trailingSpace = true,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -37,9 +37,14 @@ class Item extends StatelessWidget {
       mainAxisSize: MainAxisSize.min,
       children: <Widget>[
         SizedBox(width: leadingPadding),
-        if (country != null) Flag(country: country!, flagSize: flagSize),
+        if (country != null)
+          Flag(
+            country: country!,
+            flagSize: flagSize,
+            style: flagStyle,
+          ),
         SizedBox(width: 3.0),
-        Text('$dialCode', textDirection: TextDirection.ltr, style: textStyle),
+        Text(dialCode, textDirection: TextDirection.ltr, style: textStyle),
         SizedBox(width: trailingPadding),
       ],
     );

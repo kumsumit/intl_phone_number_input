@@ -11,6 +11,7 @@ class CountrySearchListWidget extends StatefulWidget {
   final bool autoFocus;
   final bool? showFlags;
   final double flagSize;
+  final TextStyle? flagStyle;
   final TextStyle? titleStyle;
   final TextStyle? subtitleStyle;
   final List<Country> Function(String value) filterFunction;
@@ -22,18 +23,18 @@ class CountrySearchListWidget extends StatefulWidget {
     this.showFlags,
     this.autoFocus = false,
     required this.flagSize,
+    this.flagStyle,
     required this.titleStyle,
     required this.subtitleStyle,
     required this.filterFunction,
   });
 
   @override
-  _CountrySearchListWidgetState createState() =>
-      _CountrySearchListWidgetState();
+  State<CountrySearchListWidget> createState() => _CountrySearchListWidgetState();
 }
 
 class _CountrySearchListWidgetState extends State<CountrySearchListWidget> {
-  late TextEditingController _searchController = TextEditingController();
+  final TextEditingController _searchController = TextEditingController();
   late List<Country> filteredCountries;
 
   @override
@@ -85,6 +86,7 @@ class _CountrySearchListWidgetState extends State<CountrySearchListWidget> {
                 country: country,
                 showFlags: widget.showFlags!,
                 flagSize: widget.flagSize,
+                flagStyle: widget.flagStyle,
                 titleStyle: widget.titleStyle,
                 subtitleStyle: widget.subtitleStyle,
               );
@@ -107,6 +109,7 @@ class DirectionalCountryListTile extends StatelessWidget {
   final Country country;
   final bool showFlags;
   final double flagSize;
+  final TextStyle? flagStyle;
   final TextStyle? titleStyle;
   final TextStyle? subtitleStyle;
   const DirectionalCountryListTile({
@@ -114,6 +117,7 @@ class DirectionalCountryListTile extends StatelessWidget {
     required this.country,
     required this.showFlags,
     this.flagSize = 20,
+    this.flagStyle,
     this.titleStyle,
     this.subtitleStyle,
   });
@@ -121,10 +125,13 @@ class DirectionalCountryListTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ListTile(
-      leading: (showFlags ? Flag(country: country, flagSize: flagSize) : null),
+      leading: (showFlags
+          ? Flag(country: country, flagSize: flagSize, style: flagStyle)
+          : null),
       title: Align(
         alignment: AlignmentDirectional.centerStart,
-        child: Text(country.name,
+        child: Text(
+          country.name,
           textDirection: Directionality.of(context),
           style: titleStyle,
           textAlign: TextAlign.start,
@@ -133,7 +140,7 @@ class DirectionalCountryListTile extends StatelessWidget {
       subtitle: Align(
         alignment: AlignmentDirectional.centerStart,
         child: Text(
-          '${country.dialCode}',
+          country.dialCode,
           textDirection: TextDirection.ltr,
           textAlign: TextAlign.start,
           style: subtitleStyle,
@@ -147,15 +154,21 @@ class DirectionalCountryListTile extends StatelessWidget {
 class Flag extends StatelessWidget {
   final Country country;
   final double flagSize;
-  const Flag({required this.country, required this.flagSize});
+  final TextStyle? style;
+
+  const Flag({
+    required this.country,
+    required this.flagSize,
+    this.style,
+  });
 
   @override
   Widget build(BuildContext context) {
     return Text(
       Utils.generateFlagEmojiUnicode(country.alpha2Code),
-      style: Theme.of(
-        context,
-      ).textTheme.headlineSmall?.copyWith(fontSize: flagSize),
+      style:
+          style ??
+          Theme.of(context).textTheme.headlineSmall?.copyWith(fontSize: flagSize),
     );
   }
 }

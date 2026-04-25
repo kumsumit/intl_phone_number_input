@@ -1,16 +1,16 @@
-# example
+# Example
 
-A new Flutter project.
+This app demonstrates the package in a single screen:
 
-## Getting Started
+- switch between `DROPDOWN`, `BOTTOM_SHEET`, and `DIALOG`
+- toggle formatting, prefix mode, blank handling, and length checks
+- validate, clear, and save the current number
+- inspect the parsed phone number state as you type
 
-This project is a starting point for a Flutter application.
+## Run
 
-A few resources to get you started if this is your first Flutter project:
+```bash
+flutter run -d <device>
+```
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
-
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+The app currently calls `MetadataFinder.readMetadataJson(...)` during startup because the package depends on `phone_parser` metadata for formatting and validation.

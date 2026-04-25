@@ -34,7 +34,6 @@ class AsYouTypeFormatter extends TextInputFormatter {
   });
 
   @override
- @override
   TextEditingValue formatEditUpdate(
     TextEditingValue oldValue,
     TextEditingValue newValue,
@@ -58,9 +57,14 @@ class AsYouTypeFormatter extends TextInputFormatter {
     final textToParse = dialCode + rawText;
 
     // Format the text
-    final parsedText = parsePhoneNumber(
-      formatAsYouType(phoneNumber: textToParse),
-    );
+    late final String parsedText;
+    try {
+      parsedText = parsePhoneNumber(
+        formatAsYouType(phoneNumber: textToParse),
+      );
+    } catch (_) {
+      return newValue;
+    }
 
     // Fix selection safely
     int offset = newValue.selection.end;
@@ -107,9 +111,7 @@ class AsYouTypeFormatter extends TextInputFormatter {
       if (isPartOfNorthAmericanNumberingPlan(dialCode)) {
         String northAmericaDialCode = '+1';
         String countryDialCodeWithSpace =
-            northAmericaDialCode +
-            ' ' +
-            dialCode.replaceFirst(northAmericaDialCode, '');
+            '$northAmericaDialCode ${dialCode.replaceFirst(northAmericaDialCode, '')}';
 
         return filteredPhoneNumber!
             .replaceFirst(countryDialCodeWithSpace, '')

@@ -22,7 +22,7 @@ class SelectorButton extends StatelessWidget {
   final List<Country> Function(String value) filterFunction;
 
   const SelectorButton({
-    Key? key,
+    super.key,
     required this.countries,
     this.country,
     required this.selectorConfig,
@@ -35,7 +35,7 @@ class SelectorButton extends StatelessWidget {
     required this.isScrollControlled,
     required this.flagSize,
     required this.filterFunction,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -49,14 +49,15 @@ class SelectorButton extends StatelessWidget {
                       leadingPadding: selectorConfig.leadingPadding,
                       trailingSpace: selectorConfig.trailingSpace,
                       textStyle: selectorTextStyle,
+                      flagStyle: flagStyle,
                       flagSize: flagSize,
                     ),
                     value: country,
                     items: mapCountryToDropdownItem(countries),
-                    onChanged: (val){
-                     if(val != null && isEnabled){
-                       onCountryChanged(val);
-                     }
+                    onChanged: (val) {
+                      if (val != null && isEnabled) {
+                        onCountryChanged(val);
+                      }
                     },
                   ),
                 )
@@ -67,6 +68,7 @@ class SelectorButton extends StatelessWidget {
                   trailingPadding: selectorConfig.trailingPadding,
                   trailingSpace: selectorConfig.trailingSpace,
                   textStyle: selectorTextStyle,
+                  flagStyle: flagStyle,
                   flagSize: flagSize,
                 )
         : MaterialButton(
@@ -99,6 +101,7 @@ class SelectorButton extends StatelessWidget {
               leadingPadding: selectorConfig.leadingPadding,
               trailingSpace: selectorConfig.trailingSpace,
               textStyle: selectorTextStyle,
+              flagStyle: flagStyle,
               flagSize: flagSize,
             ),
           );
@@ -115,7 +118,7 @@ class SelectorButton extends StatelessWidget {
           country: country,
           showFlag: selectorConfig.showFlags,
           textStyle: selectorTextStyle,
-          withCountryNames: false,
+          flagStyle: flagStyle,
           trailingSpace: selectorConfig.trailingSpace,
           flagSize: flagSize,
         ),
@@ -142,6 +145,7 @@ class SelectorButton extends StatelessWidget {
               showFlags: selectorConfig.showFlags,
               autoFocus: autoFocusSearchField,
               flagSize: flagSize,
+              flagStyle: flagStyle,
               titleStyle: selectorConfig.titleStyle,
               subtitleStyle: selectorConfig.subtitleStyle,
               filterFunction: filterFunction,
@@ -198,6 +202,7 @@ class SelectorButton extends StatelessWidget {
                         showFlags: selectorConfig.showFlags,
                         autoFocus: autoFocusSearchField,
                         flagSize: flagSize,
+                        flagStyle: flagStyle,
                         titleStyle: selectorConfig.titleStyle,
                         subtitleStyle: selectorConfig.subtitleStyle,
                         filterFunction: filterFunction,

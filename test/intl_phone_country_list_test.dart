@@ -1,57 +1,33 @@
-// import 'package:flutter_test/flutter_test.dart';
-// import 'package:intl_phone_number_input/src/models/country_list.dart';
-// import 'package:intl_phone_number_input/src/models/country_model.dart';
+import 'package:flutter_test/flutter_test.dart';
+import 'package:intl_phone_number_input/src/models/country_model.dart';
 
-// void main() {
-//   TestWidgetsFlutterBinding.ensureInitialized();
+void main() {
+  group('Country', () {
+    final country = Country(
+      name: 'India',
+      alpha2Code: 'IN',
+      alpha3Code: 'IND',
+      dialCode: '+91',
+    );
 
-//   group('Countries are loaded test', () {
-//     test('Json is correctly loaded in to memory', () {
-//       expect(Countries.countryList.length, greaterThan(0));
+    test('matches by name, code, and dial code', () {
+      expect(country.matches('india'), isTrue);
+      expect(country.matches('in'), isTrue);
+      expect(country.matches('IND'), isTrue);
+      expect(country.matches('+91'), isTrue);
+      expect(country.matches('usa'), isFalse);
+    });
 
-//       const List<String> expectedTranslations = [
-//         'sk',
-//         'se',
-//         'pl',
-//         'no',
-//         'ja',
-//         'it',
-//         'zh',
-//         'nl',
-//         'de',
-//         'fr',
-//         'en',
-//         'es',
-//         'pt_BR',
-//         'sr-Cyrl',
-//         'sr-Latn',
-//         'zh_TW',
-//         'tr',
-//         'ro',
-//         'ar',
-//         'fa',
-//         'ru',
-//         'yue',
-//         'ku',
-//         'hi',
-//       ];
+    test('compares equality by country codes and dial code', () {
+      final sameCountry = Country(
+        name: 'Bharat',
+        alpha2Code: 'IN',
+        alpha3Code: 'IND',
+        dialCode: '+91',
+      );
 
-//       Countries.countryList.forEach((Map<String, dynamic> data) {
-//         Country country = Country.fromJson(data);
-
-//         expect(country.name!.length, greaterThan(0));
-//         expect(country.alpha2Code!.length, greaterThan(0));
-//         expect(country.alpha3Code!.length, greaterThan(0));
-//         expect(country.dialCode!.length, greaterThan(0));
-//         expect(
-//           country.nameTranslations!.length,
-//           equals(expectedTranslations.length),
-//         );
-//         expectedTranslations.forEach(
-//           (language) =>
-//               expect(country.nameTranslations!.containsKey(language), true),
-//         );
-//       });
-//     });
-//   });
-// }
+      expect(country, sameCountry);
+      expect(country.hashCode, sameCountry.hashCode);
+    });
+  });
+}

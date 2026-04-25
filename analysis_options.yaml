@@ -1,0 +1,12 @@
+include: package:lints/recommended.yaml
+
+analyzer:
+  exclude:
+    - example/**/flutter/**
+    - example/**/GeneratedPluginRegistrant.*
+    - example/**/.dart_tool/**
+    - example/**/build/**
+
+linter:
+  rules:
+    constant_identifier_names: false
