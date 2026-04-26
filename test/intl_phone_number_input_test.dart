@@ -224,7 +224,8 @@ void main() {
               countries: multiCountries,
               defaultCountry: multiCountries.first,
               autoDetectCountry: true,
-              prioritizeDetectedCountry: true,
+              detectedCountryOrderStrategy:
+                  DetectedCountryOrderStrategy.signalVotesThenDistance,
               countryDetector: () async => const CountryResult(
                 countryCode: 'US',
                 confidence: 80,

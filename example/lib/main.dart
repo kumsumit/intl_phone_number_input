@@ -48,8 +48,12 @@ class _ExampleHomePageState extends State<ExampleHomePage> {
   bool _prefixSelector = true;
   bool _ignoreBlank = false;
   bool _disableLengthCheck = false;
+  bool _autoDetectCountry = false;
   bool? _isValid;
+  CountryResult? _detectedCountryResult;
   PhoneNumber _number = const PhoneNumber(isoCode: 'IN', nsn: '');
+  DetectedCountryOrderStrategy _detectedCountryOrderStrategy =
+      DetectedCountryOrderStrategy.signalVotesThenDistance;
 
   @override
   void initState() {
@@ -102,7 +106,7 @@ class _ExampleHomePageState extends State<ExampleHomePage> {
             ),
             const SizedBox(height: 8),
             Text(
-              'Switch selector modes, toggle formatting, and validate the current input.',
+              'Switch selector modes, try auto country detection, and validate the current input.',
               style: Theme.of(context).textTheme.bodyMedium,
             ),
             const SizedBox(height: 24),
@@ -174,7 +178,49 @@ class _ExampleHomePageState extends State<ExampleHomePage> {
                     });
                   },
                 ),
+                FilterChip(
+                  label: const Text('Auto detect country'),
+                  selected: _autoDetectCountry,
+                  onSelected: (value) {
+                    setState(() {
+                      _autoDetectCountry = value;
+                    });
+                  },
+                ),
               ],
+            ),
+            const SizedBox(height: 20),
+            Text(
+              'Detected country ordering',
+              style: Theme.of(context).textTheme.titleMedium,
+            ),
+            const SizedBox(height: 12),
+            SegmentedButton<DetectedCountryOrderStrategy>(
+              segments: const [
+                ButtonSegment(
+                  value: DetectedCountryOrderStrategy.none,
+                  label: Text('Off'),
+                ),
+                ButtonSegment(
+                  value: DetectedCountryOrderStrategy.detectedCountryFirst,
+                  label: Text('Detected'),
+                ),
+                ButtonSegment(
+                  value: DetectedCountryOrderStrategy.signalVotesThenDistance,
+                  label: Text('Signals'),
+                ),
+                ButtonSegment(
+                  value: DetectedCountryOrderStrategy
+                      .signalVotesThenNeighborsThenDistance,
+                  label: Text('Signals + near'),
+                ),
+              ],
+              selected: {_detectedCountryOrderStrategy},
+              onSelectionChanged: (selection) {
+                setState(() {
+                  _detectedCountryOrderStrategy = selection.first;
+                });
+              },
             ),
             const SizedBox(height: 24),
             Form(
@@ -185,6 +231,8 @@ class _ExampleHomePageState extends State<ExampleHomePage> {
                 filterFunction: _filterCountries,
                 initialValue: _number,
                 textFieldController: _controller,
+                autoDetectCountry: _autoDetectCountry,
+                detectedCountryOrderStrategy: _detectedCountryOrderStrategy,
                 formatInput: _formatInput,
                 ignoreBlank: _ignoreBlank,
                 disableLengthCheck: _disableLengthCheck,
@@ -211,6 +259,11 @@ class _ExampleHomePageState extends State<ExampleHomePage> {
                 onInputValidated: (isValid) {
                   setState(() {
                     _isValid = isValid;
+                  });
+                },
+                onAutoCountryDetected: (result) {
+                  setState(() {
+                    _detectedCountryResult = result;
                   });
                 },
                 onSaved: (number) {
@@ -286,6 +339,16 @@ class _ExampleHomePageState extends State<ExampleHomePage> {
                       value: _number.nsn.isNotEmpty
                           ? _number.international
                           : 'Empty',
+                    ),
+                    _StatusRow(
+                      label: 'Detected country',
+                      value: _detectedCountryResult?.countryCode ?? 'None',
+                    ),
+                    _StatusRow(
+                      label: 'Detection confidence',
+                      value: _detectedCountryResult != null
+                          ? '${_detectedCountryResult!.confidence}%'
+                          : 'None',
                     ),
                   ],
                 ),

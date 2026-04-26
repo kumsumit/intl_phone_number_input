@@ -14,6 +14,7 @@ A customizable Flutter widget for entering, formatting, and validating internati
 - RTL-friendly layout
 - Custom selector styling, decorations, and search UI
 - Optional length-check bypass for custom workflows
+- Optional country auto-detection and signal-aware selector ordering
 
 ## Install
 
@@ -28,7 +29,7 @@ This package currently depends on a Git source for `phone_parser`, so it is conf
 
 ## Usage
 
-The widget expects you to provide the country list, the default country, and the filter logic. The example app includes a ready-to-use `country_list.dart` if you want a starting point.
+The widget expects you to provide the country list and a default country. `filterFunction` is optional, and the example app includes a ready-to-use `country_list.dart` if you want a starting point.
 
 ```dart
 import 'package:flutter/material.dart';
@@ -56,20 +57,23 @@ InternationalPhoneNumberInput(
   countries: countries,
   defaultCountry: defaultCountry,
   textFieldController: controller,
-  filterFunction: (value) {
-    return countries.where((country) => country.matches(value)).toList();
-  },
   selectorConfig: const SelectorConfig(
     selectorType: PhoneInputSelectorType.BOTTOM_SHEET,
     setSelectorButtonAsPrefixIcon: true,
   ),
   initialValue: const PhoneNumber(isoCode: 'IN', nsn: ''),
+  autoDetectCountry: true,
+  detectedCountryOrderStrategy:
+      DetectedCountryOrderStrategy.signalVotesThenDistance,
   formatInput: true,
   onInputChanged: (number) {
     debugPrint(number.international);
   },
   onInputValidated: (isValid) {
     debugPrint('valid: $isValid');
+  },
+  onAutoCountryDetected: (result) {
+    debugPrint('detected ${result.countryCode} (${result.confidence}%)');
   },
 );
 ```
@@ -88,6 +92,8 @@ InternationalPhoneNumberInput(
   onInputValidated: onInputValidated,
   onSaved: onSaved,
   validator: validator,
+  autoDetectCountry: false,
+  detectedCountryOrderStrategy: DetectedCountryOrderStrategy.none,
   formatInput: true,
   disableLengthCheck: false,
   ignoreBlank: false,
@@ -99,11 +105,22 @@ Important options:
 
 - `countries`: the available selector entries
 - `defaultCountry`: the initial selector value
-- `filterFunction`: the search/filter implementation for the selector list
+- `filterFunction`: optional search/filter override for the selector list
 - `formatInput`: enables the as-you-type formatter
 - `disableLengthCheck`: skips metadata-based max-length enforcement in the formatter
+- `autoDetectCountry`: uses `CountryDetector` to guess the initial country
+- `detectedCountryOrderStrategy`: controls how the selector list is reordered after detection
 - `selectorConfig`: controls selector mode and styling
 - `textFieldController`: pass your own controller when the parent owns the text lifecycle
+
+## Detection Ordering
+
+Use `detectedCountryOrderStrategy` to control selector ordering after detection:
+
+- `DetectedCountryOrderStrategy.none`: keep the original country list order
+- `DetectedCountryOrderStrategy.detectedCountryFirst`: place only the detected country first
+- `DetectedCountryOrderStrategy.signalVotesThenDistance`: detected country first, then signal-voted countries, then the rest by geographic distance
+- `DetectedCountryOrderStrategy.signalVotesThenNeighborsThenDistance`: detected country first, then signal-voted countries, then nearby countries, then the rest by distance
 
 ## SelectorConfig
 

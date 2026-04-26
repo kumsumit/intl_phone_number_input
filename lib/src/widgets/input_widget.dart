@@ -23,6 +23,13 @@ final Map<String, List<int>> _acceptedLengthCache = <String, List<int>>{};
 
 enum CountryDetectionMode { localSignals, networkSignals }
 
+enum DetectedCountryOrderStrategy {
+  none,
+  detectedCountryFirst,
+  signalVotesThenDistance,
+  signalVotesThenNeighborsThenDistance,
+}
+
 typedef CountryDetectorCallback = Future<CountryResult> Function();
 
 /// A [TextFormField] for [InternationalPhoneNumberInput].
@@ -44,6 +51,7 @@ class InternationalPhoneNumberInput extends StatefulWidget {
   final CountryDetectionMode countryDetectionMode;
   final CountryDetectorCallback? countryDetector;
   final ValueChanged<CountryResult>? onAutoCountryDetected;
+  final DetectedCountryOrderStrategy detectedCountryOrderStrategy;
   final bool prioritizeDetectedCountry;
   final bool includeDetectedCountryNeighbors;
 
@@ -109,6 +117,7 @@ class InternationalPhoneNumberInput extends StatefulWidget {
     this.countryDetectionMode = CountryDetectionMode.localSignals,
     this.countryDetector,
     this.onAutoCountryDetected,
+    this.detectedCountryOrderStrategy = DetectedCountryOrderStrategy.none,
     this.prioritizeDetectedCountry = false,
     this.includeDetectedCountryNeighbors = false,
     this.selectorConfig = const SelectorConfig(),
@@ -310,7 +319,12 @@ class InputWidgetState extends State<InternationalPhoneNumberInput> {
     final autoDetectChanged =
         oldWidget.autoDetectCountry != widget.autoDetectCountry ||
         oldWidget.countryDetectionMode != widget.countryDetectionMode ||
-        oldWidget.countryDetector != widget.countryDetector;
+        oldWidget.countryDetector != widget.countryDetector ||
+        oldWidget.detectedCountryOrderStrategy !=
+            widget.detectedCountryOrderStrategy ||
+        oldWidget.prioritizeDetectedCountry != widget.prioritizeDetectedCountry ||
+        oldWidget.includeDetectedCountryNeighbors !=
+            widget.includeDetectedCountryNeighbors;
 
     if (!countriesChanged &&
         !defaultCountryChanged &&
@@ -470,7 +484,8 @@ class InputWidgetState extends State<InternationalPhoneNumberInput> {
   }
 
   List<Country> _prioritizeCountriesForDetection(CountryResult result) {
-    if (!widget.prioritizeDetectedCountry) {
+    final strategy = _effectiveDetectedCountryOrderStrategy;
+    if (strategy == DetectedCountryOrderStrategy.none) {
       return widget.countries;
     }
 
@@ -494,21 +509,34 @@ class InputWidgetState extends State<InternationalPhoneNumberInput> {
       remainingCodes,
     );
 
-    final prioritizedCodes = <String>[
-      detectedIsoCode,
-      ...voteOrderedCodes,
-      if (widget.includeDetectedCountryNeighbors)
-        ...CountryDetector
-            .possibleBoundaryCountriesFor(detectedIsoCode)
+    final includeSignalVotes =
+        strategy == DetectedCountryOrderStrategy.signalVotesThenDistance ||
+        strategy ==
+            DetectedCountryOrderStrategy.signalVotesThenNeighborsThenDistance;
+    final includeNeighbors =
+        strategy ==
+        DetectedCountryOrderStrategy.signalVotesThenNeighborsThenDistance;
+
+    final prioritizedCodes = <String>[detectedIsoCode];
+
+    if (includeSignalVotes) {
+      prioritizedCodes.addAll(voteOrderedCodes);
+    }
+
+    if (includeNeighbors) {
+      prioritizedCodes.addAll(
+        CountryDetector.possibleBoundaryCountriesFor(detectedIsoCode)
             .map((code) => code.toUpperCase())
             .where(
               (code) =>
                   code != detectedIsoCode &&
-                  !voteOrderedCodes.contains(code) &&
+                  !prioritizedCodes.contains(code) &&
                   !distanceOrderedCodes.contains(code),
             ),
-      ...distanceOrderedCodes,
-    ];
+      );
+    }
+
+    prioritizedCodes.addAll(distanceOrderedCodes);
 
     final byCode = <String, Country>{
       for (final item in widget.countries) item.alpha2Code.toUpperCase(): item,
@@ -532,6 +560,21 @@ class InputWidgetState extends State<InternationalPhoneNumberInput> {
     }
 
     return ordered;
+  }
+
+  DetectedCountryOrderStrategy get _effectiveDetectedCountryOrderStrategy {
+    if (widget.detectedCountryOrderStrategy !=
+        DetectedCountryOrderStrategy.none) {
+      return widget.detectedCountryOrderStrategy;
+    }
+
+    if (!widget.prioritizeDetectedCountry) {
+      return DetectedCountryOrderStrategy.none;
+    }
+
+    return widget.includeDetectedCountryNeighbors
+        ? DetectedCountryOrderStrategy.signalVotesThenNeighborsThenDistance
+        : DetectedCountryOrderStrategy.signalVotesThenDistance;
   }
 
   /// [initialiseWidget] sets initial values of the widget
