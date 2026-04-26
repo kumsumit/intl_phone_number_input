@@ -100,10 +100,7 @@ class _ExampleHomePageState extends State<ExampleHomePage> {
         child: ListView(
           padding: const EdgeInsets.all(16),
           children: [
-            Text(
-              'Example',
-              style: Theme.of(context).textTheme.headlineMedium,
-            ),
+            Text('Example', style: Theme.of(context).textTheme.headlineMedium),
             const SizedBox(height: 8),
             Text(
               'Switch selector modes, try auto country detection, and validate the current input.',
@@ -229,7 +226,6 @@ class _ExampleHomePageState extends State<ExampleHomePage> {
                 countries: _countries,
                 defaultCountry: _defaultCountry,
                 filterFunction: _filterCountries,
-                initialValue: _number,
                 textFieldController: _controller,
                 autoDetectCountry: _autoDetectCountry,
                 detectedCountryOrderStrategy: _detectedCountryOrderStrategy,
@@ -252,18 +248,30 @@ class _ExampleHomePageState extends State<ExampleHomePage> {
                   helperText: 'Try changing the selector mode above.',
                 ),
                 onInputChanged: (number) {
-                  setState(() {
-                    _number = number;
+                  WidgetsBinding.instance.addPostFrameCallback((_) {
+                    if (mounted) {
+                      setState(() {
+                        _number = number;
+                      });
+                    }
                   });
                 },
                 onInputValidated: (isValid) {
-                  setState(() {
-                    _isValid = isValid;
+                  WidgetsBinding.instance.addPostFrameCallback((_) {
+                    if (mounted) {
+                      setState(() {
+                        _isValid = isValid;
+                      });
+                    }
                   });
                 },
                 onAutoCountryDetected: (result) {
-                  setState(() {
-                    _detectedCountryResult = result;
+                  WidgetsBinding.instance.addPostFrameCallback((_) {
+                    if (mounted) {
+                      setState(() {
+                        _detectedCountryResult = result;
+                      });
+                    }
                   });
                 },
                 onSaved: (number) {
@@ -284,7 +292,9 @@ class _ExampleHomePageState extends State<ExampleHomePage> {
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(
                         content: Text(
-                          isValid ? 'Current value is valid' : 'Current value is invalid',
+                          isValid
+                              ? 'Current value is valid'
+                              : 'Current value is invalid',
                         ),
                       ),
                     );
@@ -323,7 +333,10 @@ class _ExampleHomePageState extends State<ExampleHomePage> {
                       style: Theme.of(context).textTheme.titleMedium,
                     ),
                     const SizedBox(height: 12),
-                    _StatusRow(label: 'Validation', value: _statusLabel(_isValid)),
+                    _StatusRow(
+                      label: 'Validation',
+                      value: _statusLabel(_isValid),
+                    ),
                     _StatusRow(
                       label: 'ISO code',
                       value: _number.isoCode.isNotEmpty
@@ -383,16 +396,10 @@ class _StatusRow extends StatelessWidget {
         children: [
           SizedBox(
             width: 120,
-            child: Text(
-              label,
-              style: Theme.of(context).textTheme.bodyMedium,
-            ),
+            child: Text(label, style: Theme.of(context).textTheme.bodyMedium),
           ),
           Expanded(
-            child: Text(
-              value,
-              style: Theme.of(context).textTheme.bodyMedium,
-            ),
+            child: Text(value, style: Theme.of(context).textTheme.bodyMedium),
           ),
         ],
       ),

@@ -191,7 +191,7 @@ class InputWidgetState extends State<InternationalPhoneNumberInput> {
   void initState() {
     super.initState();
     country = widget.defaultCountry;
-    countries = widget.countries;
+    countries = _reorderCountriesForStrategy(widget.countries);
     _attachController(widget.textFieldController);
     acceptedLengths = _acceptedLengthsFor(widget.initialValue?.isoCode);
     initialiseWidget();
@@ -338,7 +338,7 @@ class InputWidgetState extends State<InternationalPhoneNumberInput> {
     final nextCountry = _resolveCountryForUpdate(nextCountries);
 
     setState(() {
-      countries = nextCountries;
+      countries = _reorderCountriesForStrategy(nextCountries);
       country = nextCountry;
       acceptedLengths = _acceptedLengthsFor(nextCountry.alpha2Code);
     });
@@ -553,6 +553,68 @@ class InputWidgetState extends State<InternationalPhoneNumberInput> {
     }
 
     for (final item in widget.countries) {
+      final code = item.alpha2Code.toUpperCase();
+      if (seen.add(code)) {
+        ordered.add(item);
+      }
+    }
+
+    return ordered;
+  }
+
+  List<Country> _reorderCountriesForStrategy(List<Country> countries) {
+    final strategy = _effectiveDetectedCountryOrderStrategy;
+    if (strategy == DetectedCountryOrderStrategy.none) {
+      return countries;
+    }
+
+    final detectedIsoCode = widget.defaultCountry.alpha2Code.toUpperCase();
+
+    final remainingCodes = countries
+        .map((country) => country.alpha2Code.toUpperCase())
+        .where((code) => code != detectedIsoCode)
+        .toList(growable: false);
+
+    final distanceOrderedCodes = CountryDetector.rankCountriesByDistanceFrom(
+      detectedIsoCode,
+      remainingCodes,
+    );
+
+    final includeNeighbors =
+        strategy == DetectedCountryOrderStrategy.signalVotesThenNeighborsThenDistance;
+
+    final prioritizedCodes = <String>[detectedIsoCode];
+
+    if (includeNeighbors) {
+      prioritizedCodes.addAll(
+        CountryDetector.possibleBoundaryCountriesFor(detectedIsoCode)
+            .map((code) => code.toUpperCase())
+            .where(
+              (code) =>
+                  code != detectedIsoCode &&
+                  !prioritizedCodes.contains(code) &&
+                  !distanceOrderedCodes.contains(code),
+            ),
+      );
+    }
+
+    prioritizedCodes.addAll(distanceOrderedCodes);
+
+    final byCode = <String, Country>{
+      for (final item in countries) item.alpha2Code.toUpperCase(): item,
+    };
+
+    final ordered = <Country>[];
+    final seen = <String>{};
+
+    for (final code in prioritizedCodes) {
+      final country = byCode[code];
+      if (country != null && seen.add(code)) {
+        ordered.add(country);
+      }
+    }
+
+    for (final item in countries) {
       final code = item.alpha2Code.toUpperCase();
       if (seen.add(code)) {
         ordered.add(item);
