@@ -1,6 +1,6 @@
 import 'dart:io';
 
-import 'package:example/country_list.dart';
+import 'country_list.dart';
 import 'package:flutter/material.dart';
 import 'package:intl_phone_number_input/intl_phone_number_input.dart';
 import 'package:path_provider/path_provider.dart';
@@ -61,12 +61,14 @@ class _ExampleHomePageState extends State<ExampleHomePage> {
   bool _prefixSelector = true;
   bool _ignoreBlank = false;
   bool _disableLengthCheck = false;
-  bool _autoDetectCountry = false;
+  bool _autoDetectCountry = true;
   bool? _isValid;
   CountryResult? _detectedCountryResult;
   PhoneNumber _number = const PhoneNumber(isoCode: 'IN', nsn: '');
+  CountryDetectionMode _countryDetectionMode =
+      CountryDetectionMode.networkSignals;
   DetectedCountryOrderStrategy _detectedCountryOrderStrategy =
-      DetectedCountryOrderStrategy.signalVotesThenDistance;
+      DetectedCountryOrderStrategy.signalVotesThenNeighborsThenDistance;
 
   @override
   void initState() {
@@ -77,46 +79,6 @@ class _ExampleHomePageState extends State<ExampleHomePage> {
     _defaultCountry = _countries.firstWhere(
       (country) => country.alpha2Code == 'IN',
     );
-  }
-
-  Future<void> _progressiveCountryDetection() async {
-    // Step 1: Local signals detection (instant)
-    try {
-      final localResult = await CountryDetector.detectSync();
-      if (localResult.countryCode != null &&
-          localResult.countryCode!.isNotEmpty &&
-          localResult.countryCode != _defaultCountry.alpha2Code) {
-        final detectedCountry = _countries.where(
-          (country) => country.alpha2Code == localResult.countryCode,
-        );
-        if (detectedCountry.isNotEmpty) {
-          setState(() {
-            _defaultCountry = detectedCountry.first;
-          });
-        }
-      }
-    } catch (e) {
-      // Continue to network detection
-    }
-
-    // Step 2: Full detection including IP (async, more accurate)
-    try {
-      final fullResult = await CountryDetector.detect();
-      if (fullResult.countryCode != null &&
-          fullResult.countryCode!.isNotEmpty &&
-          fullResult.countryCode != _defaultCountry.alpha2Code) {
-        final detectedCountry = _countries.where(
-          (country) => country.alpha2Code == fullResult.countryCode,
-        );
-        if (detectedCountry.isNotEmpty) {
-          setState(() {
-            _defaultCountry = detectedCountry.first;
-          });
-        }
-      }
-    } catch (e) {
-      // Fallback to current default
-    }
   }
 
   List<Country> _filterCountries(String value) {
@@ -144,10 +106,6 @@ class _ExampleHomePageState extends State<ExampleHomePage> {
         _detectedCountryResult = null;
       }
     });
-
-    if (value) {
-      _progressiveCountryDetection();
-    }
   }
 
   @override
@@ -169,7 +127,7 @@ class _ExampleHomePageState extends State<ExampleHomePage> {
             Text('Example', style: Theme.of(context).textTheme.headlineMedium),
             const SizedBox(height: 8),
             Text(
-              'Switch selector modes, try auto country detection, and validate the current input.',
+              'This demo uses widget-managed smart detection so the selected country and chooser order stay in sync.',
               style: Theme.of(context).textTheme.bodyMedium,
             ),
             const SizedBox(height: 24),
@@ -252,6 +210,31 @@ class _ExampleHomePageState extends State<ExampleHomePage> {
             ),
             const SizedBox(height: 20),
             Text(
+              'Detection mode',
+              style: Theme.of(context).textTheme.titleMedium,
+            ),
+            const SizedBox(height: 12),
+            SegmentedButton<CountryDetectionMode>(
+              segments: const [
+                ButtonSegment(
+                  value: CountryDetectionMode.localSignals,
+                  label: Text('Local only'),
+                ),
+                ButtonSegment(
+                  value: CountryDetectionMode.networkSignals,
+                  label: Text('Local + IP'),
+                ),
+              ],
+              selected: {_countryDetectionMode},
+              onSelectionChanged: (selection) {
+                setState(() {
+                  _countryDetectionMode = selection.first;
+                  _detectedCountryResult = null;
+                });
+              },
+            ),
+            const SizedBox(height: 20),
+            Text(
               'Detected country ordering',
               style: Theme.of(context).textTheme.titleMedium,
             ),
@@ -287,11 +270,15 @@ class _ExampleHomePageState extends State<ExampleHomePage> {
             Form(
               key: _formKey,
               child: InternationalPhoneNumberInput(
+                key: ValueKey(
+                  'phone-input-$_autoDetectCountry-$_countryDetectionMode-$_detectedCountryOrderStrategy',
+                ),
                 countries: _countries,
                 defaultCountry: _defaultCountry,
                 filterFunction: _filterCountries,
                 textFieldController: _controller,
                 autoDetectCountry: _autoDetectCountry,
+                countryDetectionMode: _countryDetectionMode,
                 detectedCountryOrderStrategy: _detectedCountryOrderStrategy,
                 formatInput: _formatInput,
                 ignoreBlank: _ignoreBlank,
@@ -422,11 +409,40 @@ class _ExampleHomePageState extends State<ExampleHomePage> {
                       value: _detectedCountryResult?.countryCode ?? 'None',
                     ),
                     _StatusRow(
+                      label: 'Detection mode',
+                      value:
+                          _countryDetectionMode ==
+                              CountryDetectionMode.networkSignals
+                          ? 'Local + IP'
+                          : 'Local only',
+                    ),
+                    _StatusRow(
+                      label: 'Ordering',
+                      value: _detectedCountryOrderStrategy.name,
+                    ),
+                    _StatusRow(
                       label: 'Detection confidence',
                       value: _detectedCountryResult != null
                           ? '${_detectedCountryResult!.confidence}%'
                           : 'None',
                     ),
+                    if (_detectedCountryResult != null &&
+                        _detectedCountryResult!.allVotes.isNotEmpty) ...[
+                      const SizedBox(height: 16),
+                      Text(
+                        'Top ranked votes',
+                        style: Theme.of(context).textTheme.titleSmall,
+                      ),
+                      const SizedBox(height: 8),
+                      ..._detectedCountryResult!.allVotes.entries
+                          .take(6)
+                          .map(
+                            (entry) => _StatusRow(
+                              label: entry.key,
+                              value: '${entry.value} pts',
+                            ),
+                          ),
+                    ],
                   ],
                 ),
               ),
