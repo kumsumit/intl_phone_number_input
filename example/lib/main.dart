@@ -7,9 +7,17 @@ import 'package:path_provider/path_provider.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  final Directory appDocDir = await getApplicationDocumentsDirectory();
+  String dirPath;
   try {
-    await MetadataFinder.readMetadataJson(appDocDir.path);
+    // Try to use path_provider for a writable directory (mobile/desktop)
+    final Directory appDocDir = await getApplicationSupportDirectory();
+    dirPath = appDocDir.path;
+  } catch (_) {
+    // Fallback for pure Dart CLI or if path_provider fails
+    dirPath = Directory.current.path;
+  }
+  try {
+    await MetadataFinder.readMetadataJson(dirPath);
   } catch (e) {
     // Metadata download failed, continue with app
     debugPrint('Metadata download failed: $e');

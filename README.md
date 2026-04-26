@@ -135,6 +135,20 @@ const SelectorConfig(
 )
 ```
 
+### macOS setup
+
+* If your Flutter macOS app uses the app sandbox, you must allow outbound network access.
+* Add this entitlement to both `macos/Runner/DebugProfile.entitlements` and `macos/Runner/Release.entitlements`:
+  ```xml
+  <key>com.apple.security.network.client</key>
+  <true/>
+  ```
+* Without it, metadata download can fail with errors like:
+  ```text
+  SocketException: Connection failed (OS Error: Operation not permitted)
+  ```
+* Your app also needs write access to the directory you pass to `MetadataFinder.readMetadataJson(...)`.
+
 ## Notes
 
 - The widget no longer needs manual `web/index.html` script tags.
