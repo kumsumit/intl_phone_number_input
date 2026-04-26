@@ -9,7 +9,7 @@ class CountrySearchListWidget extends StatefulWidget {
   final InputDecoration? searchBoxDecoration;
   final ScrollController? scrollController;
   final bool autoFocus;
-  final bool? showFlags;
+  final bool showFlags;
   final double flagSize;
   final TextStyle? flagStyle;
   final TextStyle? titleStyle;
@@ -22,7 +22,7 @@ class CountrySearchListWidget extends StatefulWidget {
     this.countries, {
     this.searchBoxDecoration,
     this.scrollController,
-    this.showFlags,
+    this.showFlags = true,
     this.autoFocus = false,
     required this.flagSize,
     this.flagStyle,
@@ -66,8 +66,32 @@ class _CountrySearchListWidgetState extends State<CountrySearchListWidget> {
     final query = value.trim();
     final filterFunction = widget.filterFunction;
     return filterFunction != null
-        ? filterFunction(query)
+        ? _orderLikeWidgetCountries(filterFunction(query))
         : Utils.filterCountries(widget.countries, query);
+  }
+
+  List<Country> _orderLikeWidgetCountries(List<Country> result) {
+    final codesInResult = result
+        .map((country) => country.alpha2Code.toUpperCase())
+        .toSet();
+    final ordered = <Country>[];
+    final seen = <String>{};
+
+    for (final country in widget.countries) {
+      final code = country.alpha2Code.toUpperCase();
+      if (codesInResult.contains(code) && seen.add(code)) {
+        ordered.add(country);
+      }
+    }
+
+    for (final country in result) {
+      final code = country.alpha2Code.toUpperCase();
+      if (seen.add(code)) {
+        ordered.add(country);
+      }
+    }
+
+    return ordered;
   }
 
   /// Returns [InputDecoration] of the search box
@@ -114,7 +138,7 @@ class _CountrySearchListWidgetState extends State<CountrySearchListWidget> {
                     Country country = filteredCountries[index];
                     return DirectionalCountryListTile(
                       country: country,
-                      showFlags: widget.showFlags!,
+                      showFlags: widget.showFlags,
                       flagSize: widget.flagSize,
                       flagStyle: widget.flagStyle,
                       titleStyle: widget.titleStyle,

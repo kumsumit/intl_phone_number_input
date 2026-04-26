@@ -262,6 +262,303 @@ void main() {
         'India',
       ]);
     });
+
+    testWidgets(
+      'keeps detected ordering in the chooser when a custom filterFunction is used',
+      (tester) async {
+        final multiCountries = <Country>[
+          Country(
+            name: 'Australia',
+            alpha2Code: 'AU',
+            alpha3Code: 'AUS',
+            dialCode: '+61',
+          ),
+          Country(
+            name: 'Bangladesh',
+            alpha2Code: 'BD',
+            alpha3Code: 'BGD',
+            dialCode: '+880',
+          ),
+          Country(
+            name: 'Bhutan',
+            alpha2Code: 'BT',
+            alpha3Code: 'BTN',
+            dialCode: '+975',
+          ),
+          Country(
+            name: 'India',
+            alpha2Code: 'IN',
+            alpha3Code: 'IND',
+            dialCode: '+91',
+          ),
+          Country(
+            name: 'Sri Lanka',
+            alpha2Code: 'LK',
+            alpha3Code: 'LKA',
+            dialCode: '+94',
+          ),
+        ];
+
+        List<Country> filterCountries(String value) {
+          return multiCountries
+              .where((country) => country.matches(value))
+              .toList();
+        }
+
+        await tester.pumpWidget(
+          MaterialApp(
+            home: Scaffold(
+              body: InternationalPhoneNumberInput(
+                countries: multiCountries,
+                defaultCountry: multiCountries.first,
+                filterFunction: filterCountries,
+                autoDetectCountry: true,
+                detectedCountryOrderStrategy:
+                    DetectedCountryOrderStrategy
+                        .signalVotesThenNeighborsThenDistance,
+                countryDetector: () async => const CountryResult(
+                  countryCode: 'IN',
+                  confidence: 92,
+                  allVotes: {
+                    'IN': 92,
+                    'LK': 60,
+                  },
+                ),
+                selectorConfig: const SelectorConfig(
+                  selectorType: PhoneInputSelectorType.DIALOG,
+                ),
+                formatInput: false,
+              ),
+            ),
+          ),
+        );
+
+        await tester.pumpAndSettle();
+        await tester.tap(find.byType(MaterialButton));
+        await tester.pumpAndSettle();
+
+        final countryTiles = tester.widgetList<ListTile>(find.byType(ListTile)).toList();
+        final countryNames = countryTiles.map((tile) {
+          final title = tile.title! as Align;
+          final text = title.child! as Text;
+          return text.data;
+        }).toList();
+
+        expect(countryNames.take(5), [
+          'India',
+          'Sri Lanka',
+          'Bangladesh',
+          'Bhutan',
+          'Australia',
+        ]);
+      },
+    );
+
+    testWidgets(
+      'orders India, Sri Lanka, neighbor buckets, then alphabetical remainder',
+      (tester) async {
+        final multiCountries = <Country>[
+          Country(
+            name: 'Australia',
+            alpha2Code: 'AU',
+            alpha3Code: 'AUS',
+            dialCode: '+61',
+          ),
+          Country(
+            name: 'Bangladesh',
+            alpha2Code: 'BD',
+            alpha3Code: 'BGD',
+            dialCode: '+880',
+          ),
+          Country(
+            name: 'Bhutan',
+            alpha2Code: 'BT',
+            alpha3Code: 'BTN',
+            dialCode: '+975',
+          ),
+          Country(
+            name: 'China',
+            alpha2Code: 'CN',
+            alpha3Code: 'CHN',
+            dialCode: '+86',
+          ),
+          Country(
+            name: 'India',
+            alpha2Code: 'IN',
+            alpha3Code: 'IND',
+            dialCode: '+91',
+          ),
+          Country(
+            name: 'Japan',
+            alpha2Code: 'JP',
+            alpha3Code: 'JPN',
+            dialCode: '+81',
+          ),
+          Country(
+            name: 'Myanmar',
+            alpha2Code: 'MM',
+            alpha3Code: 'MMR',
+            dialCode: '+95',
+          ),
+          Country(
+            name: 'Nepal',
+            alpha2Code: 'NP',
+            alpha3Code: 'NPL',
+            dialCode: '+977',
+          ),
+          Country(
+            name: 'Pakistan',
+            alpha2Code: 'PK',
+            alpha3Code: 'PAK',
+            dialCode: '+92',
+          ),
+          Country(
+            name: 'Sri Lanka',
+            alpha2Code: 'LK',
+            alpha3Code: 'LKA',
+            dialCode: '+94',
+          ),
+          Country(
+            name: 'United States',
+            alpha2Code: 'US',
+            alpha3Code: 'USA',
+            dialCode: '+1',
+          ),
+        ];
+
+        await tester.pumpWidget(
+          MaterialApp(
+            home: Scaffold(
+              body: InternationalPhoneNumberInput(
+                countries: multiCountries,
+                defaultCountry: multiCountries.last,
+                autoDetectCountry: true,
+                detectedCountryOrderStrategy:
+                    DetectedCountryOrderStrategy
+                        .signalVotesThenNeighborsThenDistance,
+                countryDetector: () async => const CountryResult(
+                  countryCode: 'IN',
+                  confidence: 92,
+                  allVotes: {
+                    'IN': 92,
+                    'LK': 60,
+                  },
+                ),
+                selectorConfig: const SelectorConfig(
+                  selectorType: PhoneInputSelectorType.DIALOG,
+                ),
+                formatInput: false,
+              ),
+            ),
+          ),
+        );
+
+        await tester.pumpAndSettle();
+
+        final dynamic state = tester.state(
+          find.byType(InternationalPhoneNumberInput),
+        );
+        final countryNames =
+            (state.countries as List<Country>).map((country) => country.name).toList();
+
+        expect(countryNames.take(10), [
+          'India',
+          'Sri Lanka',
+          'Nepal',
+          'Pakistan',
+          'Bangladesh',
+          'Bhutan',
+          'Myanmar',
+          'China',
+          'Australia',
+          'Japan',
+        ]);
+      },
+    );
+
+    testWidgets(
+      'does not promote unofficial disputed neighbors for other countries',
+      (tester) async {
+        final countries = <Country>[
+          Country(
+            name: 'Albania',
+            alpha2Code: 'AL',
+            alpha3Code: 'ALB',
+            dialCode: '+355',
+          ),
+          Country(
+            name: 'Greece',
+            alpha2Code: 'GR',
+            alpha3Code: 'GRC',
+            dialCode: '+30',
+          ),
+          Country(
+            name: 'Kosovo',
+            alpha2Code: 'XK',
+            alpha3Code: 'XKX',
+            dialCode: '+383',
+          ),
+          Country(
+            name: 'Montenegro',
+            alpha2Code: 'ME',
+            alpha3Code: 'MNE',
+            dialCode: '+382',
+          ),
+          Country(
+            name: 'North Macedonia',
+            alpha2Code: 'MK',
+            alpha3Code: 'MKD',
+            dialCode: '+389',
+          ),
+          Country(
+            name: 'Serbia',
+            alpha2Code: 'RS',
+            alpha3Code: 'SRB',
+            dialCode: '+381',
+          ),
+        ];
+
+        await tester.pumpWidget(
+          MaterialApp(
+            home: Scaffold(
+              body: InternationalPhoneNumberInput(
+                countries: countries,
+                defaultCountry: countries.first,
+                autoDetectCountry: true,
+                detectedCountryOrderStrategy:
+                    DetectedCountryOrderStrategy
+                        .signalVotesThenNeighborsThenDistance,
+                countryDetector: () async => const CountryResult(
+                  countryCode: 'AL',
+                  confidence: 90,
+                  allVotes: {'AL': 90},
+                ),
+                selectorConfig: const SelectorConfig(
+                  selectorType: PhoneInputSelectorType.DIALOG,
+                ),
+                formatInput: false,
+              ),
+            ),
+          ),
+        );
+
+        await tester.pumpAndSettle();
+
+        final dynamic state = tester.state(
+          find.byType(InternationalPhoneNumberInput),
+        );
+        final countryNames =
+            (state.countries as List<Country>).map((country) => country.name).toList();
+
+        expect(countryNames.take(4), [
+          'Albania',
+          'North Macedonia',
+          'Montenegro',
+          'Greece',
+        ]);
+        expect(countryNames.indexOf('Kosovo'), greaterThan(3));
+      },
+    );
   });
 }
 

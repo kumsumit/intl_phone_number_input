@@ -7,6 +7,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter_timezone/flutter_timezone.dart';
 import 'package:http/http.dart' as http;
 
+import 'country_borders_data.dart';
 import 'country_coordinates_data.dart';
 
 class CountryResult {
@@ -456,6 +457,11 @@ class CountryDetector {
     final normalized = code.trim().toUpperCase();
     if (normalized.isEmpty) {
       return const [];
+    }
+
+    final borders = countryBorders[normalized];
+    if (borders != null) {
+      return List.unmodifiable(borders);
     }
 
     try {

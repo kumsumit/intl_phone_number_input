@@ -50,11 +50,16 @@ void main() {
   });
 
   group('CountryDetector', () {
-    test('returns nearby boundary countries for a known country code', () {
+    test('returns built-in border countries for India', () {
       final result = CountryDetector.possibleBoundaryCountriesFor('IN');
 
-      expect(result, isNotEmpty);
-      expect(result, isNot(contains('IN')));
+      expect(result, ['BD', 'BT', 'MM', 'CN', 'NP', 'PK']);
+    });
+
+    test('returns built-in border countries for Canada', () {
+      final result = CountryDetector.possibleBoundaryCountriesFor('CA');
+
+      expect(result, ['US']);
     });
 
     test('ranks countries by distance from the detected country', () {

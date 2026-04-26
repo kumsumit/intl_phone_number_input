@@ -110,6 +110,7 @@ Important options:
 - `disableLengthCheck`: skips metadata-based max-length enforcement in the formatter
 - `autoDetectCountry`: uses `CountryDetector` to guess the initial country
 - `detectedCountryOrderStrategy`: controls how the selector list is reordered after detection
+- `countryNeighborResolver`: optional callback to override the built-in boundary-sharing neighbors for a given ISO code
 - `selectorConfig`: controls selector mode and styling
 - `textFieldController`: pass your own controller when the parent owns the text lifecycle
 
@@ -120,7 +121,7 @@ Use `detectedCountryOrderStrategy` to control selector ordering after detection:
 - `DetectedCountryOrderStrategy.none`: keep the original country list order
 - `DetectedCountryOrderStrategy.detectedCountryFirst`: place only the detected country first
 - `DetectedCountryOrderStrategy.signalVotesThenDistance`: detected country first, then signal-voted countries, then the rest by geographic distance
-- `DetectedCountryOrderStrategy.signalVotesThenNeighborsThenDistance`: detected country first, then signal-voted countries, then nearby countries, then the rest by distance
+- `DetectedCountryOrderStrategy.signalVotesThenNeighborsThenDistance`: detected country first, then signal-voted countries, then built-in boundary-sharing neighbors (or `countryNeighborResolver` overrides), then the remaining countries alphabetically
 
 ## SelectorConfig
 

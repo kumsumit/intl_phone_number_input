@@ -54,7 +54,7 @@ class _ExampleHomePageState extends State<ExampleHomePage> {
   final TextEditingController _controller = TextEditingController();
 
   late final List<Country> _countries;
-  late final Country _defaultCountry;
+  late Country _defaultCountry;
 
   PhoneInputSelectorType _selectorType = PhoneInputSelectorType.BOTTOM_SHEET;
   bool _formatInput = true;
@@ -77,7 +77,6 @@ class _ExampleHomePageState extends State<ExampleHomePage> {
     _defaultCountry = _countries.firstWhere(
       (country) => country.alpha2Code == 'IN',
     );
-    _progressiveCountryDetection();
   }
 
   Future<void> _progressiveCountryDetection() async {
@@ -136,6 +135,19 @@ class _ExampleHomePageState extends State<ExampleHomePage> {
       _number = const PhoneNumber(isoCode: 'IN', nsn: '');
       _isValid = null;
     });
+  }
+
+  void _setAutoDetectCountry(bool value) {
+    setState(() {
+      _autoDetectCountry = value;
+      if (!value) {
+        _detectedCountryResult = null;
+      }
+    });
+
+    if (value) {
+      _progressiveCountryDetection();
+    }
   }
 
   @override
@@ -233,9 +245,7 @@ class _ExampleHomePageState extends State<ExampleHomePage> {
                   label: const Text('Auto detect country'),
                   selected: _autoDetectCountry,
                   onSelected: (value) {
-                    setState(() {
-                      _autoDetectCountry = value;
-                    });
+                    _setAutoDetectCountry(value);
                   },
                 ),
               ],

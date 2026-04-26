@@ -20,6 +20,7 @@ import 'package:phone_parser/phone_parser.dart';
 enum PhoneInputSelectorType { DROPDOWN, BOTTOM_SHEET, DIALOG }
 
 final Map<String, List<int>> _acceptedLengthCache = <String, List<int>>{};
+const Set<String> _sensitiveNeighborCodes = {'XK'};
 
 enum CountryDetectionMode { localSignals, networkSignals }
 
@@ -31,6 +32,7 @@ enum DetectedCountryOrderStrategy {
 }
 
 typedef CountryDetectorCallback = Future<CountryResult> Function();
+typedef CountryNeighborResolver = List<String> Function(String countryCode);
 
 /// A [TextFormField] for [InternationalPhoneNumberInput].
 ///
@@ -50,6 +52,7 @@ class InternationalPhoneNumberInput extends StatefulWidget {
   final bool autoDetectCountry;
   final CountryDetectionMode countryDetectionMode;
   final CountryDetectorCallback? countryDetector;
+  final CountryNeighborResolver? countryNeighborResolver;
   final ValueChanged<CountryResult>? onAutoCountryDetected;
   final DetectedCountryOrderStrategy detectedCountryOrderStrategy;
   final bool prioritizeDetectedCountry;
@@ -116,6 +119,7 @@ class InternationalPhoneNumberInput extends StatefulWidget {
     this.autoDetectCountry = false,
     this.countryDetectionMode = CountryDetectionMode.localSignals,
     this.countryDetector,
+    this.countryNeighborResolver,
     this.onAutoCountryDetected,
     this.detectedCountryOrderStrategy = DetectedCountryOrderStrategy.none,
     this.prioritizeDetectedCountry = false,
@@ -320,6 +324,7 @@ class InputWidgetState extends State<InternationalPhoneNumberInput> {
         oldWidget.autoDetectCountry != widget.autoDetectCountry ||
         oldWidget.countryDetectionMode != widget.countryDetectionMode ||
         oldWidget.countryDetector != widget.countryDetector ||
+        oldWidget.countryNeighborResolver != widget.countryNeighborResolver ||
         oldWidget.detectedCountryOrderStrategy !=
             widget.detectedCountryOrderStrategy ||
         oldWidget.prioritizeDetectedCountry != widget.prioritizeDetectedCountry ||
@@ -484,30 +489,21 @@ class InputWidgetState extends State<InternationalPhoneNumberInput> {
   }
 
   List<Country> _prioritizeCountriesForDetection(CountryResult result) {
+    final sortedCountries = _sortCountries(widget.countries);
     final strategy = _effectiveDetectedCountryOrderStrategy;
     if (strategy == DetectedCountryOrderStrategy.none) {
-      return widget.countries;
+      return sortedCountries;
     }
 
     final detectedIsoCode = result.countryCode?.toUpperCase();
     if (detectedIsoCode == null || detectedIsoCode.isEmpty) {
-      return widget.countries;
+      return sortedCountries;
     }
 
     final voteOrderedCodes = result.allVotes.keys
         .map((code) => code.toUpperCase())
         .where((code) => code != detectedIsoCode)
         .toList(growable: false);
-
-    final remainingCodes = widget.countries
-        .map((country) => country.alpha2Code.toUpperCase())
-        .where((code) => code != detectedIsoCode && !voteOrderedCodes.contains(code))
-        .toList(growable: false);
-
-    final distanceOrderedCodes = CountryDetector.rankCountriesByDistanceFrom(
-      detectedIsoCode,
-      remainingCodes,
-    );
 
     final includeSignalVotes =
         strategy == DetectedCountryOrderStrategy.signalVotesThenDistance ||
@@ -525,60 +521,41 @@ class InputWidgetState extends State<InternationalPhoneNumberInput> {
 
     if (includeNeighbors) {
       prioritizedCodes.addAll(
-        CountryDetector.possibleBoundaryCountriesFor(detectedIsoCode)
-            .map((code) => code.toUpperCase())
-            .where(
-              (code) =>
-                  code != detectedIsoCode &&
-                  !prioritizedCodes.contains(code) &&
-                  !distanceOrderedCodes.contains(code),
-            ),
+        _neighborBucketCodesFor(
+          [detectedIsoCode, ...voteOrderedCodes],
+          sortedCountries,
+        ),
+      );
+    } else {
+      final remainingCodes = sortedCountries
+          .map((country) => country.alpha2Code.toUpperCase())
+          .where(
+            (code) => code != detectedIsoCode && !voteOrderedCodes.contains(code),
+          )
+          .toList(growable: false);
+
+      prioritizedCodes.addAll(
+        CountryDetector.rankCountriesByDistanceFrom(
+          detectedIsoCode,
+          remainingCodes,
+        ),
       );
     }
 
-    prioritizedCodes.addAll(distanceOrderedCodes);
-
-    final byCode = <String, Country>{
-      for (final item in widget.countries) item.alpha2Code.toUpperCase(): item,
-    };
-
-    final ordered = <Country>[];
-    final seen = <String>{};
-
-    for (final code in prioritizedCodes) {
-      final country = byCode[code];
-      if (country != null && seen.add(code)) {
-        ordered.add(country);
-      }
-    }
-
-    for (final item in widget.countries) {
-      final code = item.alpha2Code.toUpperCase();
-      if (seen.add(code)) {
-        ordered.add(item);
-      }
-    }
-
-    return ordered;
+    return _orderCountriesByCodesThenAlphabetical(
+      sortedCountries,
+      prioritizedCodes,
+    );
   }
 
   List<Country> _reorderCountriesForStrategy(List<Country> countries) {
+    final sortedCountries = _sortCountries(countries);
     final strategy = _effectiveDetectedCountryOrderStrategy;
     if (strategy == DetectedCountryOrderStrategy.none) {
-      return countries;
+      return sortedCountries;
     }
 
     final detectedIsoCode = widget.defaultCountry.alpha2Code.toUpperCase();
-
-    final remainingCodes = countries
-        .map((country) => country.alpha2Code.toUpperCase())
-        .where((code) => code != detectedIsoCode)
-        .toList(growable: false);
-
-    final distanceOrderedCodes = CountryDetector.rankCountriesByDistanceFrom(
-      detectedIsoCode,
-      remainingCodes,
-    );
 
     final includeNeighbors =
         strategy == DetectedCountryOrderStrategy.signalVotesThenNeighborsThenDistance;
@@ -587,19 +564,86 @@ class InputWidgetState extends State<InternationalPhoneNumberInput> {
 
     if (includeNeighbors) {
       prioritizedCodes.addAll(
-        CountryDetector.possibleBoundaryCountriesFor(detectedIsoCode)
-            .map((code) => code.toUpperCase())
-            .where(
-              (code) =>
-                  code != detectedIsoCode &&
-                  !prioritizedCodes.contains(code) &&
-                  !distanceOrderedCodes.contains(code),
-            ),
+        _neighborBucketCodesFor([detectedIsoCode], sortedCountries),
+      );
+    } else {
+      final remainingCodes = sortedCountries
+          .map((country) => country.alpha2Code.toUpperCase())
+          .where((code) => code != detectedIsoCode)
+          .toList(growable: false);
+
+      prioritizedCodes.addAll(
+        CountryDetector.rankCountriesByDistanceFrom(
+          detectedIsoCode,
+          remainingCodes,
+        ),
       );
     }
 
-    prioritizedCodes.addAll(distanceOrderedCodes);
+    return _orderCountriesByCodesThenAlphabetical(
+      sortedCountries,
+      prioritizedCodes,
+    );
+  }
 
+  List<Country> _sortCountries(List<Country> countries) {
+    final comparator = widget.selectorConfig.countryComparator;
+    if (comparator == null) {
+      return List<Country>.from(countries);
+    }
+
+    final sorted = List<Country>.from(countries);
+    sorted.sort(comparator);
+    return sorted;
+  }
+
+  List<String> _neighborBucketCodesFor(
+    List<String> rootCodes,
+    List<Country> countries,
+  ) {
+    final countriesByCode = <String, Country>{
+      for (final country in countries) country.alpha2Code.toUpperCase(): country,
+    };
+    final orderedCodes = <String>[];
+    final seen = <String>{};
+
+    for (final rootCode in rootCodes) {
+      final neighbors =
+          widget.countryNeighborResolver?.call(rootCode) ??
+          CountryDetector.possibleBoundaryCountriesFor(rootCode);
+      final eligibleNeighbors = neighbors
+          .map((neighbor) => neighbor.toUpperCase())
+          .where((neighbor) => countriesByCode.containsKey(neighbor))
+          .where((neighbor) => _shouldPromoteNeighborCode(neighbor, rootCodes))
+          .where((neighbor) => neighbor != rootCode)
+          .toList(growable: false);
+      final rankedNeighbors = CountryDetector.rankCountriesByDistanceFrom(
+        rootCode,
+        eligibleNeighbors,
+      );
+      for (final neighbor in rankedNeighbors) {
+        final normalized = neighbor.toUpperCase();
+        if (seen.add(normalized) && !rootCodes.contains(normalized)) {
+          orderedCodes.add(normalized);
+        }
+      }
+    }
+
+    return orderedCodes;
+  }
+
+  bool _shouldPromoteNeighborCode(String candidate, List<String> rootCodes) {
+    if (!_sensitiveNeighborCodes.contains(candidate)) {
+      return true;
+    }
+
+    return rootCodes.contains(candidate);
+  }
+
+  List<Country> _orderCountriesByCodesThenAlphabetical(
+    List<Country> countries,
+    List<String> prioritizedCodes,
+  ) {
     final byCode = <String, Country>{
       for (final item in countries) item.alpha2Code.toUpperCase(): item,
     };
@@ -614,7 +658,27 @@ class InputWidgetState extends State<InternationalPhoneNumberInput> {
       }
     }
 
-    for (final item in countries) {
+    final remaining = countries.where((item) {
+      final code = item.alpha2Code.toUpperCase();
+      return !seen.contains(code);
+    }).toList(growable: false);
+
+    final comparator = widget.selectorConfig.countryComparator;
+    if (comparator != null) {
+      remaining.sort(comparator);
+    } else {
+      remaining.sort((a, b) {
+        final nameComparison = a.name.toLowerCase().compareTo(
+          b.name.toLowerCase(),
+        );
+        if (nameComparison != 0) {
+          return nameComparison;
+        }
+        return a.alpha2Code.compareTo(b.alpha2Code);
+      });
+    }
+
+    for (final item in remaining) {
       final code = item.alpha2Code.toUpperCase();
       if (seen.add(code)) {
         ordered.add(item);
@@ -837,7 +901,9 @@ class InputWidgetState extends State<InternationalPhoneNumberInput> {
         '',
       );
 
-      String phoneNumber = '${country.dialCode}$parsedPhoneNumberString';
+      final String phoneNumber = parsedPhoneNumberString.startsWith('+')
+          ? parsedPhoneNumberString
+          : '${country.dialCode}$parsedPhoneNumberString';
 
       widget.onSaved?.call(
         PhoneNumber.parse(phoneNumber, callerCountry: country.alpha2Code),
