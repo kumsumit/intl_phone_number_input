@@ -8,7 +8,12 @@ import 'package:path_provider/path_provider.dart';
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   final Directory appDocDir = await getApplicationDocumentsDirectory();
-  await MetadataFinder.readMetadataJson(appDocDir.path);
+  try {
+    await MetadataFinder.readMetadataJson(appDocDir.path);
+  } catch (e) {
+    // Metadata download failed, continue with app
+    debugPrint('Metadata download failed: $e');
+  }
   runApp(const ExampleApp());
 }
 
@@ -64,6 +69,47 @@ class _ExampleHomePageState extends State<ExampleHomePage> {
     _defaultCountry = _countries.firstWhere(
       (country) => country.alpha2Code == 'IN',
     );
+    _progressiveCountryDetection();
+  }
+
+  Future<void> _progressiveCountryDetection() async {
+    // Step 1: Local signals detection (instant)
+    try {
+      final localResult = await CountryDetector.detectSync();
+      if (localResult.countryCode != null &&
+          localResult.countryCode!.isNotEmpty &&
+          localResult.countryCode != _defaultCountry.alpha2Code) {
+        final detectedCountry = _countries.where(
+          (country) => country.alpha2Code == localResult.countryCode,
+        );
+        if (detectedCountry.isNotEmpty) {
+          setState(() {
+            _defaultCountry = detectedCountry.first;
+          });
+        }
+      }
+    } catch (e) {
+      // Continue to network detection
+    }
+
+    // Step 2: Full detection including IP (async, more accurate)
+    try {
+      final fullResult = await CountryDetector.detect();
+      if (fullResult.countryCode != null &&
+          fullResult.countryCode!.isNotEmpty &&
+          fullResult.countryCode != _defaultCountry.alpha2Code) {
+        final detectedCountry = _countries.where(
+          (country) => country.alpha2Code == fullResult.countryCode,
+        );
+        if (detectedCountry.isNotEmpty) {
+          setState(() {
+            _defaultCountry = detectedCountry.first;
+          });
+        }
+      }
+    } catch (e) {
+      // Fallback to current default
+    }
   }
 
   List<Country> _filterCountries(String value) {
