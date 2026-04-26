@@ -37,6 +37,11 @@ class CountryResult {
 }
 
 class CountryDetector {
+  static const Duration _localSignalsCacheTtl = Duration(seconds: 5);
+  static _LocalSignalsSnapshot? _cachedLocalSignals;
+  static DateTime? _cachedLocalSignalsAt;
+  static Future<_LocalSignalsSnapshot>? _pendingLocalSignals;
+
   // // ── Country code → Name ────────────────────────────────────────────────────
   static const Map<String, String> countryNames = {
     'AF': 'Afghanistan',
@@ -379,10 +384,15 @@ class CountryDetector {
       }
     }
 
+    final localeCountry = locale['country']?.toUpperCase();
+    final localesCountry = locales['country']?.toUpperCase();
+
     vote(ip['country'], 60);
     vote(timezone['country'], 20);
-    vote(locale['country'], 15);
-    vote(locales['country'], 5);
+    vote(localeCountry, 15);
+    if (localesCountry != localeCountry) {
+      vote(localesCountry, 5);
+    }
     // Boost all possible countries for this offset
     final offsetCountries =
         (offset['countries'] as List?)?.cast<String>() ?? [];
@@ -411,45 +421,91 @@ class CountryDetector {
     );
   }
 
+  /// Clears the cached local signals so the next detection reads fresh data.
+  ///
+  /// This is useful after app resume, manual locale changes, or tests that
+  /// mutate platform-provided signals between runs.
+  static void clearLocalSignalsCache() {
+    _cachedLocalSignals = null;
+    _cachedLocalSignalsAt = null;
+    debugPrint('[CountryDetector] cleared local signals cache');
+  }
+
+  static Future<_LocalSignalsSnapshot> _collectLocalSignals({
+    bool allowCached = true,
+  }) async {
+    final now = DateTime.now();
+    if (allowCached &&
+        _cachedLocalSignals != null &&
+        _cachedLocalSignalsAt != null &&
+        now.difference(_cachedLocalSignalsAt!) <= _localSignalsCacheTtl) {
+      debugPrint('[CountryDetector] reusing cached local signals');
+      return _cachedLocalSignals!;
+    }
+
+    final pending = _pendingLocalSignals;
+    if (pending != null) {
+      debugPrint('[CountryDetector] awaiting in-flight local signals');
+      return pending;
+    }
+
+    final future = _loadLocalSignals();
+    _pendingLocalSignals = future;
+
+    try {
+      final snapshot = await future;
+      _cachedLocalSignals = snapshot;
+      _cachedLocalSignalsAt = DateTime.now();
+      return snapshot;
+    } finally {
+      _pendingLocalSignals = null;
+    }
+  }
+
+  static Future<_LocalSignalsSnapshot> _loadLocalSignals() async {
+    final timezone = await _getTimezoneSignal();
+    final offset = _getOffsetSignal();
+    final locale = _getLocaleSignal();
+    final locales = _getLocalesSignal();
+
+    debugPrint('[CountryDetector] timezone signal:   $timezone');
+    debugPrint('[CountryDetector] offset signal:     $offset');
+    debugPrint('[CountryDetector] locale signal:     $locale');
+    debugPrint('[CountryDetector] locales signal:    $locales');
+
+    return _LocalSignalsSnapshot(
+      timezone: timezone,
+      offset: offset,
+      locale: locale,
+      locales: locales,
+    );
+  }
+
   // ── Public API ─────────────────────────────────────────────────────────────
 
   /// Instant best-guess from timezone + locale only (no network call).
   static Future<CountryResult> detectSync() async {
-    final tz = await _getTimezoneSignal();
-    debugPrint('[CountryDetector] timezone signal:   $tz');
-    final offset = _getOffsetSignal();
-    debugPrint('[CountryDetector] offset signal:     $offset');
-    final loc = _getLocaleSignal();
-    debugPrint('[CountryDetector] locale signal:     $loc');
-    final locs = _getLocalesSignal();
-    debugPrint('[CountryDetector] locales signal:    $locs');
+    final localSignals = await _collectLocalSignals();
     return _combine(
       ip: {},
-      timezone: tz,
-      offset: offset,
-      locale: loc,
-      locales: locs,
+      timezone: localSignals.timezone,
+      offset: localSignals.offset,
+      locale: localSignals.locale,
+      locales: localSignals.locales,
     );
   }
 
   /// Full detection including IP geolocation (async, most accurate).
   static Future<CountryResult> detect() async {
-    final tz = await _getTimezoneSignal();
-    debugPrint('[CountryDetector] timezone signal:   $tz');
-    final offset = _getOffsetSignal();
-    debugPrint('[CountryDetector] offset signal:     $offset');
-    final loc = _getLocaleSignal();
-    debugPrint('[CountryDetector] locale signal:     $loc');
-    final locs = _getLocalesSignal();
-    debugPrint('[CountryDetector] locales signal:    $locs');
+    final localSignals = await _collectLocalSignals();
     final ip = await _getIPSignal();
     debugPrint('[CountryDetector] ip signal:         $ip');
     return _combine(
       ip: ip,
-      timezone: tz,
-      offset: offset,
-      locale: loc,
-      locales: locs,
+      timezone: localSignals.timezone,
+      offset: localSignals.offset,
+      locale: localSignals.locale,
+      locales: localSignals.locales,
     );
   }
 
@@ -544,6 +600,20 @@ class CountryDetector {
       );
     }
   }
+}
+
+class _LocalSignalsSnapshot {
+  final Map<String, String?> timezone;
+  final Map<String, dynamic> offset;
+  final Map<String, String?> locale;
+  final Map<String, String?> locales;
+
+  const _LocalSignalsSnapshot({
+    required this.timezone,
+    required this.offset,
+    required this.locale,
+    required this.locales,
+  });
 }
 
 extension on CountryCoordinates {

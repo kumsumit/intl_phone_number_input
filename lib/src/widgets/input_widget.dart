@@ -505,42 +505,41 @@ class InputWidgetState extends State<InternationalPhoneNumberInput> {
         .where((code) => code != detectedIsoCode)
         .toList(growable: false);
 
-    final includeSignalVotes =
-        strategy == DetectedCountryOrderStrategy.signalVotesThenDistance ||
-        strategy ==
-            DetectedCountryOrderStrategy.signalVotesThenNeighborsThenDistance;
+    if (strategy == DetectedCountryOrderStrategy.detectedCountryFirst) {
+      return _orderCountriesByCodesThenAlphabetical(
+        sortedCountries,
+        [detectedIsoCode],
+      );
+    }
+
     final includeNeighbors =
         strategy ==
         DetectedCountryOrderStrategy.signalVotesThenNeighborsThenDistance;
 
-    final prioritizedCodes = <String>[detectedIsoCode];
-
-    if (includeSignalVotes) {
-      prioritizedCodes.addAll(voteOrderedCodes);
-    }
-
     if (includeNeighbors) {
-      prioritizedCodes.addAll(
-        _neighborBucketCodesFor(
+      return _orderCountriesByCodesThenAlphabetical(
+        sortedCountries,
+        _interleavedRootAndNeighborCodesFor(
           [detectedIsoCode, ...voteOrderedCodes],
           sortedCountries,
         ),
       );
-    } else {
-      final remainingCodes = sortedCountries
-          .map((country) => country.alpha2Code.toUpperCase())
-          .where(
-            (code) => code != detectedIsoCode && !voteOrderedCodes.contains(code),
-          )
-          .toList(growable: false);
-
-      prioritizedCodes.addAll(
-        CountryDetector.rankCountriesByDistanceFrom(
-          detectedIsoCode,
-          remainingCodes,
-        ),
-      );
     }
+
+    final prioritizedCodes = <String>[detectedIsoCode, ...voteOrderedCodes];
+    final remainingCodes = sortedCountries
+        .map((country) => country.alpha2Code.toUpperCase())
+        .where(
+          (code) => code != detectedIsoCode && !voteOrderedCodes.contains(code),
+        )
+        .toList(growable: false);
+
+    prioritizedCodes.addAll(
+      CountryDetector.rankCountriesByDistanceFrom(
+        detectedIsoCode,
+        remainingCodes,
+      ),
+    );
 
     return _orderCountriesByCodesThenAlphabetical(
       sortedCountries,
@@ -556,6 +555,13 @@ class InputWidgetState extends State<InternationalPhoneNumberInput> {
     }
 
     final detectedIsoCode = widget.defaultCountry.alpha2Code.toUpperCase();
+
+    if (strategy == DetectedCountryOrderStrategy.detectedCountryFirst) {
+      return _orderCountriesByCodesThenAlphabetical(
+        sortedCountries,
+        [detectedIsoCode],
+      );
+    }
 
     final includeNeighbors =
         strategy == DetectedCountryOrderStrategy.signalVotesThenNeighborsThenDistance;
@@ -625,6 +631,31 @@ class InputWidgetState extends State<InternationalPhoneNumberInput> {
         final normalized = neighbor.toUpperCase();
         if (seen.add(normalized) && !rootCodes.contains(normalized)) {
           orderedCodes.add(normalized);
+        }
+      }
+    }
+
+    return orderedCodes;
+  }
+
+  List<String> _interleavedRootAndNeighborCodesFor(
+    List<String> rootCodes,
+    List<Country> countries,
+  ) {
+    final orderedCodes = <String>[];
+    final seen = <String>{};
+
+    for (final rootCode in rootCodes) {
+      final normalizedRoot = rootCode.toUpperCase();
+      if (seen.add(normalizedRoot)) {
+        orderedCodes.add(normalizedRoot);
+      }
+
+      for (final neighborCode
+          in _neighborBucketCodesFor([normalizedRoot], countries)) {
+        final normalizedNeighbor = neighborCode.toUpperCase();
+        if (seen.add(normalizedNeighbor)) {
+          orderedCodes.add(normalizedNeighbor);
         }
       }
     }
