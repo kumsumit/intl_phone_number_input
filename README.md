@@ -15,6 +15,7 @@ A customizable Flutter widget for entering, formatting, and validating internati
 - Custom selector styling, decorations, and search UI
 - Optional length-check bypass for custom workflows
 - Optional country auto-detection and signal-aware selector ordering
+- Blocks `+` country-code entry in the text field and supports a localized warning message
 
 ## Install
 
@@ -30,6 +31,8 @@ This package currently depends on a Git source for `phone_parser`, so it is conf
 ## Usage
 
 The widget expects you to provide the country list and a default country. `filterFunction` is optional, and the example app includes a ready-to-use `country_list.dart` if you want a starting point.
+
+The text field is intended for the national number only. The selected country supplies the dial code context, so the widget rejects `+` country-code input and can show a custom localized warning message.
 
 ```dart
 import 'package:flutter/material.dart';
@@ -66,6 +69,7 @@ InternationalPhoneNumberInput(
   detectedCountryOrderStrategy:
       DetectedCountryOrderStrategy.signalVotesThenDistance,
   formatInput: true,
+  countryCodeWarningMessage: 'Enter the local number only',
   onInputChanged: (number) {
     debugPrint(number.international);
   },
@@ -97,6 +101,7 @@ InternationalPhoneNumberInput(
   formatInput: true,
   disableLengthCheck: false,
   ignoreBlank: false,
+  countryCodeWarningMessage: 'Enter the local number only',
   autoValidateMode: AutovalidateMode.disabled,
 )
 ```
@@ -108,11 +113,18 @@ Important options:
 - `filterFunction`: optional search/filter override for the selector list
 - `formatInput`: enables the as-you-type formatter
 - `disableLengthCheck`: skips metadata-based max-length enforcement in the formatter
+- `countryCodeWarningMessage`: localized warning shown when a user tries to enter `+` country-code text
 - `autoDetectCountry`: uses `CountryDetector` to guess the initial country
 - `detectedCountryOrderStrategy`: controls how the selector list is reordered after detection
 - `countryNeighborResolver`: optional callback to override the built-in boundary-sharing neighbors for a given ISO code
 - `selectorConfig`: controls selector mode and styling
 - `textFieldController`: pass your own controller when the parent owns the text lifecycle
+
+## Input Rules
+
+- Enter only the national number in the text field.
+- Choose the country from the selector instead of typing the dial code.
+- If a user tries to type `+`, the widget keeps the existing text and shows `countryCodeWarningMessage`.
 
 ## Detection Ordering
 

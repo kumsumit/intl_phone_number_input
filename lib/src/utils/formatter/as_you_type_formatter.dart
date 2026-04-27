@@ -2,10 +2,38 @@ import 'package:flutter/services.dart';
 import 'package:phone_parser/phone_parser.dart';
 
 typedef OnInputFormatted<T> = void Function(T value);
+typedef OnRejectedInput = void Function();
+typedef OnAcceptedInput = void Function();
+
+class CountryCodeBlockerFormatter extends TextInputFormatter {
+  final OnRejectedInput onRejected;
+  final OnAcceptedInput onAccepted;
+
+  CountryCodeBlockerFormatter({
+    required this.onRejected,
+    required this.onAccepted,
+  });
+
+  @override
+  TextEditingValue formatEditUpdate(
+    TextEditingValue oldValue,
+    TextEditingValue newValue,
+  ) {
+    if (newValue.text.contains('+')) {
+      onRejected();
+      return oldValue;
+    }
+
+    onAccepted();
+    return newValue;
+  }
+}
 
 /// [AsYouTypeFormatter] is a custom formatter that extends [TextInputFormatter]
 /// which provides as you type validation and formatting for phone number inputted.
 class AsYouTypeFormatter extends TextInputFormatter {
+  static const int maxDigits = 15;
+
   /// Contains characters allowed as seperators.
   final RegExp separatorChars = RegExp(r'[^\d]+');
 
@@ -48,8 +76,14 @@ class AsYouTypeFormatter extends TextInputFormatter {
 
     // ✅ Allow input to continue even if not yet in acceptedLengths
     // Only enforce max length, not exact match
-    if (acceptedLengths.isNotEmpty &&
-        rawText.length > acceptedLengths.reduce((a, b) => a > b ? a : b)) {
+    final acceptedMaxLength = acceptedLengths.isEmpty
+        ? maxDigits
+        : acceptedLengths.reduce((a, b) => a > b ? a : b);
+    final effectiveMaxLength = acceptedMaxLength > maxDigits
+        ? maxDigits
+        : acceptedMaxLength;
+
+    if (rawText.length > effectiveMaxLength) {
       return oldValue;
     }
 
@@ -66,18 +100,10 @@ class AsYouTypeFormatter extends TextInputFormatter {
       return newValue;
     }
 
-    // Fix selection safely
-    int offset = newValue.selection.end;
-    if (offset < 0) offset = 0;
-    if (offset > parsedText.length) offset = parsedText.length;
-
-    // Adjust offset if cursor lands on a separator
-    if (offset > 0 && offset <= parsedText.length) {
-      final valueAtOffset = parsedText[offset - 1];
-      if (separatorChars.hasMatch(valueAtOffset)) {
-        offset = (offset + 1).clamp(0, parsedText.length);
-      }
-    }
+    final offset = _selectionOffsetForFormattedText(
+      formattedText: parsedText,
+      newValue: newValue,
+    );
 
     final textEditingValue = TextEditingValue(
       text: parsedText,
@@ -88,6 +114,38 @@ class AsYouTypeFormatter extends TextInputFormatter {
     onInputFormatted(textEditingValue);
 
     return textEditingValue;
+  }
+
+  int _selectionOffsetForFormattedText({
+    required String formattedText,
+    required TextEditingValue newValue,
+  }) {
+    final requestedOffset = newValue.selection.end.clamp(0, newValue.text.length);
+    if (requestedOffset == 0) {
+      return 0;
+    }
+
+    final significantCharsBeforeCursor = newValue.text
+        .substring(0, requestedOffset)
+        .split('')
+        .where((char) => allowedChars.hasMatch(char))
+        .length;
+
+    if (significantCharsBeforeCursor == 0) {
+      return 0;
+    }
+
+    var seenSignificantChars = 0;
+    for (var i = 0; i < formattedText.length; i++) {
+      if (allowedChars.hasMatch(formattedText[i])) {
+        seenSignificantChars++;
+      }
+      if (seenSignificantChars == significantCharsBeforeCursor) {
+        return i + 1;
+      }
+    }
+
+    return formattedText.length;
   }
 
   /// Accepts [input], unformatted phone number and

@@ -52,6 +52,8 @@ class ExampleHomePage extends StatefulWidget {
 class _ExampleHomePageState extends State<ExampleHomePage> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   final TextEditingController _controller = TextEditingController();
+  static const String _countryCodeWarningMessage =
+      'Enter the local number only. The country code comes from the selector.';
 
   late final List<Country> _countries;
   late Country _defaultCountry;
@@ -284,6 +286,7 @@ class _ExampleHomePageState extends State<ExampleHomePage> {
                 ignoreBlank: _ignoreBlank,
                 disableLengthCheck: _disableLengthCheck,
                 autoValidateMode: AutovalidateMode.onUserInteraction,
+                countryCodeWarningMessage: _countryCodeWarningMessage,
                 selectorConfig: SelectorConfig(
                   selectorType: _selectorType,
                   setSelectorButtonAsPrefixIcon: _prefixSelector,
@@ -296,7 +299,8 @@ class _ExampleHomePageState extends State<ExampleHomePage> {
                 inputBorder: const OutlineInputBorder(),
                 inputDecoration: const InputDecoration(
                   labelText: 'Phone number',
-                  helperText: 'Try changing the selector mode above.',
+                  helperText:
+                      'Enter the local number only. Country code input is blocked.',
                 ),
                 onInputChanged: (number) {
                   WidgetsBinding.instance.addPostFrameCallback((_) {

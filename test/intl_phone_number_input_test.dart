@@ -7,6 +7,28 @@ void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
   group('AsYouTypeFormatter', () {
+    test('rejects attempts to enter a country code prefix', () {
+      var rejected = false;
+      var accepted = false;
+      final formatter = CountryCodeBlockerFormatter(
+        onRejected: () {
+          rejected = true;
+        },
+        onAccepted: () {
+          accepted = true;
+        },
+      );
+
+      const oldValue = TextEditingValue(text: '');
+      const newValue = TextEditingValue(text: '+1');
+
+      final result = formatter.formatEditUpdate(oldValue, newValue);
+
+      expect(result, oldValue);
+      expect(rejected, isTrue);
+      expect(accepted, isFalse);
+    });
+
     test('allows empty input', () {
       final formatter = AsYouTypeFormatter(
         isoCode: 'US',
@@ -33,6 +55,22 @@ void main() {
 
       final oldValue = const TextEditingValue(text: '1234567890');
       final newValue = const TextEditingValue(text: '12345678901');
+
+      final result = formatter.formatEditUpdate(oldValue, newValue);
+
+      expect(result, oldValue);
+    });
+
+    test('blocks input past 15 digits when accepted lengths are disabled', () {
+      final formatter = AsYouTypeFormatter(
+        isoCode: 'US',
+        dialCode: '+1',
+        acceptedLengths: const [],
+        onInputFormatted: (_) {},
+      );
+
+      const oldValue = TextEditingValue(text: '123456789012345');
+      const newValue = TextEditingValue(text: '1234567890123456');
 
       final result = formatter.formatEditUpdate(oldValue, newValue);
 
@@ -110,6 +148,41 @@ void main() {
       expect(updatedText, secondNumber.nsn);
     });
 
+    testWidgets('saves using the selected country as parse context', (
+      tester,
+    ) async {
+      final formKey = GlobalKey<FormState>();
+      PhoneNumber? savedNumber;
+
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Scaffold(
+            body: Form(
+              key: formKey,
+              child: InternationalPhoneNumberInput(
+                countries: countries,
+                defaultCountry: defaultCountry,
+                filterFunction: filterCountries,
+                formatInput: false,
+                onSaved: (number) {
+                  savedNumber = number;
+                },
+              ),
+            ),
+          ),
+        ),
+      );
+
+      await tester.enterText(find.byType(TextFormField), '6505551234');
+      await tester.pump();
+
+      formKey.currentState!.save();
+
+      expect(savedNumber, isNotNull);
+      expect(savedNumber!.isoCode, 'US');
+      expect(savedNumber!.nsn, '6505551234');
+    });
+
     testWidgets('reports empty input as invalid when blanks are not ignored', (
       tester,
     ) async {
@@ -138,6 +211,168 @@ void main() {
       expect(validatedValues, isNotEmpty);
       expect(validatedValues.last, isFalse);
     });
+
+    testWidgets('reports an empty phone number when the field is cleared', (
+      tester,
+    ) async {
+      final changedValues = <PhoneNumber>[];
+
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Scaffold(
+            body: InternationalPhoneNumberInput(
+              countries: countries,
+              defaultCountry: defaultCountry,
+              filterFunction: filterCountries,
+              onInputChanged: changedValues.add,
+              formatInput: false,
+            ),
+          ),
+        ),
+      );
+
+      await tester.enterText(find.byType(TextFormField), '9876543210');
+      await tester.pump();
+      await tester.enterText(find.byType(TextFormField), '');
+      await tester.pump();
+
+      expect(changedValues, isNotEmpty);
+      expect(changedValues.last.isoCode, defaultCountry.alpha2Code);
+      expect(changedValues.last.nsn, isEmpty);
+    });
+
+    testWidgets('reports invalid unparseable input changes to listeners', (
+      tester,
+    ) async {
+      final changedValues = <PhoneNumber>[];
+      final validatedValues = <bool>[];
+
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Scaffold(
+            body: InternationalPhoneNumberInput(
+              countries: countries,
+              defaultCountry: defaultCountry,
+              filterFunction: filterCountries,
+              onInputChanged: changedValues.add,
+              onInputValidated: validatedValues.add,
+              formatInput: true,
+            ),
+          ),
+        ),
+      );
+
+      await tester.enterText(find.byType(TextFormField), '6505551234');
+      await tester.pump();
+      await tester.enterText(find.byType(TextFormField), '(');
+      await tester.pump();
+
+      expect(changedValues, isNotEmpty);
+      expect(changedValues.last.isoCode, defaultCountry.alpha2Code);
+      expect(changedValues.last.nsn, isEmpty);
+      expect(validatedValues, isNotEmpty);
+      expect(validatedValues.last, isFalse);
+    });
+
+    testWidgets('shows a custom warning when country code input is attempted', (
+      tester,
+    ) async {
+      const warningMessage = 'Use local number only';
+
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Scaffold(
+            body: InternationalPhoneNumberInput(
+              countries: countries,
+              defaultCountry: defaultCountry,
+              filterFunction: filterCountries,
+              countryCodeWarningMessage: warningMessage,
+              autoValidateMode: AutovalidateMode.always,
+              formatInput: false,
+            ),
+          ),
+        ),
+      );
+
+      await tester.enterText(find.byType(TextFormField), '+1');
+      await tester.pump();
+
+      final textField = tester.widget<TextFormField>(find.byType(TextFormField));
+      expect(textField.controller!.text, isEmpty);
+      expect(find.text(warningMessage), findsOneWidget);
+    });
+
+    testWidgets('clears the country code warning after valid input', (
+      tester,
+    ) async {
+      const warningMessage = 'Use local number only';
+
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Scaffold(
+            body: InternationalPhoneNumberInput(
+              countries: countries,
+              defaultCountry: defaultCountry,
+              filterFunction: filterCountries,
+              countryCodeWarningMessage: warningMessage,
+              autoValidateMode: AutovalidateMode.always,
+              formatInput: false,
+            ),
+          ),
+        ),
+      );
+
+      await tester.enterText(find.byType(TextFormField), '+1');
+      await tester.pump();
+      expect(find.text(warningMessage), findsOneWidget);
+
+      await tester.enterText(find.byType(TextFormField), '6505551234');
+      await tester.pump();
+
+      expect(find.text(warningMessage), findsNothing);
+    });
+
+    testWidgets(
+      'keeps the cursor at the end when formatting reaches a valid number',
+      (tester) async {
+        final controller = TextEditingController();
+        final validatedValues = <bool>[];
+
+        await tester.pumpWidget(
+          MaterialApp(
+            home: Scaffold(
+              body: InternationalPhoneNumberInput(
+                countries: countries,
+                defaultCountry: defaultCountry,
+                filterFunction: filterCountries,
+                textFieldController: controller,
+                formatInput: true,
+                autoValidateMode: AutovalidateMode.onUserInteraction,
+                onInputValidated: validatedValues.add,
+              ),
+            ),
+          ),
+        );
+
+        await tester.tap(find.byType(TextFormField));
+        await tester.pump();
+
+        const digits = '6505551234';
+        for (var i = 0; i < digits.length; i++) {
+          final nextText = '${controller.text}${digits[i]}';
+          tester.testTextInput.updateEditingValue(
+            TextEditingValue(
+              text: nextText,
+              selection: TextSelection.collapsed(offset: nextText.length),
+            ),
+          );
+          await tester.pump();
+        }
+
+        expect(controller.selection.isCollapsed, isTrue);
+        expect(controller.selection.baseOffset, controller.text.length);
+      },
+    );
 
     testWidgets('uses the built-in country filter when none is provided', (
       tester,

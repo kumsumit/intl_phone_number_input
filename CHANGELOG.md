@@ -1,3 +1,11 @@
+## [0.7.3+2]
+* Fixed cursor jumps while typing and validating formatted phone numbers
+* Fixed formatted input length limiting so spacing and punctuation no longer consume digit capacity
+* Fixed `onInputChanged` so empty and invalid edits no longer leave parent state stale
+* Fixed parsing consistency across live validation, form validation, and save handling
+* Added `countryCodeWarningMessage` to show a developer-provided localized warning when a user tries to type a country code
+* Blocked `+` country-code input in the text field so the field stays national-number only
+
 ## [0.7.3+1]
 * Added pub example
 

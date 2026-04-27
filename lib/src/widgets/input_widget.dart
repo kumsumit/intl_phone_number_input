@@ -75,6 +75,7 @@ class InternationalPhoneNumberInput extends StatefulWidget {
   final String? hintText;
   final Widget? label;
   final String? errorMessage;
+  final String? countryCodeWarningMessage;
 
   final double selectorButtonOnErrorPadding;
 
@@ -140,6 +141,8 @@ class InternationalPhoneNumberInput extends StatefulWidget {
     this.initialValue,
     this.hintText = 'Phone number',
     this.errorMessage = 'Invalid phone number',
+    this.countryCodeWarningMessage =
+        'Enter the phone number without country code',
     this.selectorButtonOnErrorPadding = 24,
     this.spaceBetweenSelectorAndTextField = 12,
     this.isEnabled = true,
@@ -182,6 +185,7 @@ class InputWidgetState extends State<InternationalPhoneNumberInput> {
   List<Country> countries = [];
   bool isNotValid = true;
   String errorText = "";
+  bool _showCountryCodeWarning = false;
   bool _hasUserSelectedCountry = false;
   bool _autoDetectionStarted = false;
 
@@ -212,8 +216,7 @@ class InputWidgetState extends State<InternationalPhoneNumberInput> {
 
   @override
   Widget build(BuildContext context) {
-    final selectorErrorText =
-        widget.validator?.call(controller.text) ?? errorText;
+    final selectorErrorText = _runValidator(controller.text) ?? errorText;
     selectorButtonBottomPadding = selectorErrorText.isEmpty
         ? widget.selectorButtonOnErrorPadding
         : 0;
@@ -274,11 +277,14 @@ class InputWidgetState extends State<InternationalPhoneNumberInput> {
             onFieldSubmitted: widget.onFieldSubmitted,
             autovalidateMode: widget.autoValidateMode,
             autofillHints: widget.autofillHints,
-            validator: widget.validator ?? _defaultValidator,
+            validator: _runValidator,
             onSaved: onSaved,
             scrollPadding: widget.scrollPadding,
             inputFormatters: [
-              LengthLimitingTextInputFormatter(15),
+              CountryCodeBlockerFormatter(
+                onRejected: _showCountryCodeWarningMessage,
+                onAccepted: _clearCountryCodeWarningMessage,
+              ),
               FilteringTextInputFormatter.allow(
                 RegExp(
                   '[${Patterns.plus}${Patterns.digits}${Patterns.punctuation}]',
@@ -288,13 +294,12 @@ class InputWidgetState extends State<InternationalPhoneNumberInput> {
                   ? AsYouTypeFormatter(
                       isoCode: country.alpha2Code,
                       dialCode: country.dialCode,
-                      onInputFormatted: (TextEditingValue value) {
-                        controller.value = value;
-                      },
+                      onInputFormatted: (_) {},
                       acceptedLengths:
                           widget.disableLengthCheck ? const [] : acceptedLengths,
                     )
-                  : FilteringTextInputFormatter.digitsOnly,
+                  : LengthLimitingTextInputFormatter(15),
+              if (!widget.formatInput) FilteringTextInputFormatter.digitsOnly,
             ],
           ),
         ),
@@ -772,6 +777,10 @@ class InputWidgetState extends State<InternationalPhoneNumberInput> {
 
     if (controller.text.isEmpty) {
       final isValidWhenBlank = widget.ignoreBlank;
+      widget.onInputChanged?.call(PhoneNumber(
+        isoCode: country.alpha2Code,
+        nsn: '',
+      ));
       widget.onInputValidated?.call(isValidWhenBlank);
       setState(() {
         currentLength = 0;
@@ -788,11 +797,11 @@ class InputWidgetState extends State<InternationalPhoneNumberInput> {
 
     late final PhoneNumber phoneNumber;
     try {
-      phoneNumber = PhoneNumber.parse(
-        parsedPhoneNumberString,
-        destinationCountry: country.alpha2Code,
-      );
+      phoneNumber = _parsePhoneNumberValue(parsedPhoneNumberString);
     } catch (_) {
+      widget.onInputChanged?.call(
+        _parsePhoneNumberValueOrFallback(parsedPhoneNumberString),
+      );
       widget.onInputValidated?.call(false);
       setState(() {
         currentLength = parsedPhoneNumberString.replaceAll('+', '').length;
@@ -895,6 +904,14 @@ class InputWidgetState extends State<InternationalPhoneNumberInput> {
   /// Validate and returns a validation error when [FormState] validate is called.
   ///
 
+  String? _runValidator(String? value) {
+    if (_showCountryCodeWarning) {
+      return widget.countryCodeWarningMessage;
+    }
+
+    return widget.validator?.call(value) ?? _defaultValidator(value);
+  }
+
   String? _defaultValidator(String? value) {
     // debugPrint("Validator called with: $value");
     final bool hasContent = value?.isNotEmpty ?? false;
@@ -902,10 +919,7 @@ class InputWidgetState extends State<InternationalPhoneNumberInput> {
     final bool isInvalid =
         isNotValid && (hasContent || shouldValidateBlank);
     try {
-      final isParsed = PhoneNumber.parse(
-        value ?? "",
-        callerCountry: country.alpha2Code,
-      );
+      final isParsed = _parsePhoneNumberValue(value ?? "");
       if (isParsed.isValid()) {
         return null;
       }
@@ -927,17 +941,44 @@ class InputWidgetState extends State<InternationalPhoneNumberInput> {
 
   void _phoneNumberSaved() {
     if (mounted) {
-      String parsedPhoneNumberString = controller.text.replaceAll(
+      widget.onSaved?.call(_parsePhoneNumberValueOrFallback(controller.text));
+    }
+  }
+
+  PhoneNumber _parsePhoneNumberValue(String value) {
+    final parsedPhoneNumberString = value.replaceAll(
+      RegExp(r'[^\d+]'),
+      '',
+    );
+
+    try {
+      return PhoneNumber.parse(
+        parsedPhoneNumberString,
+        destinationCountry: country.alpha2Code,
+      );
+    } catch (_) {
+      return PhoneNumber.parse(
+        parsedPhoneNumberString,
+        callerCountry: country.alpha2Code,
+      );
+    }
+  }
+
+  PhoneNumber _parsePhoneNumberValueOrFallback(String value) {
+    try {
+      return _parsePhoneNumberValue(value);
+    } catch (_) {
+      final parsedPhoneNumberString = value.replaceAll(
         RegExp(r'[^\d+]'),
         '',
       );
+      final nsn = parsedPhoneNumberString.startsWith('+')
+          ? parsedPhoneNumberString.replaceFirst(country.dialCode, '')
+          : parsedPhoneNumberString;
 
-      final String phoneNumber = parsedPhoneNumberString.startsWith('+')
-          ? parsedPhoneNumberString
-          : '${country.dialCode}$parsedPhoneNumberString';
-
-      widget.onSaved?.call(
-        PhoneNumber.parse(phoneNumber, callerCountry: country.alpha2Code),
+      return PhoneNumber(
+        isoCode: country.alpha2Code,
+        nsn: nsn,
       );
     }
   }
@@ -945,5 +986,25 @@ class InputWidgetState extends State<InternationalPhoneNumberInput> {
   /// Saved the phone number when form is saved
   void onSaved(String? value) {
     _phoneNumberSaved();
+  }
+
+  void _showCountryCodeWarningMessage() {
+    if (_showCountryCodeWarning) {
+      return;
+    }
+
+    setState(() {
+      _showCountryCodeWarning = true;
+    });
+  }
+
+  void _clearCountryCodeWarningMessage() {
+    if (!_showCountryCodeWarning) {
+      return;
+    }
+
+    setState(() {
+      _showCountryCodeWarning = false;
+    });
   }
 }
