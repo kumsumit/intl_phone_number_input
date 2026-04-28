@@ -12,8 +12,8 @@ class SelectorConfig {
   /// [selectorType], for selector button type
   final PhoneInputSelectorType selectorType;
 
-  /// [showFlags], displays flag along side countries info on selector button
-  /// and list items within the selector
+  /// [showFlags], displays flags in the selector button, dropdown items,
+  /// and list items within the selector.
   final bool showFlags;
 
   /// [countryComparator], sort the country list according to the comparator.

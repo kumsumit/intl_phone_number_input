@@ -120,6 +120,75 @@ Important options:
 - `selectorConfig`: controls selector mode and styling
 - `textFieldController`: pass your own controller when the parent owns the text lifecycle
 
+Conditional options:
+
+- `spaceBetweenSelectorAndTextField`: only applies when `selectorConfig.setSelectorButtonAsPrefixIcon` is `false`
+- `betweenTextFieldWidget`: only applies when `selectorConfig.setSelectorButtonAsPrefixIcon` is `false`
+- `selectorButtonBottomWidget`: only applies when `selectorConfig.setSelectorButtonAsPrefixIcon` is `false`
+- `hintText`: only used when `inputDecoration` is not provided
+- `label`: only used when `inputDecoration` is not provided
+- `inputBorder`: only used when `inputDecoration` is not provided
+
+## All Parameters
+
+- `countries`: list of countries available in the selector
+- `defaultCountry`: initially selected country
+- `filterFunction`: optional custom country filter for the selector search UI
+- `autoDetectCountry`: enables automatic country detection on startup
+- `countryDetectionMode`: selects which built-in detection signals to use
+- `countryDetector`: optional custom detector that replaces the built-in detector
+- `countryNeighborResolver`: optional custom neighbor resolver used by detection-based ordering
+- `onAutoCountryDetected`: callback invoked with the country detection result
+- `detectedCountryOrderStrategy`: controls how the selector list is reordered after detection
+- `selectorConfig`: controls selector layout, search behavior, and selector styling
+- `onInputChanged`: callback invoked when the parsed phone number changes
+- `onInputValidated`: callback invoked when validity changes
+- `onSubmit`: callback invoked when editing is completed
+- `onFieldSubmitted`: callback invoked when the user submits the field
+- `validator`: optional custom validator for the text field
+- `onSaved`: callback invoked when a parent `Form` saves the field
+- `fieldKey`: key forwarded to the internal `TextFormField`
+- `textFieldController`: optional external text controller
+- `keyboardType`: keyboard type used by the text field
+- `keyboardAction`: keyboard action button configuration
+- `initialValue`: initial phone number used to prefill the field and selected country
+- `hintText`: hint text used when `inputDecoration` is not provided
+- `label`: label widget used when `inputDecoration` is not provided
+- `errorMessage`: default validation error text for invalid numbers
+- `countryCodeWarningMessage`: warning shown when the user types a country code into the field
+- `selectorButtonOnErrorPadding`: bottom padding used to keep the selector aligned when an error is shown
+- `spaceBetweenSelectorAndTextField`: horizontal gap between the external selector button and the text field
+- `selectorButtonBottomWidget`: optional widget shown below the external selector button
+- `betweenTextFieldWidget`: optional widget shown between the external selector button and the text field
+- `isEnabled`: enables or disables interaction
+- `formatInput`: formats the number as the user types
+- `autoFocus`: autofocuses the text field
+- `autoFocusSearch`: autofocuses the selector search field when opened
+- `autoValidateMode`: validation mode for the internal `TextFormField`
+- `ignoreBlank`: treats blank input as valid when `true`
+- `countrySelectorScrollControlled`: controls whether the bottom-sheet selector is scroll-controlled
+- `textDirection`: text direction used by the text field
+- `textStyle`: text style for the phone number field
+- `selectorTextStyle`: text style for the selector button and dropdown items
+- `flagStyle`: text style for flag emoji
+- `inputBorder`: border used when `inputDecoration` is not provided
+- `inputDecoration`: base decoration for the text field
+- `searchBoxDecoration`: decoration for the selector search field
+- `cursorColor`: cursor color for the text field
+- `textAlign`: horizontal text alignment in the field
+- `textAlignVertical`: vertical text alignment in the field
+- `scrollPadding`: scroll padding forwarded to the internal `TextFormField`
+- `onTap`: callback invoked when the text field is tapped
+- `focusNode`: focus node for the text field
+- `autofillHints`: autofill hints for the text field
+- `flagSize`: font size used for flag emoji
+- `disableLengthCheck`: disables metadata-based length enforcement in the formatter
+
+Notes for conditional parameters:
+
+- `spaceBetweenSelectorAndTextField`, `selectorButtonBottomWidget`, and `betweenTextFieldWidget` only apply when `selectorConfig.setSelectorButtonAsPrefixIcon` is `false`
+- `hintText`, `label`, and `inputBorder` only apply when `inputDecoration` is not provided
+
 ## Input Rules
 
 - Enter only the national number in the text field.
@@ -147,6 +216,8 @@ const SelectorConfig(
   trailingSpace: true,
 )
 ```
+
+- `showFlags` now controls flag visibility consistently in the selector button, dropdown items, and search list rows.
 
 ### macOS setup
 

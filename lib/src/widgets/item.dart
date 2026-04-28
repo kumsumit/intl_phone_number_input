@@ -37,7 +37,7 @@ class Item extends StatelessWidget {
       mainAxisSize: MainAxisSize.min,
       children: <Widget>[
         SizedBox(width: leadingPadding),
-        if (country != null)
+        if (showFlag == true && country != null)
           Flag(
             country: country!,
             flagSize: flagSize,

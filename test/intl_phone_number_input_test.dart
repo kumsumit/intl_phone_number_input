@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:intl_phone_number_input/intl_phone_number_input.dart';
 import 'package:intl_phone_number_input/src/utils/formatter/as_you_type_formatter.dart';
+import 'package:intl_phone_number_input/src/widgets/countries_search_list_widget.dart';
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
@@ -414,6 +415,44 @@ void main() {
 
       expect(find.text('United States'), findsOneWidget);
       expect(find.text('India'), findsNothing);
+    });
+
+    testWidgets('hides flags in the selector button when showFlags is false', (
+      tester,
+    ) async {
+      final multiCountries = <Country>[
+        Country(
+          name: 'India',
+          alpha2Code: 'IN',
+          alpha3Code: 'IND',
+          dialCode: '+91',
+        ),
+        Country(
+          name: 'United States',
+          alpha2Code: 'US',
+          alpha3Code: 'USA',
+          dialCode: '+1',
+        ),
+      ];
+
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Scaffold(
+            body: InternationalPhoneNumberInput(
+              countries: multiCountries,
+              defaultCountry: multiCountries.first,
+              selectorConfig: const SelectorConfig(
+                selectorType: PhoneInputSelectorType.DIALOG,
+                showFlags: false,
+              ),
+              formatInput: false,
+            ),
+          ),
+        ),
+      );
+
+      expect(find.byType(Flag), findsNothing);
+      expect(find.byType(MaterialButton), findsOneWidget);
     });
 
     testWidgets('can auto-detect and prioritize the detected country', (

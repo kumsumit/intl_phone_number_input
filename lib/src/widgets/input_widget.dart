@@ -45,71 +45,176 @@ typedef CountryNeighborResolver = List<String> Function(String countryCode);
 /// [countries] accepts list of string on Country isoCode, if specified filters
 /// available countries to match the [countries] specified.
 class InternationalPhoneNumberInput extends StatefulWidget {
+  /// Controls how the country selector is rendered and styled.
   final SelectorConfig selectorConfig;
-  final List<Country> countries;
-  final Country defaultCountry;
-  final List<Country> Function(String value)? filterFunction;
-  final bool autoDetectCountry;
-  final CountryDetectionMode countryDetectionMode;
-  final CountryDetectorCallback? countryDetector;
-  final CountryNeighborResolver? countryNeighborResolver;
-  final ValueChanged<CountryResult>? onAutoCountryDetected;
-  final DetectedCountryOrderStrategy detectedCountryOrderStrategy;
-  final bool prioritizeDetectedCountry;
-  final bool includeDetectedCountryNeighbors;
 
+  /// The list of countries available in the selector.
+  final List<Country> countries;
+
+  /// The initially selected country.
+  final Country defaultCountry;
+
+  /// Optional override for filtering countries inside the selector search UI.
+  final List<Country> Function(String value)? filterFunction;
+
+  /// Whether to attempt automatic country detection on startup.
+  final bool autoDetectCountry;
+
+  /// Selects which signal source the built-in detector should use.
+  final CountryDetectionMode countryDetectionMode;
+
+  /// Optional override for country detection.
+  ///
+  /// When provided, this is used instead of the built-in detector.
+  final CountryDetectorCallback? countryDetector;
+
+  /// Optional override for resolving neighboring countries for an ISO code.
+  final CountryNeighborResolver? countryNeighborResolver;
+
+  /// Called with the detection result after auto-detection completes.
+  final ValueChanged<CountryResult>? onAutoCountryDetected;
+
+  /// Controls how countries are reordered when detection is enabled.
+  final DetectedCountryOrderStrategy detectedCountryOrderStrategy;
+
+  /// Called whenever the parsed phone number changes.
   final ValueChanged<PhoneNumber>? onInputChanged;
+
+  /// Called whenever the current phone number validity changes.
   final ValueChanged<bool>? onInputValidated;
 
+  /// Called when the text field editing is completed.
   final VoidCallback? onSubmit;
+
+  /// Called when the user submits the text field.
   final ValueChanged<String>? onFieldSubmitted;
+
+  /// Optional custom validator for the text field.
+  ///
+  /// When omitted, the built-in phone-number validator is used.
   final String? Function(String?)? validator;
+
+  /// Called when a parent [Form] saves this field.
   final ValueChanged<PhoneNumber>? onSaved;
 
+  /// Optional key forwarded to the internal [TextFormField].
   final Key? fieldKey;
+
+  /// Optional external controller for the internal text field.
   final TextEditingController? textFieldController;
+
+  /// Keyboard configuration for the internal text field.
   final TextInputType keyboardType;
+
+  /// Action button shown by the platform keyboard.
   final TextInputAction? keyboardAction;
 
+  /// Initial phone number value used to populate the field and country.
   final PhoneNumber? initialValue;
+
+  /// Hint text used when [inputDecoration] is not provided.
   final String? hintText;
+
+  /// Label widget used when [inputDecoration] is not provided.
   final Widget? label;
+
+  /// Error message shown by the default validator.
   final String? errorMessage;
+
+  /// Warning shown when the user tries to type a country code into the field.
   final String? countryCodeWarningMessage;
 
+  /// Bottom padding used to align the selector when the text field shows an error.
   final double selectorButtonOnErrorPadding;
 
-  /// Ignored if [setSelectorButtonAsPrefixIcon = true]
+  /// Horizontal gap between the selector button and the text field.
+  ///
+  /// Only used when [selectorConfig.setSelectorButtonAsPrefixIcon] is `false`.
   final double spaceBetweenSelectorAndTextField;
+
+  /// Optional widget rendered below the external selector button column.
+  ///
+  /// Only used when [selectorConfig.setSelectorButtonAsPrefixIcon] is `false`.
   final Widget? selectorButtonBottomWidget;
+
+  /// Optional widget rendered between the external selector button and the text
+  /// field.
+  ///
+  /// Only used when [selectorConfig.setSelectorButtonAsPrefixIcon] is `false`.
   final Widget? betweenTextFieldWidget;
   // final int maxLength;
 
+  /// Whether the selector and text field are interactive.
   final bool isEnabled;
+
+  /// Whether to format the input as the user types.
   final bool formatInput;
+
+  /// Whether the text field should request focus automatically.
   final bool autoFocus;
+
+  /// Whether the selector search field should autofocus when opened.
   final bool autoFocusSearch;
+
+  /// Validation mode forwarded to the internal [TextFormField].
   final AutovalidateMode autoValidateMode;
+
+  /// Whether a blank value should be treated as valid.
   final bool ignoreBlank;
+
+  /// Whether the bottom-sheet selector should be scroll-controlled.
   final bool countrySelectorScrollControlled;
 
+  /// Text direction used by the internal text field.
   final TextDirection textDirection;
+
+  /// Text style for the phone number input.
   final TextStyle? textStyle;
+
+  /// Text style for the selector button and dropdown items.
   final TextStyle? selectorTextStyle;
+
+  /// Text style used when rendering flag emoji.
   final TextStyle? flagStyle;
+
+  /// Border applied only when [inputDecoration] is `null`.
   final InputBorder? inputBorder;
+
+  /// When provided, this decoration is used as the base decoration for the
+  /// text field.
+  ///
+  /// In that case, [label], [hintText], and [inputBorder] are not applied
+  /// automatically and should be set on [inputDecoration] itself.
   final InputDecoration? inputDecoration;
+
+  /// Decoration applied to the selector search field.
   final InputDecoration? searchBoxDecoration;
+
+  /// Cursor color for the text field.
   final Color? cursorColor;
+
+  /// Horizontal text alignment inside the text field.
   final TextAlign textAlign;
+
+  /// Vertical text alignment inside the text field.
   final TextAlignVertical textAlignVertical;
+
+  /// Scroll padding forwarded to the internal [TextFormField].
   final EdgeInsets scrollPadding;
+
+  /// Called when the text field is tapped.
   final void Function()? onTap;
+
+  /// Focus node for the internal text field.
   final FocusNode? focusNode;
+
+  /// Autofill hints forwarded to the internal text field.
   final Iterable<String>? autofillHints;
+
+  /// Font size used for flag emoji rendering.
   final double flagSize;
 
-  /// Disable view Min/Max Length check
+  /// Disables metadata-based minimum and maximum length enforcement.
   final bool disableLengthCheck;
 
   InternationalPhoneNumberInput({
@@ -123,8 +228,6 @@ class InternationalPhoneNumberInput extends StatefulWidget {
     this.countryNeighborResolver,
     this.onAutoCountryDetected,
     this.detectedCountryOrderStrategy = DetectedCountryOrderStrategy.none,
-    this.prioritizeDetectedCountry = false,
-    this.includeDetectedCountryNeighbors = false,
     this.selectorConfig = const SelectorConfig(),
     this.onInputChanged,
     this.onInputValidated,
@@ -331,10 +434,7 @@ class InputWidgetState extends State<InternationalPhoneNumberInput> {
         oldWidget.countryDetector != widget.countryDetector ||
         oldWidget.countryNeighborResolver != widget.countryNeighborResolver ||
         oldWidget.detectedCountryOrderStrategy !=
-            widget.detectedCountryOrderStrategy ||
-        oldWidget.prioritizeDetectedCountry != widget.prioritizeDetectedCountry ||
-        oldWidget.includeDetectedCountryNeighbors !=
-            widget.includeDetectedCountryNeighbors;
+            widget.detectedCountryOrderStrategy;
 
     if (!countriesChanged &&
         !defaultCountryChanged &&
@@ -725,18 +825,7 @@ class InputWidgetState extends State<InternationalPhoneNumberInput> {
   }
 
   DetectedCountryOrderStrategy get _effectiveDetectedCountryOrderStrategy {
-    if (widget.detectedCountryOrderStrategy !=
-        DetectedCountryOrderStrategy.none) {
-      return widget.detectedCountryOrderStrategy;
-    }
-
-    if (!widget.prioritizeDetectedCountry) {
-      return DetectedCountryOrderStrategy.none;
-    }
-
-    return widget.includeDetectedCountryNeighbors
-        ? DetectedCountryOrderStrategy.signalVotesThenNeighborsThenDistance
-        : DetectedCountryOrderStrategy.signalVotesThenDistance;
+    return widget.detectedCountryOrderStrategy;
   }
 
   /// [initialiseWidget] sets initial values of the widget
