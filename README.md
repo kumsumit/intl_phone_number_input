@@ -56,6 +56,8 @@ final countries = <Country>[
 final defaultCountry = countries.first;
 final controller = TextEditingController();
 
+await PhoneMetadataBootstrap.ensureInitialized();
+
 InternationalPhoneNumberInput(
   countries: countries,
   defaultCountry: defaultCountry,
@@ -81,6 +83,10 @@ InternationalPhoneNumberInput(
   },
 );
 ```
+
+If your app runs on desktop, call `PhoneMetadataBootstrap.ensureInitialized()`
+before building the widget tree. It resolves a writable directory for
+`phone_parser` metadata and keeps the setup in the library instead of your app.
 
 ## Quick Notes
 
@@ -247,19 +253,26 @@ Key options:
 - `searchHintText`: hint shown in the selector search field
 - `emptySearchMessage`: message shown when no country matches the search query
 
-### macOS setup
+## Desktop Support
 
-* If your Flutter macOS app uses the app sandbox, you must allow outbound network access.
-* Add this entitlement to both `macos/Runner/DebugProfile.entitlements` and `macos/Runner/Release.entitlements`:
+- The package now includes `PhoneMetadataBootstrap.ensureInitialized()` for
+  desktop-friendly metadata setup.
+- On Windows, Linux, and macOS, call it during app startup before rendering
+  `InternationalPhoneNumberInput`.
+- If your Flutter macOS app uses the app sandbox, you must allow outbound
+  network access.
+- Add this entitlement to both `macos/Runner/DebugProfile.entitlements` and
+  `macos/Runner/Release.entitlements`:
   ```xml
   <key>com.apple.security.network.client</key>
   <true/>
   ```
-* Without it, metadata download can fail with errors like:
+- Without it, metadata download can fail with errors like:
   ```text
   SocketException: Connection failed (OS Error: Operation not permitted)
   ```
-* Your app also needs write access to the directory you pass to `MetadataFinder.readMetadataJson(...)`.
+- If you need custom storage behavior, pass your own path to
+  `PhoneMetadataBootstrap.ensureInitialized(directoryPath: ...)`.
 
 ## Notes
 

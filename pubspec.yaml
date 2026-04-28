@@ -5,17 +5,29 @@ version: 0.7.3+1
 homepage: https://github.com/natintosh/intl-phone-number-input
 repository: https://github.com/natintosh/intl-phone-number-input
 
+platforms:
+  android:
+  ios:
+  linux:
+  macos:
+  windows:
+
 environment:
   sdk: ">=3.11.0 <4.0.0"
 
 dependencies:
   flutter:
     sdk: flutter
+  macos_ui: ^2.2.2
+  yaru: ^10.1.0
+  fluent_ui: ^4.15.1  
   phone_parser:
     git: https://github.com/sumitsharansatsangi/phone_parser.git
-  flutter_timezone: 
+  flutter_timezone:
     git: https://github.com/kumsumit/flutter_timezone.git
-  http: ^1.6.0  
+  http: ^1.6.0
+  path_provider: 
+    git: https://github.com/kumsumit/path_provider.git
 
 dev_dependencies:
   flutter_test:
@@ -25,3 +37,11 @@ dev_dependencies:
 # following page: https://dart.dev/tools/pub/pubspec
 
 # The following section is specific to Flutter.
+dependency_overrides:
+  plugin_platform_interface:
+    git: https://github.com/kumsumit/plugin_platform_interface.git
+  xdg_directories:
+    git: https://github.com/kumsumit/xdg_directories.git
+  path_provider:
+    git: https://github.com/kumsumit/path_provider.git
+  xml: ^7.0.1

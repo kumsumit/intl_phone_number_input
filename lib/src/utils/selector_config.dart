@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl_phone_number_input/src/models/country_model.dart';
-import 'package:intl_phone_number_input/src/widgets/input_widget.dart';
+import 'package:intl_phone_number_input/src/utils/input_types.dart';
 
 /// Compares two countries for custom selector ordering.
 ///

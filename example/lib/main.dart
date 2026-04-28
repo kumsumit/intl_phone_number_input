@@ -1,23 +1,13 @@
-import 'dart:io';
-
-import 'country_list.dart';
 import 'package:flutter/material.dart';
 import 'package:intl_phone_number_input/intl_phone_number_input.dart';
-import 'package:path_provider/path_provider.dart';
+import 'package:yaru/yaru.dart';
+
+import 'country_list.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  String dirPath;
   try {
-    // Try to use path_provider for a writable directory (mobile/desktop)
-    final Directory appDocDir = await getApplicationSupportDirectory();
-    dirPath = appDocDir.path;
-  } catch (_) {
-    // Fallback for pure Dart CLI or if path_provider fails
-    dirPath = Directory.current.path;
-  }
-  try {
-    await MetadataFinder.readMetadataJson(dirPath);
+    await PhoneMetadataBootstrap.ensureInitialized();
   } catch (e) {
     // Metadata download failed, continue with app
     debugPrint('Metadata download failed: $e');
@@ -33,10 +23,8 @@ class ExampleApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'Intl Phone Number Input',
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.indigo),
-        useMaterial3: true,
-      ),
+      theme: yaruLight,
+      darkTheme: yaruDark,
       home: const ExampleHomePage(),
     );
   }
@@ -121,339 +109,364 @@ class _ExampleHomePageState extends State<ExampleHomePage> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final colorScheme = theme.colorScheme;
 
     return Scaffold(
       appBar: AppBar(title: const Text('Phone Input Playground')),
       body: SafeArea(
-        child: ListView(
-          padding: const EdgeInsets.all(16),
-          children: [
-            Text('Phone Input Playground', style: theme.textTheme.headlineMedium),
-            const SizedBox(height: 8),
-            Text(
-              'Try selector layouts, formatting, and country detection settings in one place. The preview stays wired to the live widget so it is easy to understand how each option changes behavior.',
-              style: theme.textTheme.bodyMedium,
-            ),
-            const SizedBox(height: 24),
-            _SectionHeader(
-              title: 'Selector',
-              caption: 'Choose how the country picker is presented.',
-            ),
-            const SizedBox(height: 12),
-            SegmentedButton<PhoneInputSelectorType>(
-              segments: const [
-                ButtonSegment(
-                  value: PhoneInputSelectorType.DROPDOWN,
-                  label: Text('Dropdown'),
-                ),
-                ButtonSegment(
-                  value: PhoneInputSelectorType.BOTTOM_SHEET,
-                  label: Text('Bottom sheet'),
-                ),
-                ButtonSegment(
-                  value: PhoneInputSelectorType.DIALOG,
-                  label: Text('Dialog'),
-                ),
-              ],
-              selected: {_selectorType},
-              onSelectionChanged: (selection) {
-                setState(() {
-                  _selectorType = selection.first;
-                });
-              },
-            ),
-            const SizedBox(height: 20),
-            Wrap(
-              spacing: 12,
-              runSpacing: 8,
-              children: [
-                FilterChip(
-                  label: const Text('Format input'),
-                  selected: _formatInput,
-                  onSelected: (value) {
-                    setState(() {
-                      _formatInput = value;
-                    });
-                  },
-                ),
-                FilterChip(
-                  label: const Text('Prefix selector'),
-                  selected: _prefixSelector,
-                  onSelected: (value) {
-                    setState(() {
-                      _prefixSelector = value;
-                    });
-                  },
-                ),
-                FilterChip(
-                  label: const Text('Ignore blank'),
-                  selected: _ignoreBlank,
-                  onSelected: (value) {
-                    setState(() {
-                      _ignoreBlank = value;
-                    });
-                  },
-                ),
-                FilterChip(
-                  label: const Text('Disable length check'),
-                  selected: _disableLengthCheck,
-                  onSelected: (value) {
-                    setState(() {
-                      _disableLengthCheck = value;
-                    });
-                  },
-                ),
-                FilterChip(
-                  label: const Text('Auto detect country'),
-                  selected: _autoDetectCountry,
-                  onSelected: (value) {
-                    _setAutoDetectCountry(value);
-                  },
-                ),
-              ],
-            ),
-            const SizedBox(height: 20),
-            _SectionHeader(
-              title: 'Detection Signals',
-              caption: 'Control which signals the built-in detector can use.',
-            ),
-            const SizedBox(height: 12),
-            SegmentedButton<CountryDetectionMode>(
-              segments: const [
-                ButtonSegment(
-                  value: CountryDetectionMode.localSignals,
-                  label: Text('Local only'),
-                ),
-                ButtonSegment(
-                  value: CountryDetectionMode.networkSignals,
-                  label: Text('Local + IP'),
-                ),
-              ],
-              selected: {_countryDetectionMode},
-              onSelectionChanged: (selection) {
-                setState(() {
-                  _countryDetectionMode = selection.first;
-                  _detectedCountryResult = null;
-                });
-              },
-            ),
-            const SizedBox(height: 20),
-            _SectionHeader(
-              title: 'Detection Ordering',
-              caption: 'Choose how detected countries are prioritized in the selector.',
-            ),
-            const SizedBox(height: 12),
-            SegmentedButton<DetectedCountryOrderStrategy>(
-              segments: const [
-                ButtonSegment(
-                  value: DetectedCountryOrderStrategy.none,
-                  label: Text('Off'),
-                ),
-                ButtonSegment(
-                  value: DetectedCountryOrderStrategy.detectedCountryFirst,
-                  label: Text('Detected'),
-                ),
-                ButtonSegment(
-                  value: DetectedCountryOrderStrategy.signalVotesThenDistance,
-                  label: Text('Signals first'),
-                ),
-                ButtonSegment(
-                  value: DetectedCountryOrderStrategy
-                      .signalVotesThenNeighborsThenDistance,
-                  label: Text('Signals + neighbors'),
-                ),
-              ],
-              selected: {_detectedCountryOrderStrategy},
-              onSelectionChanged: (selection) {
-                setState(() {
-                  _detectedCountryOrderStrategy = selection.first;
-                });
-              },
-            ),
-            const SizedBox(height: 24),
-            _SectionHeader(
-              title: 'Live Preview',
-              caption: _helperText,
-            ),
-            const SizedBox(height: 12),
-            Form(
-              key: _formKey,
-              child: InternationalPhoneNumberInput(
-                key: ValueKey(
-                  'phone-input-$_autoDetectCountry-$_countryDetectionMode-$_detectedCountryOrderStrategy',
-                ),
-                countries: _countries,
-                defaultCountry: _defaultCountry,
-                filterFunction: _filterCountries,
-                textFieldController: _controller,
-                autoDetectCountry: _autoDetectCountry,
-                countryDetectionMode: _countryDetectionMode,
-                detectedCountryOrderStrategy: _detectedCountryOrderStrategy,
-                formatInput: _formatInput,
-                ignoreBlank: _ignoreBlank,
-                disableLengthCheck: _disableLengthCheck,
-                autoValidateMode: AutovalidateMode.onUserInteraction,
-                countryCodeWarningMessage: _countryCodeWarningMessage,
-                selectorConfig: SelectorConfig(
-                  selectorType: _selectorType,
-                  setSelectorButtonAsPrefixIcon: _prefixSelector,
-                  useBottomSheetSafeArea: true,
-                  titleStyle: Theme.of(context).textTheme.bodyLarge,
-                  subtitleStyle: Theme.of(context).textTheme.bodySmall,
-                ),
-                selectorTextStyle: Theme.of(context).textTheme.bodyMedium,
-                flagStyle: Theme.of(context).textTheme.titleLarge,
-                inputBorder: const OutlineInputBorder(),
-                inputDecoration: const InputDecoration(
-                  labelText: 'Phone number',
-                  helperText: _helperText,
-                ),
-                onInputChanged: (number) {
-                  WidgetsBinding.instance.addPostFrameCallback((_) {
-                    if (mounted) {
-                      setState(() {
-                        _number = number;
-                      });
-                    }
-                  });
-                },
-                onInputValidated: (isValid) {
-                  WidgetsBinding.instance.addPostFrameCallback((_) {
-                    if (mounted) {
-                      setState(() {
-                        _isValid = isValid;
-                      });
-                    }
-                  });
-                },
-                onAutoCountryDetected: (result) {
-                  WidgetsBinding.instance.addPostFrameCallback((_) {
-                    if (mounted) {
-                      setState(() {
-                        _detectedCountryResult = result;
-                      });
-                    }
-                  });
-                },
-                onSaved: (number) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text('Saved ${number.international}')),
-                  );
-                },
+        child: LayoutBuilder(
+          builder: (context, constraints) {
+            final isWide = constraints.maxWidth >= 960;
+            final content = <Widget>[
+              Text(
+                'Phone Input Playground',
+                style: theme.textTheme.headlineMedium,
               ),
-            ),
-            const SizedBox(height: 16),
-            Wrap(
-              spacing: 12,
-              runSpacing: 12,
-              children: [
-                FilledButton(
-                  onPressed: () {
-                    final isValid = _formKey.currentState?.validate() ?? false;
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: Text(
-                          isValid
-                              ? 'The current number is valid.'
-                              : 'The current number is invalid.',
-                        ),
-                      ),
-                    );
-                  },
-                  child: const Text('Validate'),
-                ),
-                OutlinedButton(
-                  onPressed: _setDemoNumber,
-                  child: const Text('Load sample'),
-                ),
-                OutlinedButton(
-                  onPressed: _clearField,
-                  child: const Text('Clear'),
-                ),
-                OutlinedButton(
-                  onPressed: () {
-                    _formKey.currentState?.save();
-                  },
-                  child: const Text('Save'),
-                ),
-              ],
-            ),
-            const SizedBox(height: 24),
-            DecoratedBox(
-              decoration: BoxDecoration(
-                color: colorScheme.surfaceContainerHighest,
-                borderRadius: BorderRadius.circular(12),
+              const SizedBox(height: 8),
+              Text(
+                'Try selector layouts, formatting, and country detection settings in one place. The preview stays wired to the live widget so it is easy to understand how each option changes behavior.',
+                style: theme.textTheme.bodyMedium,
               ),
-              child: Padding(
-                padding: const EdgeInsets.all(16),
-                child: Column(
+              const SizedBox(height: 24),
+              if (isWide)
+                Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
-                      'Live State',
-                      style: theme.textTheme.titleMedium,
-                    ),
-                    const SizedBox(height: 12),
-                    _StatusRow(
-                      label: 'Validation',
-                      value: _statusLabel(_isValid),
-                    ),
-                    _StatusRow(
-                      label: 'ISO code',
-                      value: _number.isoCode.isNotEmpty
-                          ? _number.isoCode
-                          : 'Unavailable',
-                    ),
-                    _StatusRow(
-                      label: 'National number',
-                      value: _number.nsn.isNotEmpty ? _number.nsn : 'Empty',
-                    ),
-                    _StatusRow(
-                      label: 'International',
-                      value: _number.nsn.isNotEmpty
-                          ? _number.international
-                          : 'Empty',
-                    ),
-                    _StatusRow(
-                      label: 'Detected country',
-                      value: _detectedCountryResult?.countryCode ?? 'None',
-                    ),
-                    _StatusRow(
-                      label: 'Detection mode',
-                      value: _detectionModeLabel(_countryDetectionMode),
-                    ),
-                    _StatusRow(
-                      label: 'Ordering',
-                      value: _orderingLabel(_detectedCountryOrderStrategy),
-                    ),
-                    _StatusRow(
-                      label: 'Detection confidence',
-                      value: _detectedCountryResult != null
-                          ? '${_detectedCountryResult!.confidence}%'
-                          : 'None',
-                    ),
-                    if (_detectedCountryResult != null &&
-                        _detectedCountryResult!.allVotes.isNotEmpty) ...[
-                      const SizedBox(height: 16),
-                      Text(
-                        'Top Ranked Votes',
-                        style: theme.textTheme.titleSmall,
-                      ),
-                      const SizedBox(height: 8),
-                      ..._detectedCountryResult!.allVotes.entries
-                          .take(6)
-                          .map(
-                            (entry) => _StatusRow(
-                              label: entry.key,
-                              value: '${entry.value} pts',
-                            ),
-                          ),
-                    ],
+                    Expanded(flex: 7, child: _buildControlsColumn(context)),
+                    const SizedBox(width: 24),
+                    Expanded(flex: 5, child: _buildStatusCard(context)),
                   ],
+                )
+              else ...[
+                ..._buildControlsChildren(context),
+                const SizedBox(height: 24),
+                _buildStatusCard(context),
+              ],
+            ];
+
+            return ListView(
+              padding: const EdgeInsets.all(16),
+              children: content,
+            );
+          },
+        ),
+      ),
+    );
+  }
+
+  Widget _buildControlsColumn(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: _buildControlsChildren(context),
+    );
+  }
+
+  List<Widget> _buildControlsChildren(BuildContext context) {
+    final theme = Theme.of(context);
+
+    return [
+      _SectionHeader(
+        title: 'Selector',
+        caption: 'Choose how the country picker is presented.',
+      ),
+      const SizedBox(height: 12),
+      SegmentedButton<PhoneInputSelectorType>(
+        segments: const [
+          ButtonSegment(
+            value: PhoneInputSelectorType.DROPDOWN,
+            label: Text('Dropdown'),
+          ),
+          ButtonSegment(
+            value: PhoneInputSelectorType.BOTTOM_SHEET,
+            label: Text('Bottom sheet'),
+          ),
+          ButtonSegment(
+            value: PhoneInputSelectorType.DIALOG,
+            label: Text('Dialog'),
+          ),
+        ],
+        selected: {_selectorType},
+        onSelectionChanged: (selection) {
+          setState(() {
+            _selectorType = selection.first;
+          });
+        },
+      ),
+      const SizedBox(height: 20),
+      Wrap(
+        spacing: 12,
+        runSpacing: 8,
+        children: [
+          FilterChip(
+            label: const Text('Format input'),
+            selected: _formatInput,
+            onSelected: (value) {
+              setState(() {
+                _formatInput = value;
+              });
+            },
+          ),
+          FilterChip(
+            label: const Text('Prefix selector'),
+            selected: _prefixSelector,
+            onSelected: (value) {
+              setState(() {
+                _prefixSelector = value;
+              });
+            },
+          ),
+          FilterChip(
+            label: const Text('Ignore blank'),
+            selected: _ignoreBlank,
+            onSelected: (value) {
+              setState(() {
+                _ignoreBlank = value;
+              });
+            },
+          ),
+          FilterChip(
+            label: const Text('Disable length check'),
+            selected: _disableLengthCheck,
+            onSelected: (value) {
+              setState(() {
+                _disableLengthCheck = value;
+              });
+            },
+          ),
+          FilterChip(
+            label: const Text('Auto detect country'),
+            selected: _autoDetectCountry,
+            onSelected: (value) {
+              _setAutoDetectCountry(value);
+            },
+          ),
+        ],
+      ),
+      const SizedBox(height: 20),
+      _SectionHeader(
+        title: 'Detection Signals',
+        caption: 'Control which signals the built-in detector can use.',
+      ),
+      const SizedBox(height: 12),
+      SegmentedButton<CountryDetectionMode>(
+        segments: const [
+          ButtonSegment(
+            value: CountryDetectionMode.localSignals,
+            label: Text('Local only'),
+          ),
+          ButtonSegment(
+            value: CountryDetectionMode.networkSignals,
+            label: Text('Local + IP'),
+          ),
+        ],
+        selected: {_countryDetectionMode},
+        onSelectionChanged: (selection) {
+          setState(() {
+            _countryDetectionMode = selection.first;
+            _detectedCountryResult = null;
+          });
+        },
+      ),
+      const SizedBox(height: 20),
+      _SectionHeader(
+        title: 'Detection Ordering',
+        caption:
+            'Choose how detected countries are prioritized in the selector.',
+      ),
+      const SizedBox(height: 12),
+      SegmentedButton<DetectedCountryOrderStrategy>(
+        segments: const [
+          ButtonSegment(
+            value: DetectedCountryOrderStrategy.none,
+            label: Text('Off'),
+          ),
+          ButtonSegment(
+            value: DetectedCountryOrderStrategy.detectedCountryFirst,
+            label: Text('Detected'),
+          ),
+          ButtonSegment(
+            value: DetectedCountryOrderStrategy.signalVotesThenDistance,
+            label: Text('Signals first'),
+          ),
+          ButtonSegment(
+            value: DetectedCountryOrderStrategy
+                .signalVotesThenNeighborsThenDistance,
+            label: Text('Signals + neighbors'),
+          ),
+        ],
+        selected: {_detectedCountryOrderStrategy},
+        onSelectionChanged: (selection) {
+          setState(() {
+            _detectedCountryOrderStrategy = selection.first;
+          });
+        },
+      ),
+      const SizedBox(height: 24),
+      _SectionHeader(title: 'Live Preview', caption: _helperText),
+      const SizedBox(height: 12),
+      Form(
+        key: _formKey,
+        child: YaruInternationalPhoneNumber(
+          key: ValueKey(
+            'phone-input-$_autoDetectCountry-$_countryDetectionMode-$_detectedCountryOrderStrategy',
+          ),
+          countries: _countries,
+          defaultCountry: _defaultCountry,
+          filterFunction: _filterCountries,
+          textFieldController: _controller,
+          autoDetectCountry: _autoDetectCountry,
+          countryDetectionMode: _countryDetectionMode,
+          detectedCountryOrderStrategy: _detectedCountryOrderStrategy,
+          formatInput: _formatInput,
+          ignoreBlank: _ignoreBlank,
+          disableLengthCheck: _disableLengthCheck,
+          autoValidateMode: AutovalidateMode.onUserInteraction,
+          countryCodeWarningMessage: _countryCodeWarningMessage,
+          selectorConfig: SelectorConfig(
+            selectorType: _selectorType,
+            setSelectorButtonAsPrefixIcon: _prefixSelector,
+            useBottomSheetSafeArea: true,
+            titleStyle: theme.textTheme.bodyLarge,
+            subtitleStyle: theme.textTheme.bodySmall,
+          ),
+          selectorTextStyle: theme.textTheme.bodyMedium,
+          flagStyle: theme.textTheme.titleLarge,
+          inputDecoration: const InputDecoration(
+            labelText: 'Phone number',
+            border: OutlineInputBorder(),
+          ),
+          onInputChanged: (number) {
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              if (mounted) {
+                setState(() {
+                  _number = number;
+                });
+              }
+            });
+          },
+          onInputValidated: (isValid) {
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              if (mounted) {
+                setState(() {
+                  _isValid = isValid;
+                });
+              }
+            });
+          },
+          onAutoCountryDetected: (result) {
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              if (mounted) {
+                setState(() {
+                  _detectedCountryResult = result;
+                });
+              }
+            });
+          },
+          onSaved: (number) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text('Saved ${number.international}')),
+            );
+          },
+        ),
+      ),
+      const SizedBox(height: 16),
+      Wrap(
+        spacing: 12,
+        runSpacing: 12,
+        children: [
+          FilledButton(
+            onPressed: () {
+              final isValid = _formKey.currentState?.validate() ?? false;
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text(
+                    isValid
+                        ? 'The current number is valid.'
+                        : 'The current number is invalid.',
+                  ),
                 ),
-              ),
+              );
+            },
+            child: const Text('Validate'),
+          ),
+          OutlinedButton(
+            onPressed: _setDemoNumber,
+            child: const Text('Load sample'),
+          ),
+          OutlinedButton(onPressed: _clearField, child: const Text('Clear')),
+          OutlinedButton(
+            onPressed: () {
+              _formKey.currentState?.save();
+            },
+            child: const Text('Save'),
+          ),
+        ],
+      ),
+    ];
+  }
+
+  Widget _buildStatusCard(BuildContext context) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        color: colorScheme.surfaceContainerHighest,
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text('Live State', style: theme.textTheme.titleMedium),
+            const SizedBox(height: 12),
+            _StatusRow(label: 'Validation', value: _statusLabel(_isValid)),
+            _StatusRow(
+              label: 'ISO code',
+              value: _number.isoCode.isNotEmpty
+                  ? _number.isoCode
+                  : 'Unavailable',
             ),
+            _StatusRow(
+              label: 'National number',
+              value: _number.nsn.isNotEmpty ? _number.nsn : 'Empty',
+            ),
+            _StatusRow(
+              label: 'International',
+              value: _number.nsn.isNotEmpty ? _number.international : 'Empty',
+            ),
+            _StatusRow(
+              label: 'Detected country',
+              value: _detectedCountryResult?.countryCode ?? 'None',
+            ),
+            _StatusRow(
+              label: 'Detection mode',
+              value: _detectionModeLabel(_countryDetectionMode),
+            ),
+            _StatusRow(
+              label: 'Ordering',
+              value: _orderingLabel(_detectedCountryOrderStrategy),
+            ),
+            _StatusRow(
+              label: 'Detection confidence',
+              value: _detectedCountryResult != null
+                  ? '${_detectedCountryResult!.confidence}%'
+                  : 'None',
+            ),
+            if (_detectedCountryResult != null &&
+                _detectedCountryResult!.allVotes.isNotEmpty) ...[
+              const SizedBox(height: 16),
+              Text('Top Ranked Votes', style: theme.textTheme.titleSmall),
+              const SizedBox(height: 8),
+              ..._detectedCountryResult!.allVotes.entries
+                  .take(6)
+                  .map(
+                    (entry) => _StatusRow(
+                      label: entry.key,
+                      value: '${entry.value} pts',
+                    ),
+                  ),
+            ],
           ],
         ),
       ),

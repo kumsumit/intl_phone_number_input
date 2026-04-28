@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:intl_phone_number_input/intl_phone_number_input.dart';
 import 'package:intl_phone_number_input/src/utils/formatter/as_you_type_formatter.dart';
-import 'package:intl_phone_number_input/src/widgets/countries_search_list_widget.dart';
+import 'package:intl_phone_number_input/src/widgets/common/flag_widget.dart';
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
@@ -79,7 +79,7 @@ void main() {
     });
   });
 
-  group('InternationalPhoneNumberInput', () {
+  group('MaterialInternationalPhoneNumber', () {
     final countries = <Country>[
       Country(
         name: 'United States',
@@ -102,7 +102,7 @@ void main() {
       await tester.pumpWidget(
         MaterialApp(
           home: Scaffold(
-            body: InternationalPhoneNumberInput(
+            body: MaterialInternationalPhoneNumber(
               countries: countries,
               defaultCountry: defaultCountry,
               filterFunction: filterCountries,
@@ -138,12 +138,18 @@ void main() {
 
       final state = tester.state<_HarnessState>(find.byType(_Harness));
       final textField = find.byType(TextFormField);
-      final initialText = tester.widget<TextFormField>(textField).controller!.text;
+      final initialText = tester
+          .widget<TextFormField>(textField)
+          .controller!
+          .text;
 
       state.updatePhoneNumber(secondNumber);
       await tester.pump();
 
-      final updatedText = tester.widget<TextFormField>(textField).controller!.text;
+      final updatedText = tester
+          .widget<TextFormField>(textField)
+          .controller!
+          .text;
 
       expect(updatedText, isNot(initialText));
       expect(updatedText, secondNumber.nsn);
@@ -160,7 +166,7 @@ void main() {
           home: Scaffold(
             body: Form(
               key: formKey,
-              child: InternationalPhoneNumberInput(
+              child: MaterialInternationalPhoneNumber(
                 countries: countries,
                 defaultCountry: defaultCountry,
                 filterFunction: filterCountries,
@@ -192,7 +198,7 @@ void main() {
       await tester.pumpWidget(
         MaterialApp(
           home: Scaffold(
-            body: InternationalPhoneNumberInput(
+            body: MaterialInternationalPhoneNumber(
               countries: countries,
               defaultCountry: defaultCountry,
               filterFunction: filterCountries,
@@ -221,7 +227,7 @@ void main() {
       await tester.pumpWidget(
         MaterialApp(
           home: Scaffold(
-            body: InternationalPhoneNumberInput(
+            body: MaterialInternationalPhoneNumber(
               countries: countries,
               defaultCountry: defaultCountry,
               filterFunction: filterCountries,
@@ -251,7 +257,7 @@ void main() {
       await tester.pumpWidget(
         MaterialApp(
           home: Scaffold(
-            body: InternationalPhoneNumberInput(
+            body: MaterialInternationalPhoneNumber(
               countries: countries,
               defaultCountry: defaultCountry,
               filterFunction: filterCountries,
@@ -283,7 +289,7 @@ void main() {
       await tester.pumpWidget(
         MaterialApp(
           home: Scaffold(
-            body: InternationalPhoneNumberInput(
+            body: MaterialInternationalPhoneNumber(
               countries: countries,
               defaultCountry: defaultCountry,
               filterFunction: filterCountries,
@@ -298,7 +304,9 @@ void main() {
       await tester.enterText(find.byType(TextFormField), '+1');
       await tester.pump();
 
-      final textField = tester.widget<TextFormField>(find.byType(TextFormField));
+      final textField = tester.widget<TextFormField>(
+        find.byType(TextFormField),
+      );
       expect(textField.controller!.text, isEmpty);
       expect(find.text(warningMessage), findsOneWidget);
     });
@@ -311,7 +319,7 @@ void main() {
       await tester.pumpWidget(
         MaterialApp(
           home: Scaffold(
-            body: InternationalPhoneNumberInput(
+            body: MaterialInternationalPhoneNumber(
               countries: countries,
               defaultCountry: defaultCountry,
               filterFunction: filterCountries,
@@ -342,7 +350,7 @@ void main() {
         await tester.pumpWidget(
           MaterialApp(
             home: Scaffold(
-              body: InternationalPhoneNumberInput(
+              body: MaterialInternationalPhoneNumber(
                 countries: countries,
                 defaultCountry: defaultCountry,
                 filterFunction: filterCountries,
@@ -396,7 +404,7 @@ void main() {
       await tester.pumpWidget(
         MaterialApp(
           home: Scaffold(
-            body: InternationalPhoneNumberInput(
+            body: MaterialInternationalPhoneNumber(
               countries: multiCountries,
               defaultCountry: multiCountries.first,
               selectorConfig: const SelectorConfig(
@@ -438,7 +446,7 @@ void main() {
       await tester.pumpWidget(
         MaterialApp(
           home: Scaffold(
-            body: InternationalPhoneNumberInput(
+            body: MaterialInternationalPhoneNumber(
               countries: multiCountries,
               defaultCountry: multiCountries.first,
               selectorConfig: const SelectorConfig(
@@ -451,7 +459,7 @@ void main() {
         ),
       );
 
-      expect(find.byType(Flag), findsNothing);
+      expect(find.byType(FlagWidget), findsNothing);
       expect(find.byType(MaterialButton), findsOneWidget);
     });
 
@@ -494,7 +502,7 @@ void main() {
       await tester.pumpWidget(
         MaterialApp(
           home: Scaffold(
-            body: InternationalPhoneNumberInput(
+            body: MaterialInternationalPhoneNumber(
               countries: multiCountries,
               defaultCountry: multiCountries.first,
               autoDetectCountry: true,
@@ -503,11 +511,7 @@ void main() {
               countryDetector: () async => const CountryResult(
                 countryCode: 'US',
                 confidence: 80,
-                allVotes: {
-                  'US': 80,
-                  'CA': 35,
-                  'MX': 20,
-                },
+                allVotes: {'US': 80, 'CA': 35, 'MX': 20},
               ),
               selectorConfig: const SelectorConfig(
                 selectorType: PhoneInputSelectorType.DIALOG,
@@ -522,7 +526,9 @@ void main() {
       await tester.tap(find.byType(MaterialButton));
       await tester.pumpAndSettle();
 
-      final countryTiles = tester.widgetList<ListTile>(find.byType(ListTile)).toList();
+      final countryTiles = tester
+          .widgetList<ListTile>(find.byType(ListTile))
+          .toList();
       final countryNames = countryTiles.map((tile) {
         final title = tile.title! as Align;
         final text = title.child! as Text;
@@ -570,7 +576,7 @@ void main() {
         await tester.pumpWidget(
           MaterialApp(
             home: Scaffold(
-              body: InternationalPhoneNumberInput(
+              body: MaterialInternationalPhoneNumber(
                 countries: multiCountries,
                 defaultCountry: multiCountries.first,
                 autoDetectCountry: true,
@@ -579,11 +585,7 @@ void main() {
                 countryDetector: () async => const CountryResult(
                   countryCode: 'US',
                   confidence: 80,
-                  allVotes: {
-                    'US': 80,
-                    'MX': 30,
-                    'IN': 20,
-                  },
+                  allVotes: {'US': 80, 'MX': 30, 'IN': 20},
                 ),
                 selectorConfig: const SelectorConfig(
                   selectorType: PhoneInputSelectorType.DIALOG,
@@ -597,17 +599,13 @@ void main() {
         await tester.pumpAndSettle();
 
         final dynamic state = tester.state(
-          find.byType(InternationalPhoneNumberInput),
+          find.byType(MaterialInternationalPhoneNumber),
         );
-        final countryNames =
-            (state.countries as List<Country>).map((country) => country.name).toList();
+        final countryNames = (state.countries as List<Country>)
+            .map((country) => country.name)
+            .toList();
 
-        expect(countryNames, [
-          'United States',
-          'Canada',
-          'India',
-          'Mexico',
-        ]);
+        expect(countryNames, ['United States', 'Canada', 'India', 'Mexico']);
       },
     );
 
@@ -644,7 +642,7 @@ void main() {
         await tester.pumpWidget(
           MaterialApp(
             home: Scaffold(
-              body: InternationalPhoneNumberInput(
+              body: MaterialInternationalPhoneNumber(
                 countries: multiCountries,
                 defaultCountry: multiCountries.last,
                 detectedCountryOrderStrategy:
@@ -661,17 +659,13 @@ void main() {
         await tester.pumpAndSettle();
 
         final dynamic state = tester.state(
-          find.byType(InternationalPhoneNumberInput),
+          find.byType(MaterialInternationalPhoneNumber),
         );
-        final countryNames =
-            (state.countries as List<Country>).map((country) => country.name).toList();
+        final countryNames = (state.countries as List<Country>)
+            .map((country) => country.name)
+            .toList();
 
-        expect(countryNames, [
-          'United States',
-          'Canada',
-          'India',
-          'Mexico',
-        ]);
+        expect(countryNames, ['United States', 'Canada', 'India', 'Mexico']);
       },
     );
 
@@ -720,21 +714,17 @@ void main() {
         await tester.pumpWidget(
           MaterialApp(
             home: Scaffold(
-              body: InternationalPhoneNumberInput(
+              body: MaterialInternationalPhoneNumber(
                 countries: multiCountries,
                 defaultCountry: multiCountries.first,
                 filterFunction: filterCountries,
                 autoDetectCountry: true,
-                detectedCountryOrderStrategy:
-                    DetectedCountryOrderStrategy
-                        .signalVotesThenNeighborsThenDistance,
+                detectedCountryOrderStrategy: DetectedCountryOrderStrategy
+                    .signalVotesThenNeighborsThenDistance,
                 countryDetector: () async => const CountryResult(
                   countryCode: 'IN',
                   confidence: 92,
-                  allVotes: {
-                    'IN': 92,
-                    'LK': 60,
-                  },
+                  allVotes: {'IN': 92, 'LK': 60},
                 ),
                 selectorConfig: const SelectorConfig(
                   selectorType: PhoneInputSelectorType.DIALOG,
@@ -749,7 +739,9 @@ void main() {
         await tester.tap(find.byType(MaterialButton));
         await tester.pumpAndSettle();
 
-        final countryTiles = tester.widgetList<ListTile>(find.byType(ListTile)).toList();
+        final countryTiles = tester
+            .widgetList<ListTile>(find.byType(ListTile))
+            .toList();
         final countryNames = countryTiles.map((tile) {
           final title = tile.title! as Align;
           final text = title.child! as Text;
@@ -841,20 +833,16 @@ void main() {
         await tester.pumpWidget(
           MaterialApp(
             home: Scaffold(
-              body: InternationalPhoneNumberInput(
+              body: MaterialInternationalPhoneNumber(
                 countries: multiCountries,
                 defaultCountry: multiCountries.last,
                 autoDetectCountry: true,
-                detectedCountryOrderStrategy:
-                    DetectedCountryOrderStrategy
-                        .signalVotesThenNeighborsThenDistance,
+                detectedCountryOrderStrategy: DetectedCountryOrderStrategy
+                    .signalVotesThenNeighborsThenDistance,
                 countryDetector: () async => const CountryResult(
                   countryCode: 'IN',
                   confidence: 92,
-                  allVotes: {
-                    'IN': 92,
-                    'LK': 60,
-                  },
+                  allVotes: {'IN': 92, 'LK': 60},
                 ),
                 selectorConfig: const SelectorConfig(
                   selectorType: PhoneInputSelectorType.DIALOG,
@@ -868,10 +856,11 @@ void main() {
         await tester.pumpAndSettle();
 
         final dynamic state = tester.state(
-          find.byType(InternationalPhoneNumberInput),
+          find.byType(MaterialInternationalPhoneNumber),
         );
-        final countryNames =
-            (state.countries as List<Country>).map((country) => country.name).toList();
+        final countryNames = (state.countries as List<Country>)
+            .map((country) => country.name)
+            .toList();
 
         expect(countryNames.take(10), [
           'India',
@@ -963,21 +952,16 @@ void main() {
         await tester.pumpWidget(
           MaterialApp(
             home: Scaffold(
-              body: InternationalPhoneNumberInput(
+              body: MaterialInternationalPhoneNumber(
                 countries: multiCountries,
                 defaultCountry: multiCountries.last,
                 autoDetectCountry: true,
-                detectedCountryOrderStrategy:
-                    DetectedCountryOrderStrategy
-                        .signalVotesThenNeighborsThenDistance,
+                detectedCountryOrderStrategy: DetectedCountryOrderStrategy
+                    .signalVotesThenNeighborsThenDistance,
                 countryDetector: () async => const CountryResult(
                   countryCode: 'IN',
                   confidence: 92,
-                  allVotes: {
-                    'IN': 92,
-                    'LK': 60,
-                    'MV': 45,
-                  },
+                  allVotes: {'IN': 92, 'LK': 60, 'MV': 45},
                 ),
                 selectorConfig: const SelectorConfig(
                   selectorType: PhoneInputSelectorType.DIALOG,
@@ -991,10 +975,11 @@ void main() {
         await tester.pumpAndSettle();
 
         final dynamic state = tester.state(
-          find.byType(InternationalPhoneNumberInput),
+          find.byType(MaterialInternationalPhoneNumber),
         );
-        final countryNames =
-            (state.countries as List<Country>).map((country) => country.name).toList();
+        final countryNames = (state.countries as List<Country>)
+            .map((country) => country.name)
+            .toList();
 
         expect(countryNames.take(11), [
           'India',
@@ -1057,13 +1042,12 @@ void main() {
         await tester.pumpWidget(
           MaterialApp(
             home: Scaffold(
-              body: InternationalPhoneNumberInput(
+              body: MaterialInternationalPhoneNumber(
                 countries: countries,
                 defaultCountry: countries.first,
                 autoDetectCountry: true,
-                detectedCountryOrderStrategy:
-                    DetectedCountryOrderStrategy
-                        .signalVotesThenNeighborsThenDistance,
+                detectedCountryOrderStrategy: DetectedCountryOrderStrategy
+                    .signalVotesThenNeighborsThenDistance,
                 countryDetector: () async => const CountryResult(
                   countryCode: 'AL',
                   confidence: 90,
@@ -1081,10 +1065,11 @@ void main() {
         await tester.pumpAndSettle();
 
         final dynamic state = tester.state(
-          find.byType(InternationalPhoneNumberInput),
+          find.byType(MaterialInternationalPhoneNumber),
         );
-        final countryNames =
-            (state.countries as List<Country>).map((country) => country.name).toList();
+        final countryNames = (state.countries as List<Country>)
+            .map((country) => country.name)
+            .toList();
 
         expect(countryNames.take(4), [
           'Albania',
@@ -1135,7 +1120,7 @@ class _HarnessState extends State<_Harness> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: InternationalPhoneNumberInput(
+      body: MaterialInternationalPhoneNumber(
         countries: widget.countries,
         defaultCountry: widget.defaultCountry,
         filterFunction: widget.filterFunction,

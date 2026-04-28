@@ -1,10 +1,9 @@
-// import 'package:circle_flags/circle_flags.dart';
 import 'package:flutter/material.dart';
 import 'package:intl_phone_number_input/src/models/country_model.dart';
 import 'package:intl_phone_number_input/src/utils/util.dart';
+import 'package:intl_phone_number_input/src/widgets/common/flag_widget.dart';
 
-/// Creates a list of Countries with a search textfield.
-class CountrySearchListWidget extends StatefulWidget {
+class MaterialCountrySearchListWidget extends StatefulWidget {
   final List<Country> countries;
   final InputDecoration? searchBoxDecoration;
   final ScrollController? scrollController;
@@ -18,8 +17,9 @@ class CountrySearchListWidget extends StatefulWidget {
   final String emptySearchMessage;
   final List<Country> Function(String value)? filterFunction;
 
-  CountrySearchListWidget(
+  const MaterialCountrySearchListWidget(
     this.countries, {
+    super.key,
     this.searchBoxDecoration,
     this.scrollController,
     this.showFlags = true,
@@ -34,10 +34,12 @@ class CountrySearchListWidget extends StatefulWidget {
   });
 
   @override
-  State<CountrySearchListWidget> createState() => _CountrySearchListWidgetState();
+  State<MaterialCountrySearchListWidget> createState() =>
+      _MaterialCountrySearchListWidgetState();
 }
 
-class _CountrySearchListWidgetState extends State<CountrySearchListWidget> {
+class _MaterialCountrySearchListWidgetState
+    extends State<MaterialCountrySearchListWidget> {
   final TextEditingController _searchController = TextEditingController();
   late List<Country> filteredCountries;
 
@@ -48,18 +50,18 @@ class _CountrySearchListWidgetState extends State<CountrySearchListWidget> {
   }
 
   @override
-  void dispose() {
-    _searchController.dispose();
-    super.dispose();
-  }
-
-  @override
-  void didUpdateWidget(covariant CountrySearchListWidget oldWidget) {
+  void didUpdateWidget(covariant MaterialCountrySearchListWidget oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (oldWidget.countries != widget.countries ||
         oldWidget.filterFunction != widget.filterFunction) {
       filteredCountries = _filterCountries(_searchController.text);
     }
+  }
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
   }
 
   List<Country> _filterCountries(String value) {
@@ -94,7 +96,6 @@ class _CountrySearchListWidgetState extends State<CountrySearchListWidget> {
     return ordered;
   }
 
-  /// Returns [InputDecoration] of the search box
   InputDecoration getSearchBoxDecoration() {
     return widget.searchBoxDecoration ??
         InputDecoration(labelText: widget.searchHintText);
@@ -135,14 +136,36 @@ class _CountrySearchListWidgetState extends State<CountrySearchListWidget> {
                   shrinkWrap: true,
                   itemCount: filteredCountries.length,
                   itemBuilder: (BuildContext context, int index) {
-                    Country country = filteredCountries[index];
-                    return DirectionalCountryListTile(
-                      country: country,
-                      showFlags: widget.showFlags,
-                      flagSize: widget.flagSize,
-                      flagStyle: widget.flagStyle,
-                      titleStyle: widget.titleStyle,
-                      subtitleStyle: widget.subtitleStyle,
+                    final country = filteredCountries[index];
+                    return ListTile(
+                      leading: widget.showFlags
+                          ? FlagWidget(
+                              country: country,
+                              style:
+                                  widget.flagStyle ??
+                                  Theme.of(context).textTheme.headlineSmall
+                                      ?.copyWith(fontSize: widget.flagSize),
+                            )
+                          : null,
+                      title: Align(
+                        alignment: AlignmentDirectional.centerStart,
+                        child: Text(
+                          country.name,
+                          textDirection: Directionality.of(context),
+                          style: widget.titleStyle,
+                          textAlign: TextAlign.start,
+                        ),
+                      ),
+                      subtitle: Align(
+                        alignment: AlignmentDirectional.centerStart,
+                        child: Text(
+                          country.dialCode,
+                          textDirection: TextDirection.ltr,
+                          textAlign: TextAlign.start,
+                          style: widget.subtitleStyle,
+                        ),
+                      ),
+                      onTap: () => Navigator.of(context).pop(country),
                     );
                   },
                 ),
@@ -152,77 +175,9 @@ class _CountrySearchListWidgetState extends State<CountrySearchListWidget> {
   }
 
   @override
-  void setState(fn) {
+  void setState(VoidCallback fn) {
     if (mounted) {
       super.setState(fn);
     }
-  }
-}
-
-class DirectionalCountryListTile extends StatelessWidget {
-  final Country country;
-  final bool showFlags;
-  final double flagSize;
-  final TextStyle? flagStyle;
-  final TextStyle? titleStyle;
-  final TextStyle? subtitleStyle;
-  const DirectionalCountryListTile({
-    super.key,
-    required this.country,
-    required this.showFlags,
-    this.flagSize = 20,
-    this.flagStyle,
-    this.titleStyle,
-    this.subtitleStyle,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return ListTile(
-      leading: (showFlags
-          ? Flag(country: country, flagSize: flagSize, style: flagStyle)
-          : null),
-      title: Align(
-        alignment: AlignmentDirectional.centerStart,
-        child: Text(
-          country.name,
-          textDirection: Directionality.of(context),
-          style: titleStyle,
-          textAlign: TextAlign.start,
-        ),
-      ),
-      subtitle: Align(
-        alignment: AlignmentDirectional.centerStart,
-        child: Text(
-          country.dialCode,
-          textDirection: TextDirection.ltr,
-          textAlign: TextAlign.start,
-          style: subtitleStyle,
-        ),
-      ),
-      onTap: () => Navigator.of(context).pop(country),
-    );
-  }
-}
-
-class Flag extends StatelessWidget {
-  final Country country;
-  final double flagSize;
-  final TextStyle? style;
-
-  const Flag({
-    required this.country,
-    required this.flagSize,
-    this.style,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Text(
-      Utils.generateFlagEmojiUnicode(country.alpha2Code),
-      style:
-          style ??
-          Theme.of(context).textTheme.headlineSmall?.copyWith(fontSize: flagSize),
-    );
   }
 }

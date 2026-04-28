@@ -1,12 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:intl_phone_number_input/src/models/country_model.dart';
+import 'package:intl_phone_number_input/src/utils/input_types.dart';
 import 'package:intl_phone_number_input/src/utils/selector_config.dart';
-import 'package:intl_phone_number_input/src/widgets/countries_search_list_widget.dart';
-import 'package:intl_phone_number_input/src/widgets/input_widget.dart';
-import 'package:intl_phone_number_input/src/widgets/item.dart';
+import 'package:intl_phone_number_input/src/widgets/common/item.dart';
+import 'package:intl_phone_number_input/src/widgets/material/countries_search_list_widget.dart';
 
-/// [SelectorButton]
-class SelectorButton extends StatelessWidget {
+class MaterialSelectorButton extends StatelessWidget {
   final List<Country> countries;
   final Country? country;
   final SelectorConfig selectorConfig;
@@ -17,11 +16,10 @@ class SelectorButton extends StatelessWidget {
   final bool isEnabled;
   final bool isScrollControlled;
   final double flagSize;
-
   final ValueChanged<Country> onCountryChanged;
   final List<Country> Function(String value)? filterFunction;
 
-  const SelectorButton({
+  const MaterialSelectorButton({
     super.key,
     required this.countries,
     this.country,
@@ -76,20 +74,7 @@ class SelectorButton extends StatelessWidget {
             minWidth: 0,
             onPressed: countries.isNotEmpty && countries.length > 1 && isEnabled
                 ? () async {
-                    Country? selected;
-                    if (selectorConfig.selectorType ==
-                        PhoneInputSelectorType.BOTTOM_SHEET) {
-                      selected = await showCountrySelectorBottomSheet(
-                        context,
-                        countries,
-                      );
-                    } else {
-                      selected = await showCountrySelectorDialog(
-                        context,
-                        countries,
-                      );
-                    }
-
+                    final selected = await _showSelector(context, countries);
                     if (selected != null) {
                       onCountryChanged(selected);
                     }
@@ -107,7 +92,17 @@ class SelectorButton extends StatelessWidget {
           );
   }
 
-  /// Converts the list [countries] to `DropdownMenuItem` 09931265823
+  Future<Country?> _showSelector(
+    BuildContext context,
+    List<Country> countries,
+  ) {
+    if (selectorConfig.selectorType == PhoneInputSelectorType.BOTTOM_SHEET) {
+      return showCountrySelectorBottomSheet(context, countries);
+    }
+
+    return showCountrySelectorDialog(context, countries);
+  }
+
   List<DropdownMenuItem<Country>> mapCountryToDropdownItem(
     List<Country> countries,
   ) {
@@ -126,7 +121,6 @@ class SelectorButton extends StatelessWidget {
     }).toList();
   }
 
-  /// shows a Dialog with list [countries] if the [PhoneInputSelectorType.DIALOG] is selected
   Future<Country?> showCountrySelectorDialog(
     BuildContext inheritedContext,
     List<Country> countries,
@@ -139,7 +133,7 @@ class SelectorButton extends StatelessWidget {
           textDirection: Directionality.of(inheritedContext),
           child: SizedBox(
             width: double.maxFinite,
-            child: CountrySearchListWidget(
+            child: MaterialCountrySearchListWidget(
               countries,
               searchBoxDecoration: searchBoxDecoration,
               showFlags: selectorConfig.showFlags,
@@ -158,7 +152,6 @@ class SelectorButton extends StatelessWidget {
     );
   }
 
-  /// shows a Dialog with list [countries] if the [PhoneInputSelectorType.BOTTOM_SHEET] is selected
   Future<Country?> showCountrySelectorBottomSheet(
     BuildContext inheritedContext,
     List<Country> countries,
@@ -168,7 +161,7 @@ class SelectorButton extends StatelessWidget {
       clipBehavior: Clip.hardEdge,
       isScrollControlled: isScrollControlled,
       backgroundColor: Colors.transparent,
-      shape: RoundedRectangleBorder(
+      shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.only(
           topLeft: Radius.circular(12),
           topRight: Radius.circular(12),
@@ -190,14 +183,14 @@ class SelectorButton extends StatelessWidget {
                     child: DecoratedBox(
                       decoration: ShapeDecoration(
                         color: Theme.of(context).canvasColor,
-                        shape: RoundedRectangleBorder(
+                        shape: const RoundedRectangleBorder(
                           borderRadius: BorderRadius.only(
                             topLeft: Radius.circular(12),
                             topRight: Radius.circular(12),
                           ),
                         ),
                       ),
-                      child: CountrySearchListWidget(
+                      child: MaterialCountrySearchListWidget(
                         countries,
                         searchBoxDecoration: searchBoxDecoration,
                         scrollController: controller,

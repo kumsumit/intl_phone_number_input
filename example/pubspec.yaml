@@ -33,8 +33,9 @@ dependencies:
     sdk: flutter
   intl_phone_number_input:
     path: ../
-  path_provider:
-    git: https://github.com/kumsumit/path_provider.git
+  macos_ui: ^2.2.2
+  yaru: ^10.1.0
+  fluent_ui: ^4.15.1
 
 dev_dependencies:
   flutter_test:
@@ -47,6 +48,14 @@ dev_dependencies:
   # rules and activating additional ones.
   flutter_lints: ^6.0.0
 
+dependency_overrides:
+  plugin_platform_interface:
+    git: https://github.com/kumsumit/plugin_platform_interface.git
+  xdg_directories:
+    git: https://github.com/kumsumit/xdg_directories.git
+  path_provider:
+    git: https://github.com/kumsumit/path_provider.git
+  xml: ^7.0.1
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
 

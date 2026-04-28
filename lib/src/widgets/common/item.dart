@@ -1,7 +1,6 @@
-import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:intl_phone_number_input/src/models/country_model.dart';
-
-import 'countries_search_list_widget.dart';
+import 'package:intl_phone_number_input/src/widgets/common/flag_widget.dart';
 
 /// [Item]
 class Item extends StatelessWidget {
@@ -38,10 +37,11 @@ class Item extends StatelessWidget {
       children: <Widget>[
         SizedBox(width: leadingPadding),
         if (showFlag == true && country != null)
-          Flag(
+          FlagWidget(
             country: country!,
-            flagSize: flagSize,
-            style: flagStyle,
+            style:
+                flagStyle?.copyWith(fontSize: flagSize) ??
+                TextStyle(fontSize: flagSize),
           ),
         SizedBox(width: 3.0),
         Text(dialCode, textDirection: TextDirection.ltr, style: textStyle),
