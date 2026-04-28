@@ -33,9 +33,9 @@ dependencies:
     sdk: flutter
   intl_phone_number_input:
     path: ../
-  macos_ui: ^2.2.2
   yaru: ^10.1.0
   fluent_ui: ^4.15.1
+  macos_ui: ^2.2.2
 
 dev_dependencies:
   flutter_test:

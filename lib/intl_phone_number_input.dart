@@ -1,9 +1,13 @@
 // Public exports for the `intl_phone_number_input` package.
 export 'src/widgets/material/international_phone_number_input.dart';
 export 'src/widgets/cupertino/international_phone_number_input.dart';
+export 'src/widgets/fluent/international_phone_number_input.dart';
+export 'src/widgets/macos/international_phone_number_input.dart';
 export 'src/widgets/yaru/international_phone_number_input.dart';
 export 'src/widgets/cupertino/countries_search_list_widget.dart';
 export 'src/widgets/material/countries_search_list_widget.dart';
+export 'src/widgets/fluent/countries_search_list_widget.dart';
+export 'src/widgets/macos/countries_search_list_widget.dart';
 export 'src/widgets/yaru/countries_search_list_widget.dart';
 export 'src/utils/input_types.dart'
     show

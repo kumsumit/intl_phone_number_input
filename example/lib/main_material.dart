@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:intl_phone_number_input/intl_phone_number_input.dart';
-import 'package:yaru/yaru.dart';
 
 import 'country_list.dart';
 
@@ -22,9 +21,9 @@ class ExampleApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      title: 'Intl Phone Number Input',
-      theme: yaruLight,
-      darkTheme: yaruDark,
+      title: 'Intl Phone Number Input - Material',
+      theme: ThemeData.light(),
+      darkTheme: ThemeData.dark(),
       home: const ExampleHomePage(),
     );
   }
@@ -100,18 +99,14 @@ class _ExampleHomePageState extends State<ExampleHomePage> {
     });
   }
 
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
-  }
+
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-
     return Scaffold(
-      appBar: AppBar(title: const Text('Phone Input Playground')),
+      appBar: AppBar(
+        title: const Text('Phone Input Playground - Material'),
+      ),
       body: SafeArea(
         child: LayoutBuilder(
           builder: (context, constraints) {
@@ -119,12 +114,12 @@ class _ExampleHomePageState extends State<ExampleHomePage> {
             final content = <Widget>[
               Text(
                 'Phone Input Playground',
-                style: theme.textTheme.headlineMedium,
+                style: Theme.of(context).textTheme.titleLarge,
               ),
               const SizedBox(height: 8),
               Text(
                 'Try selector layouts, formatting, and country detection settings in one place. The preview stays wired to the live widget so it is easy to understand how each option changes behavior.',
-                style: theme.textTheme.bodyMedium,
+                style: Theme.of(context).textTheme.bodyMedium,
               ),
               const SizedBox(height: 24),
               if (isWide)
@@ -169,7 +164,7 @@ class _ExampleHomePageState extends State<ExampleHomePage> {
         caption: 'Choose how the country picker is presented.',
       ),
       const SizedBox(height: 12),
-      SegmentedButton<PhoneInputSelectorType>(
+     SegmentedButton<PhoneInputSelectorType>(
         segments: const [
           ButtonSegment(
             value: PhoneInputSelectorType.DROPDOWN,
@@ -185,59 +180,69 @@ class _ExampleHomePageState extends State<ExampleHomePage> {
           ),
         ],
         selected: {_selectorType},
-        onSelectionChanged: (selection) {
-          setState(() {
-            _selectorType = selection.first;
-          });
-        },
+        onSelectionChanged: (value) =>
+            setState(() => _selectorType = value.first),
+        multiSelectionEnabled: false,
       ),
       const SizedBox(height: 20),
       Wrap(
         spacing: 12,
         runSpacing: 8,
         children: [
-          FilterChip(
-            label: const Text('Format input'),
-            selected: _formatInput,
-            onSelected: (value) {
-              setState(() {
-                _formatInput = value;
-              });
-            },
+          Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Switch(
+                value: _formatInput,
+                onChanged: (value) => setState(() => _formatInput = value),
+              ),
+              const SizedBox(width: 8),
+              const Text('Format input'),
+            ],
           ),
-          FilterChip(
-            label: const Text('Prefix selector'),
-            selected: _prefixSelector,
-            onSelected: (value) {
-              setState(() {
-                _prefixSelector = value;
-              });
-            },
+          Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Switch(
+                value: _prefixSelector,
+                onChanged: (value) => setState(() => _prefixSelector = value),
+              ),
+              const SizedBox(width: 8),
+              const Text('Prefix selector'),
+            ],
           ),
-          FilterChip(
-            label: const Text('Ignore blank'),
-            selected: _ignoreBlank,
-            onSelected: (value) {
-              setState(() {
-                _ignoreBlank = value;
-              });
-            },
+          Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Switch(
+                value: _ignoreBlank,
+                onChanged: (value) => setState(() => _ignoreBlank = value),
+              ),
+              const SizedBox(width: 8),
+              const Text('Ignore blank'),
+            ],
           ),
-          FilterChip(
-            label: const Text('Disable length check'),
-            selected: _disableLengthCheck,
-            onSelected: (value) {
-              setState(() {
-                _disableLengthCheck = value;
-              });
-            },
+          Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Switch(
+                value: _disableLengthCheck,
+                onChanged: (value) => setState(() => _disableLengthCheck = value),
+              ),
+              const SizedBox(width: 8),
+              const Text('Disable length check'),
+            ],
           ),
-          FilterChip(
-            label: const Text('Auto detect country'),
-            selected: _autoDetectCountry,
-            onSelected: (value) {
-              _setAutoDetectCountry(value);
-            },
+          Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Switch(
+                value: _autoDetectCountry,
+                onChanged: (value) => _setAutoDetectCountry(value),
+              ),
+              const SizedBox(width: 8),
+              const Text('Auto detect country'),
+            ],
           ),
         ],
       ),
@@ -247,7 +252,7 @@ class _ExampleHomePageState extends State<ExampleHomePage> {
         caption: 'Control which signals the built-in detector can use.',
       ),
       const SizedBox(height: 12),
-      SegmentedButton<CountryDetectionMode>(
+     SegmentedButton<CountryDetectionMode>(
         segments: const [
           ButtonSegment(
             value: CountryDetectionMode.localSignals,
@@ -259,12 +264,11 @@ class _ExampleHomePageState extends State<ExampleHomePage> {
           ),
         ],
         selected: {_countryDetectionMode},
-        onSelectionChanged: (selection) {
-          setState(() {
-            _countryDetectionMode = selection.first;
-            _detectedCountryResult = null;
-          });
-        },
+        onSelectionChanged: (value) => setState(() {
+          _countryDetectionMode = value.first;
+          _detectedCountryResult = null;
+        }),
+        multiSelectionEnabled: false,
       ),
       const SizedBox(height: 20),
       _SectionHeader(
@@ -294,18 +298,16 @@ class _ExampleHomePageState extends State<ExampleHomePage> {
           ),
         ],
         selected: {_detectedCountryOrderStrategy},
-        onSelectionChanged: (selection) {
-          setState(() {
-            _detectedCountryOrderStrategy = selection.first;
-          });
-        },
+        onSelectionChanged: (value) =>
+            setState(() => _detectedCountryOrderStrategy = value.first),
+        multiSelectionEnabled: false,
       ),
       const SizedBox(height: 24),
       _SectionHeader(title: 'Live Preview', caption: _helperText),
       const SizedBox(height: 12),
       Form(
         key: _formKey,
-        child: YaruInternationalPhoneNumber(
+        child: MaterialInternationalPhoneNumber(
           key: ValueKey(
             'phone-input-$_autoDetectCountry-$_countryDetectionMode-$_detectedCountryOrderStrategy',
           ),
@@ -325,15 +327,12 @@ class _ExampleHomePageState extends State<ExampleHomePage> {
             selectorType: _selectorType,
             setSelectorButtonAsPrefixIcon: _prefixSelector,
             useBottomSheetSafeArea: true,
-            titleStyle: theme.textTheme.bodyLarge,
+            titleStyle: theme.textTheme.bodyMedium,
             subtitleStyle: theme.textTheme.bodySmall,
           ),
           selectorTextStyle: theme.textTheme.bodyMedium,
-          flagStyle: theme.textTheme.titleLarge,
-          inputDecoration: const InputDecoration(
-            labelText: 'Phone number',
-            border: OutlineInputBorder(),
-          ),
+          flagStyle: theme.textTheme.bodyMedium,
+          hintText: 'Phone number',
           onInputChanged: (number) {
             WidgetsBinding.instance.addPostFrameCallback((_) {
               if (mounted) {
@@ -362,8 +361,18 @@ class _ExampleHomePageState extends State<ExampleHomePage> {
             });
           },
           onSaved: (number) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text('Saved ${number.international}')),
+            showDialog(
+              context: context,
+              builder: (context) => AlertDialog(
+                title: const Text('Saved'),
+                content: Text('Saved ${number.international}'),
+                actions: [
+                  TextButton(
+                    child: const Text('OK'),
+                    onPressed: () => Navigator.of(context).pop(),
+                  ),
+                ],
+              ),
             );
           },
         ),
@@ -373,16 +382,24 @@ class _ExampleHomePageState extends State<ExampleHomePage> {
         spacing: 12,
         runSpacing: 12,
         children: [
-          FilledButton(
+          ElevatedButton(
             onPressed: () {
               final isValid = _formKey.currentState?.validate() ?? false;
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
+              showDialog(
+                context: context,
+                builder: (context) => AlertDialog(
+                  title: const Text('Validation'),
                   content: Text(
                     isValid
                         ? 'The current number is valid.'
                         : 'The current number is invalid.',
                   ),
+                  actions: [
+                    TextButton(
+                      child: const Text('OK'),
+                      onPressed: () => Navigator.of(context).pop(),
+                    ),
+                  ],
                 ),
               );
             },
@@ -392,7 +409,10 @@ class _ExampleHomePageState extends State<ExampleHomePage> {
             onPressed: _setDemoNumber,
             child: const Text('Load sample'),
           ),
-          OutlinedButton(onPressed: _clearField, child: const Text('Clear')),
+          OutlinedButton(
+            onPressed: _clearField,
+            child: const Text('Clear'),
+          ),
           OutlinedButton(
             onPressed: () {
               _formKey.currentState?.save();
@@ -406,13 +426,8 @@ class _ExampleHomePageState extends State<ExampleHomePage> {
 
   Widget _buildStatusCard(BuildContext context) {
     final theme = Theme.of(context);
-    final colorScheme = theme.colorScheme;
 
-    return DecoratedBox(
-      decoration: BoxDecoration(
-        color: colorScheme.surfaceContainerHighest,
-        borderRadius: BorderRadius.circular(12),
-      ),
+    return Card(
       child: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
@@ -518,10 +533,16 @@ class _StatusRow extends StatelessWidget {
         children: [
           SizedBox(
             width: 120,
-            child: Text(label, style: Theme.of(context).textTheme.bodyMedium),
+            child: Text(
+              label,
+              style: Theme.of(context).textTheme.bodyMedium,
+            ),
           ),
           Expanded(
-            child: Text(value, style: Theme.of(context).textTheme.bodyMedium),
+            child: Text(
+              value,
+              style: Theme.of(context).textTheme.bodyMedium,
+            ),
           ),
         ],
       ),

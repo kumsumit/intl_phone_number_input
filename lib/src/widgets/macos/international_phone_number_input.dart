@@ -278,6 +278,7 @@ class MacosInternationalPhoneNumberState
   bool _showCountryCodeWarning = false;
   bool _hasUserSelectedCountry = false;
   bool _autoDetectionStarted = false;
+  CountryResult? _detectedCountryResult;
 
   @override
   void dispose() {
@@ -527,6 +528,7 @@ class MacosInternationalPhoneNumberState
       }
 
       setState(() {
+        _detectedCountryResult = result;
         country = detectedCountry;
         acceptedLengths = _acceptedLengthsFor(detectedCountry.alpha2Code);
         countries = _prioritizeCountriesForDetection(result);
@@ -570,19 +572,25 @@ class MacosInternationalPhoneNumberState
     }
 
     final detectedIsoCode = result.countryCode?.toUpperCase();
-    if (detectedIsoCode == null || detectedIsoCode.isEmpty) {
-      return sortedCountries;
-    }
+    final defaultIsoCode = widget.defaultCountry.alpha2Code.toUpperCase();
 
     final voteOrderedCodes = result.allVotes.keys
         .map((code) => code.toUpperCase())
         .where((code) => code != detectedIsoCode)
         .toList(growable: false);
 
+    // Put default country first if provided and different from detected
+    final rootCodes = <String>[];
+    if (defaultIsoCode.isNotEmpty) {
+      rootCodes.add(defaultIsoCode);
+    }
+    if (detectedIsoCode != null && detectedIsoCode.isNotEmpty && detectedIsoCode != defaultIsoCode) {
+      rootCodes.add(detectedIsoCode);
+    }
+    rootCodes.addAll(voteOrderedCodes.where((code) => !rootCodes.contains(code)));
+
     if (strategy == DetectedCountryOrderStrategy.detectedCountryFirst) {
-      return _orderCountriesByCodesThenAlphabetical(sortedCountries, [
-        detectedIsoCode,
-      ]);
+      return _orderCountriesByCodesThenAlphabetical(sortedCountries, rootCodes.take(1).toList());
     }
 
     final includeNeighbors =
@@ -592,27 +600,27 @@ class MacosInternationalPhoneNumberState
     if (includeNeighbors) {
       return _orderCountriesByCodesThenAlphabetical(
         sortedCountries,
-        _interleavedRootAndNeighborCodesFor([
-          detectedIsoCode,
-          ...voteOrderedCodes,
-        ], sortedCountries),
+        _interleavedRootAndNeighborCodesFor(rootCodes, sortedCountries),
       );
     }
 
-    final prioritizedCodes = <String>[detectedIsoCode, ...voteOrderedCodes];
+    final prioritizedCodes = <String>[...rootCodes];
     final remainingCodes = sortedCountries
         .map((country) => country.alpha2Code.toUpperCase())
-        .where(
-          (code) => code != detectedIsoCode && !voteOrderedCodes.contains(code),
-        )
+        .where((code) => !prioritizedCodes.contains(code))
         .toList(growable: false);
 
-    prioritizedCodes.addAll(
-      CountryDetector.rankCountriesByDistanceFrom(
-        detectedIsoCode,
-        remainingCodes,
-      ),
-    );
+    if (detectedIsoCode != null && detectedIsoCode.isNotEmpty) {
+      prioritizedCodes.addAll(
+        CountryDetector.rankCountriesByDistanceFrom(
+          detectedIsoCode,
+          remainingCodes,
+        ),
+      );
+    } else {
+      // Fallback if no detected
+      prioritizedCodes.addAll(remainingCodes);
+    }
 
     return _orderCountriesByCodesThenAlphabetical(
       sortedCountries,
@@ -627,36 +635,63 @@ class MacosInternationalPhoneNumberState
       return sortedCountries;
     }
 
-    final detectedIsoCode = widget.defaultCountry.alpha2Code.toUpperCase();
+    final defaultIsoCode = widget.defaultCountry.alpha2Code.toUpperCase();
+    final detectedResult = _detectedCountryResult;
+    final detectedIsoCode = detectedResult?.countryCode?.toUpperCase();
+
+    final voteOrderedCodes = detectedResult?.allVotes.keys
+        .map((code) => code.toUpperCase())
+        .where((code) => code != detectedIsoCode)
+        .toList(growable: false) ?? [];
+
+    // Put default first, then detected if different, then votes
+    final rootCodes = <String>[];
+    if (defaultIsoCode.isNotEmpty) {
+      rootCodes.add(defaultIsoCode);
+    }
+    if (detectedIsoCode != null && detectedIsoCode.isNotEmpty && detectedIsoCode != defaultIsoCode) {
+      rootCodes.add(detectedIsoCode);
+    }
+    rootCodes.addAll(voteOrderedCodes.where((code) => !rootCodes.contains(code)));
 
     if (strategy == DetectedCountryOrderStrategy.detectedCountryFirst) {
-      return _orderCountriesByCodesThenAlphabetical(sortedCountries, [
-        detectedIsoCode,
-      ]);
+      return _orderCountriesByCodesThenAlphabetical(sortedCountries, rootCodes.take(1).toList());
     }
 
     final includeNeighbors =
         strategy ==
         DetectedCountryOrderStrategy.signalVotesThenNeighborsThenDistance;
 
-    final prioritizedCodes = <String>[detectedIsoCode];
+    final prioritizedCodes = <String>[...rootCodes];
 
     if (includeNeighbors) {
       prioritizedCodes.addAll(
-        _neighborBucketCodesFor([detectedIsoCode], sortedCountries),
+        _interleavedRootAndNeighborCodesFor(rootCodes, sortedCountries)
+            .where((code) => !prioritizedCodes.contains(code)),
       );
     } else {
       final remainingCodes = sortedCountries
           .map((country) => country.alpha2Code.toUpperCase())
-          .where((code) => code != detectedIsoCode)
+          .where((code) => !prioritizedCodes.contains(code))
           .toList(growable: false);
 
-      prioritizedCodes.addAll(
-        CountryDetector.rankCountriesByDistanceFrom(
-          detectedIsoCode,
-          remainingCodes,
-        ),
-      );
+      if (detectedIsoCode != null && detectedIsoCode.isNotEmpty) {
+        prioritizedCodes.addAll(
+          CountryDetector.rankCountriesByDistanceFrom(
+            detectedIsoCode,
+            remainingCodes,
+          ),
+        );
+      } else if (defaultIsoCode.isNotEmpty) {
+        prioritizedCodes.addAll(
+          CountryDetector.rankCountriesByDistanceFrom(
+            defaultIsoCode,
+            remainingCodes,
+          ),
+        );
+      } else {
+        prioritizedCodes.addAll(remainingCodes);
+      }
     }
 
     return _orderCountriesByCodesThenAlphabetical(
