@@ -7,6 +7,7 @@ import 'package:intl_phone_number_input/src/utils/formatter/as_you_type_formatte
 import 'package:intl_phone_number_input/src/utils/input_types.dart';
 import 'package:intl_phone_number_input/src/utils/selector_config.dart';
 import 'package:intl_phone_number_input/src/utils/util.dart';
+import 'package:intl_phone_number_input/src/widgets/yaru/input_widget_view.dart';
 import 'package:intl_phone_number_input/src/widgets/yaru/selector_button.dart';
 import 'package:phone_parser/phone_parser.dart';
 
@@ -313,73 +314,75 @@ class YaruInternationalPhoneNumberState
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Row(
-          children: [
-            YaruSelectorButton(
-              countries: countries,
-              country: country,
-              selectorConfig: widget.selectorConfig,
-              selectorTextStyle: widget.selectorTextStyle,
-              flagStyle: widget.flagStyle,
-              searchFieldPlaceholder: widget.placeholder ?? widget.hintText,
-              autoFocusSearchField: widget.autoFocusSearch,
-              onCountryChanged: (selected) {
-                setState(() {
-                  country = selected;
-                });
-                if (widget.onInputChanged != null) {
-                  widget.onInputChanged!(
-                    PhoneNumber(
-                      isoCode: country.alpha2Code,
-                      nsn: controller.text,
-                    ),
-                  );
-                }
-              },
-              isEnabled: widget.isEnabled,
-              isScrollControlled: widget.countrySelectorScrollControlled,
-              flagSize: widget.flagSize,
-              filterFunction: widget.filterFunction,
-            ),
-            const SizedBox(width: 8),
-            Expanded(
-              child: TextFormField(
-                controller: controller,
-                focusNode: widget.focusNode,
-                decoration: widget.inputDecoration ?? InputDecoration(
-                  hintText: widget.placeholder ?? widget.hintText,
-                  border: const OutlineInputBorder(),
-                ),
-                style: widget.textStyle,
-                textAlign: widget.textAlign,
-                keyboardType: widget.keyboardType,
-                textInputAction: widget.keyboardAction,
-                onChanged: (value) {
-                  if (widget.onInputChanged != null) {
-                    widget.onInputChanged!(
-                      PhoneNumber(isoCode: country.alpha2Code, nsn: value),
-                    );
-                  }
-                },
-                onEditingComplete: widget.onSubmit,
-                onFieldSubmitted: widget.onFieldSubmitted,
-                autofocus: widget.autoFocus,
-                enabled: widget.isEnabled,
-                cursorColor: widget.cursorColor,
-                scrollPadding: widget.scrollPadding,
-                autofillHints: widget.autofillHints,
-                inputFormatters: inputFormatters,
-                validator: _defaultValidator,
-                onSaved: onSaved,
-              ),
-            ),
-          ],
+        YaruInputWidgetView(
+          selectorSection: buildSelectorButton(),
+          selectorSpacing: widget.spaceBetweenSelectorAndTextField,
+          textDirection: widget.textDirection,
+          fieldKey: widget.fieldKey,
+          controller: controller,
+          onTap: widget.onTap,
+          cursorColor: widget.cursorColor,
+          focusNode: widget.focusNode,
+          enabled: widget.isEnabled,
+          autofocus: widget.autoFocus,
+          keyboardType: widget.keyboardType,
+          textInputAction: widget.keyboardAction,
+          textStyle: widget.textStyle,
+          decoration: widget.inputDecoration ?? InputDecoration(
+            hintText: widget.placeholder ?? widget.hintText,
+            border: const OutlineInputBorder(),
+          ),
+          textAlign: widget.textAlign,
+          textAlignVertical: widget.textAlignVertical,
+          onEditingComplete: widget.onSubmit,
+          onFieldSubmitted: widget.onFieldSubmitted,
+          autovalidateMode: widget.autoValidateMode,
+          autofillHints: widget.autofillHints,
+          validator: widget.validator ?? _defaultValidator,
+          onSaved: (value) {
+            if (widget.onSaved != null) {
+              widget.onSaved!(_parsePhoneNumberValueOrFallback(value ?? ""));
+            }
+          },
+          scrollPadding: widget.scrollPadding,
+          inputFormatters: inputFormatters,
+          counterText: formatAcceptedLengths(acceptedLengths, currentLength),
         ),
         if (widget.selectorButtonBottomWidget != null)
           widget.selectorButtonBottomWidget!,
         if (widget.betweenTextFieldWidget != null)
           widget.betweenTextFieldWidget!,
       ],
+    );
+  }
+
+  Widget buildSelectorButton() {
+    return YaruSelectorButton(
+      countries: countries,
+      country: country,
+      selectorConfig: widget.selectorConfig,
+      selectorTextStyle: widget.selectorTextStyle,
+      flagStyle: widget.flagStyle,
+      searchFieldPlaceholder: widget.placeholder ?? widget.hintText,
+      autoFocusSearchField: widget.autoFocusSearch,
+      onCountryChanged: (selected) {
+        setState(() {
+          country = selected;
+          acceptedLengths = _acceptedLengthsFor(selected.alpha2Code);
+        });
+        if (widget.onInputChanged != null) {
+          widget.onInputChanged!(
+            PhoneNumber(
+              isoCode: selected.alpha2Code,
+              nsn: controller.text,
+            ),
+          );
+        }
+      },
+      isEnabled: widget.isEnabled,
+      isScrollControlled: widget.countrySelectorScrollControlled,
+      flagSize: widget.flagSize,
+      filterFunction: widget.filterFunction,
     );
   }
 
@@ -986,33 +989,7 @@ class YaruInternationalPhoneNumberState
     );
   }
 
-  Widget buildSelectorButton() {
-    return YaruSelectorButton(
-      countries: countries,
-      country: country,
-      onCountryChanged: onCountryChanged,
-      selectorConfig: widget.selectorConfig,
-      selectorTextStyle: widget.selectorTextStyle,
-      flagStyle: widget.flagStyle,
-      searchFieldPlaceholder: widget.placeholder ?? widget.hintText,
-      autoFocusSearchField: widget.autoFocusSearch,
-      isEnabled: widget.isEnabled,
-      isScrollControlled: widget.countrySelectorScrollControlled,
-      flagSize: widget.flagSize,
-      filterFunction: widget.filterFunction,
-    );
-  }
 
-  Widget? buildSelectorPrefix() {
-    if (!widget.selectorConfig.setSelectorButtonAsPrefixIcon) {
-      return null;
-    }
-
-    return Padding(
-      padding: const EdgeInsets.only(left: 8.0),
-      child: buildSelectorButton(),
-    );
-  }
 
   List<TextInputFormatter> get inputFormatters {
     return [

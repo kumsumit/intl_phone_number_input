@@ -26,6 +26,7 @@ class YaruInputWidgetView extends StatelessWidget {
   final FormFieldSetter<String>? onSaved;
   final EdgeInsets scrollPadding;
   final List<TextInputFormatter> inputFormatters;
+  final String counterText;
 
   const YaruInputWidgetView({
     super.key,
@@ -53,6 +54,7 @@ class YaruInputWidgetView extends StatelessWidget {
     this.onSaved,
     required this.scrollPadding,
     required this.inputFormatters,
+    required this.counterText,
   });
 
   @override
@@ -90,6 +92,7 @@ class YaruInputWidgetView extends StatelessWidget {
             decoration: decoration.copyWith(
               isDense: true,
               border: const OutlineInputBorder(),
+              counterText: counterText,
             ),
             textAlign: textAlign,
             textAlignVertical: textAlignVertical,

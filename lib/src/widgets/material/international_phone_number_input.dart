@@ -7,6 +7,7 @@ import 'package:intl_phone_number_input/src/utils/formatter/as_you_type_formatte
 import 'package:intl_phone_number_input/src/utils/input_types.dart';
 import 'package:intl_phone_number_input/src/utils/selector_config.dart';
 import 'package:intl_phone_number_input/src/utils/util.dart';
+import 'package:intl_phone_number_input/src/widgets/material/input_widget_view.dart';
 import 'package:intl_phone_number_input/src/widgets/material/selector_button.dart';
 import 'package:phone_parser/phone_parser.dart';
 
@@ -304,60 +305,72 @@ class MaterialInternationalPhoneNumberState
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Row(
-          children: [
-            MaterialSelectorButton(
-              country: country,
-              countries: countries,
-              onCountryChanged: onCountryChanged,
-              selectorConfig: widget.selectorConfig,
-              selectorTextStyle: widget.selectorTextStyle,
-              flagStyle: widget.flagStyle,
-              searchBoxDecoration: widget.searchBoxDecoration,
-              isEnabled: widget.isEnabled,
-              autoFocusSearchField: widget.autoFocusSearch,
-              isScrollControlled: widget.countrySelectorScrollControlled,
-              flagSize: widget.flagSize,
-              filterFunction: widget.filterFunction,
-            ),
-            const SizedBox(width: 8),
-            Expanded(
-              child: TextFormField(
-                key: widget.fieldKey,
-                controller: controller,
-                focusNode: widget.focusNode,
-                decoration: getInputDecoration(widget.inputDecoration),
-                style: widget.textStyle,
-                textAlign: widget.textAlign,
-                textAlignVertical: widget.textAlignVertical,
-                keyboardType: widget.keyboardType,
-                textInputAction: widget.keyboardAction,
-                onChanged: (value) {
-                  if (widget.onInputChanged != null) {
-                    widget.onInputChanged!(
-                      PhoneNumber(isoCode: country.alpha2Code, nsn: value),
-                    );
-                  }
-                },
-                onEditingComplete: widget.onSubmit,
-                onFieldSubmitted: widget.onFieldSubmitted,
-                autofocus: widget.autoFocus,
-                enabled: widget.isEnabled,
-                cursorColor: widget.cursorColor,
-                scrollPadding: widget.scrollPadding,
-                autofillHints: widget.autofillHints?.toList(),
-                autovalidateMode: widget.autoValidateMode,
-                validator: _runValidator,
-                inputFormatters: inputFormatters,
-              ),
-            ),
-          ],
+        MaterialInputWidgetView(
+          selectorSection: widget.selectorConfig.setSelectorButtonAsPrefixIcon
+              ? null
+              : buildSelectorButton(),
+          selectorSpacing: widget.spaceBetweenSelectorAndTextField,
+          textDirection: widget.textDirection,
+          fieldKey: widget.fieldKey,
+          controller: controller,
+          onTap: widget.onTap,
+          cursorColor: widget.cursorColor,
+          focusNode: widget.focusNode,
+          enabled: widget.isEnabled,
+          autofocus: widget.autoFocus,
+          keyboardType: widget.keyboardType,
+          textInputAction: widget.keyboardAction,
+          textStyle: widget.textStyle,
+          decoration: getInputDecoration(widget.inputDecoration),
+          textAlign: widget.textAlign,
+          textAlignVertical: widget.textAlignVertical,
+          onEditingComplete: widget.onSubmit,
+          onFieldSubmitted: widget.onFieldSubmitted,
+          autovalidateMode: widget.autoValidateMode,
+          autofillHints: widget.autofillHints,
+          validator: _runValidator,
+          onSaved: (value) {
+            if (widget.onSaved != null) {
+              widget.onSaved!(_parsePhoneNumberValueOrFallback(value ?? ""));
+            }
+          },
+          scrollPadding: widget.scrollPadding,
+          inputFormatters: inputFormatters,
         ),
         if (widget.selectorButtonBottomWidget != null)
           widget.selectorButtonBottomWidget!,
         if (widget.betweenTextFieldWidget != null)
           widget.betweenTextFieldWidget!,
       ],
+    );
+  }
+
+  Widget buildSelectorButton() {
+    return MaterialSelectorButton(
+      country: country,
+      countries: countries,
+      onCountryChanged: (selected) {
+        setState(() {
+          country = selected;
+          _hasUserSelectedCountry = true;
+          acceptedLengths = _acceptedLengthsFor(selected.alpha2Code);
+        });
+
+        if (widget.onInputChanged != null) {
+          widget.onInputChanged!(
+            PhoneNumber(isoCode: selected.alpha2Code, nsn: controller.text),
+          );
+        }
+      },
+      selectorConfig: widget.selectorConfig,
+      selectorTextStyle: widget.selectorTextStyle,
+      flagStyle: widget.flagStyle,
+      searchBoxDecoration: widget.searchBoxDecoration,
+      isEnabled: widget.isEnabled,
+      autoFocusSearchField: widget.autoFocusSearch,
+      isScrollControlled: widget.countrySelectorScrollControlled,
+      flagSize: widget.flagSize,
+      filterFunction: widget.filterFunction,
     );
   }
 
@@ -567,13 +580,20 @@ class MaterialInternationalPhoneNumberState
     if (defaultIsoCode.isNotEmpty) {
       rootCodes.add(defaultIsoCode);
     }
-    if (detectedIsoCode != null && detectedIsoCode.isNotEmpty && detectedIsoCode != defaultIsoCode) {
+    if (detectedIsoCode != null &&
+        detectedIsoCode.isNotEmpty &&
+        detectedIsoCode != defaultIsoCode) {
       rootCodes.add(detectedIsoCode);
     }
-    rootCodes.addAll(voteOrderedCodes.where((code) => !rootCodes.contains(code)));
+    rootCodes.addAll(
+      voteOrderedCodes.where((code) => !rootCodes.contains(code)),
+    );
 
     if (strategy == DetectedCountryOrderStrategy.detectedCountryFirst) {
-      return _orderCountriesByCodesThenAlphabetical(sortedCountries, rootCodes.take(1).toList());
+      return _orderCountriesByCodesThenAlphabetical(
+        sortedCountries,
+        rootCodes.take(1).toList(),
+      );
     }
 
     final includeNeighbors =
@@ -622,23 +642,32 @@ class MaterialInternationalPhoneNumberState
     final detectedResult = _detectedCountryResult;
     final detectedIsoCode = detectedResult?.countryCode?.toUpperCase();
 
-    final voteOrderedCodes = detectedResult?.allVotes.keys
-        .map((code) => code.toUpperCase())
-        .where((code) => code != detectedIsoCode)
-        .toList(growable: false) ?? [];
+    final voteOrderedCodes =
+        detectedResult?.allVotes.keys
+            .map((code) => code.toUpperCase())
+            .where((code) => code != detectedIsoCode)
+            .toList(growable: false) ??
+        [];
 
     // Put default first, then detected if different, then votes
     final rootCodes = <String>[];
     if (defaultIsoCode.isNotEmpty) {
       rootCodes.add(defaultIsoCode);
     }
-    if (detectedIsoCode != null && detectedIsoCode.isNotEmpty && detectedIsoCode != defaultIsoCode) {
+    if (detectedIsoCode != null &&
+        detectedIsoCode.isNotEmpty &&
+        detectedIsoCode != defaultIsoCode) {
       rootCodes.add(detectedIsoCode);
     }
-    rootCodes.addAll(voteOrderedCodes.where((code) => !rootCodes.contains(code)));
+    rootCodes.addAll(
+      voteOrderedCodes.where((code) => !rootCodes.contains(code)),
+    );
 
     if (strategy == DetectedCountryOrderStrategy.detectedCountryFirst) {
-      return _orderCountriesByCodesThenAlphabetical(sortedCountries, rootCodes.take(1).toList());
+      return _orderCountriesByCodesThenAlphabetical(
+        sortedCountries,
+        rootCodes.take(1).toList(),
+      );
     }
 
     final includeNeighbors =
@@ -649,8 +678,10 @@ class MaterialInternationalPhoneNumberState
 
     if (includeNeighbors) {
       prioritizedCodes.addAll(
-        _interleavedRootAndNeighborCodesFor(rootCodes, sortedCountries)
-            .where((code) => !prioritizedCodes.contains(code)),
+        _interleavedRootAndNeighborCodesFor(
+          rootCodes,
+          sortedCountries,
+        ).where((code) => !prioritizedCodes.contains(code)),
       );
     } else {
       final remainingCodes = sortedCountries
@@ -986,34 +1017,6 @@ class MaterialInternationalPhoneNumberState
         if (widget.selectorButtonBottomWidget != null)
           widget.selectorButtonBottomWidget!,
       ],
-    );
-  }
-
-  Widget buildSelectorButton() {
-    return MaterialSelectorButton(
-      country: country,
-      countries: countries,
-      onCountryChanged: onCountryChanged,
-      selectorConfig: widget.selectorConfig,
-      selectorTextStyle: widget.selectorTextStyle,
-      flagStyle: widget.flagStyle,
-      searchBoxDecoration: widget.searchBoxDecoration,
-      isEnabled: widget.isEnabled,
-      autoFocusSearchField: widget.autoFocusSearch,
-      isScrollControlled: widget.countrySelectorScrollControlled,
-      flagSize: widget.flagSize,
-      filterFunction: widget.filterFunction,
-    );
-  }
-
-  Widget? buildSelectorPrefix() {
-    if (!widget.selectorConfig.setSelectorButtonAsPrefixIcon) {
-      return null;
-    }
-
-    return Padding(
-      padding: const EdgeInsets.only(left: 8.0),
-      child: buildSelectorButton(),
     );
   }
 

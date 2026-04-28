@@ -35,61 +35,63 @@ class MaterialSelectorButton extends StatelessWidget {
     required this.filterFunction,
   });
 
+  // Builds the shared Item widget used both as the button face
+  // and as the dropdown header — ensures identical padding/style everywhere.
+  Widget _buildItem({bool inDropdownList = false}) {
+    return Item(
+      country: country,
+      showFlag: selectorConfig.showFlags,
+      leadingPadding: selectorConfig.leadingPadding,
+      trailingPadding: inDropdownList ? null : selectorConfig.trailingPadding,
+      trailingSpace: selectorConfig.trailingSpace,
+      textStyle: selectorTextStyle,
+      flagStyle: flagStyle,
+      flagSize: flagSize,
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
-    return selectorConfig.selectorType == PhoneInputSelectorType.DROPDOWN
-        ? countries.isNotEmpty && countries.length > 1
-              ? DropdownButtonHideUnderline(
-                  child: DropdownButton<Country>(
-                    hint: Item(
-                      country: country,
-                      showFlag: selectorConfig.showFlags,
-                      leadingPadding: selectorConfig.leadingPadding,
-                      trailingSpace: selectorConfig.trailingSpace,
-                      textStyle: selectorTextStyle,
-                      flagStyle: flagStyle,
-                      flagSize: flagSize,
-                    ),
-                    value: country,
-                    items: mapCountryToDropdownItem(countries),
-                    onChanged: (val) {
-                      if (val != null && isEnabled) {
-                        onCountryChanged(val);
-                      }
-                    },
-                  ),
-                )
-              : Item(
-                  country: country,
-                  showFlag: selectorConfig.showFlags,
-                  leadingPadding: selectorConfig.leadingPadding,
-                  trailingPadding: selectorConfig.trailingPadding,
-                  trailingSpace: selectorConfig.trailingSpace,
-                  textStyle: selectorTextStyle,
-                  flagStyle: flagStyle,
-                  flagSize: flagSize,
-                )
-        : MaterialButton(
-            padding: EdgeInsets.zero,
-            minWidth: 0,
-            onPressed: countries.isNotEmpty && countries.length > 1 && isEnabled
-                ? () async {
-                    final selected = await _showSelector(context, countries);
-                    if (selected != null) {
-                      onCountryChanged(selected);
-                    }
-                  }
-                : null,
-            child: Item(
-              country: country,
-              showFlag: selectorConfig.showFlags,
-              leadingPadding: selectorConfig.leadingPadding,
-              trailingSpace: selectorConfig.trailingSpace,
-              textStyle: selectorTextStyle,
-              flagStyle: flagStyle,
-              flagSize: flagSize,
-            ),
-          );
+    final bool hasMultipleCountries =
+        countries.isNotEmpty && countries.length > 1;
+
+    if (selectorConfig.selectorType == PhoneInputSelectorType.DROPDOWN) {
+      if (!hasMultipleCountries) {
+        // Only one country — show a static item, no button chrome at all.
+        return _buildItem();
+      }
+
+      return DropdownButtonHideUnderline(
+        child: DropdownButton<Country>(
+          value: country,
+          // selectedItemBuilder ensures the *header* always looks like
+          // _buildItem(), regardless of which item is highlighted in the list.
+          selectedItemBuilder: (BuildContext context) {
+            return countries.map((_) => _buildItem()).toList();
+          },
+          hint: _buildItem(),
+          items: _mapCountryToDropdownItem(countries),
+          onChanged: isEnabled
+              ? (Country? val) {
+                  if (val != null) onCountryChanged(val);
+                }
+              : null, // passing null disables the dropdown natively
+        ),
+      );
+    }
+
+    // BOTTOM_SHEET / DIALOG — single tappable surface, no MaterialButton.
+    return InkWell(
+      onTap: hasMultipleCountries && isEnabled
+          ? () async {
+              final selected = await _showSelector(context, countries);
+              if (selected != null) {
+                onCountryChanged(selected);
+              }
+            }
+          : null,
+      child: _buildItem(),
+    );
   }
 
   Future<Country?> _showSelector(
@@ -97,20 +99,19 @@ class MaterialSelectorButton extends StatelessWidget {
     List<Country> countries,
   ) {
     if (selectorConfig.selectorType == PhoneInputSelectorType.BOTTOM_SHEET) {
-      return showCountrySelectorBottomSheet(context, countries);
+      return _showCountrySelectorBottomSheet(context, countries);
     }
-
-    return showCountrySelectorDialog(context, countries);
+    return _showCountrySelectorDialog(context, countries);
   }
 
-  List<DropdownMenuItem<Country>> mapCountryToDropdownItem(
+  List<DropdownMenuItem<Country>> _mapCountryToDropdownItem(
     List<Country> countries,
   ) {
-    return countries.map((country) {
+    return countries.map((c) {
       return DropdownMenuItem<Country>(
-        value: country,
+        value: c,
         child: Item(
-          country: country,
+          country: c,
           showFlag: selectorConfig.showFlags,
           textStyle: selectorTextStyle,
           flagStyle: flagStyle,
@@ -121,7 +122,7 @@ class MaterialSelectorButton extends StatelessWidget {
     }).toList();
   }
 
-  Future<Country?> showCountrySelectorDialog(
+  Future<Country?> _showCountrySelectorDialog(
     BuildContext inheritedContext,
     List<Country> countries,
   ) {
@@ -152,7 +153,7 @@ class MaterialSelectorButton extends StatelessWidget {
     );
   }
 
-  Future<Country?> showCountrySelectorBottomSheet(
+  Future<Country?> _showCountrySelectorBottomSheet(
     BuildContext inheritedContext,
     List<Country> countries,
   ) {
