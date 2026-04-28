@@ -82,7 +82,15 @@ InternationalPhoneNumberInput(
 );
 ```
 
-## Main Parameters
+## Quick Notes
+
+- The input field is for the national number only.
+- The selected country provides the dial code context.
+- If a user types `+`, the widget blocks that input and can show `countryCodeWarningMessage`.
+- `detectedCountryOrderStrategy` controls how detection affects selector ordering.
+- `SelectorConfig` controls how the selector looks and behaves.
+
+## Common Configuration
 
 ```dart
 InternationalPhoneNumberInput(
@@ -106,7 +114,7 @@ InternationalPhoneNumberInput(
 )
 ```
 
-Important options:
+Common options:
 
 - `countries`: the available selector entries
 - `defaultCountry`: the initial selector value
@@ -129,7 +137,7 @@ Conditional options:
 - `label`: only used when `inputDecoration` is not provided
 - `inputBorder`: only used when `inputDecoration` is not provided
 
-## All Parameters
+## InternationalPhoneNumberInput Parameters
 
 - `countries`: list of countries available in the selector
 - `defaultCountry`: initially selected country
@@ -189,12 +197,6 @@ Notes for conditional parameters:
 - `spaceBetweenSelectorAndTextField`, `selectorButtonBottomWidget`, and `betweenTextFieldWidget` only apply when `selectorConfig.setSelectorButtonAsPrefixIcon` is `false`
 - `hintText`, `label`, and `inputBorder` only apply when `inputDecoration` is not provided
 
-## Input Rules
-
-- Enter only the national number in the text field.
-- Choose the country from the selector instead of typing the dial code.
-- If a user tries to type `+`, the widget keeps the existing text and shows `countryCodeWarningMessage`.
-
 ## Detection Ordering
 
 Use `detectedCountryOrderStrategy` to control selector ordering after detection:
@@ -217,7 +219,33 @@ const SelectorConfig(
 )
 ```
 
-- `showFlags` now controls flag visibility consistently in the selector button, dropdown items, and search list rows.
+Key options:
+
+- `selectorType`: chooses between dropdown, dialog, and bottom-sheet selector UIs
+- `showFlags`: controls flag visibility consistently in the selector button, dropdown items, and search list rows
+- `countryComparator`: applies custom sorting to the selector list before any detection-based reordering
+- `setSelectorButtonAsPrefixIcon`: places the selector inside the text field instead of beside it
+- `leadingPadding` and `trailingPadding`: adjust selector spacing
+- `trailingSpace`: pads short dial codes for steadier layout
+- `useBottomSheetSafeArea`: enables safe-area handling for the bottom-sheet selector
+- `titleStyle` and `subtitleStyle`: style country names and dial codes in the selector list
+- `searchHintText`: custom hint for the selector search field
+- `emptySearchMessage`: custom empty-state text when no country matches
+
+## SelectorConfig Parameters
+
+- `selectorType`: selector presentation style
+- `showFlags`: whether flags are shown throughout the selector UI
+- `countryComparator`: optional custom sort callback for countries
+- `setSelectorButtonAsPrefixIcon`: whether the selector is rendered inside the text field
+- `leadingPadding`: optional leading spacing for selector content
+- `trailingPadding`: optional trailing spacing for selector content
+- `trailingSpace`: whether short dial codes receive extra padding
+- `useBottomSheetSafeArea`: whether the bottom-sheet selector respects safe areas
+- `titleStyle`: text style for country names in the selector list
+- `subtitleStyle`: text style for country dial codes and selector empty-state text
+- `searchHintText`: hint shown in the selector search field
+- `emptySearchMessage`: message shown when no country matches the search query
 
 ### macOS setup
 

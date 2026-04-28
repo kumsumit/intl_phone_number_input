@@ -54,6 +54,8 @@ class _ExampleHomePageState extends State<ExampleHomePage> {
   final TextEditingController _controller = TextEditingController();
   static const String _countryCodeWarningMessage =
       'Enter the local number only. The country code comes from the selector.';
+  static const String _helperText =
+      'Enter the national number only. The selected country supplies the dial code.';
 
   late final List<Country> _countries;
   late Country _defaultCountry;
@@ -118,24 +120,25 @@ class _ExampleHomePageState extends State<ExampleHomePage> {
 
   @override
   Widget build(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Intl Phone Number Input')),
+      appBar: AppBar(title: const Text('Phone Input Playground')),
       body: SafeArea(
         child: ListView(
           padding: const EdgeInsets.all(16),
           children: [
-            Text('Example', style: Theme.of(context).textTheme.headlineMedium),
+            Text('Phone Input Playground', style: theme.textTheme.headlineMedium),
             const SizedBox(height: 8),
             Text(
-              'This demo uses widget-managed smart detection so the selected country and chooser order stay in sync.',
-              style: Theme.of(context).textTheme.bodyMedium,
+              'Try selector layouts, formatting, and country detection settings in one place. The preview stays wired to the live widget so it is easy to understand how each option changes behavior.',
+              style: theme.textTheme.bodyMedium,
             ),
             const SizedBox(height: 24),
-            Text(
-              'Selector mode',
-              style: Theme.of(context).textTheme.titleMedium,
+            _SectionHeader(
+              title: 'Selector',
+              caption: 'Choose how the country picker is presented.',
             ),
             const SizedBox(height: 12),
             SegmentedButton<PhoneInputSelectorType>(
@@ -211,9 +214,9 @@ class _ExampleHomePageState extends State<ExampleHomePage> {
               ],
             ),
             const SizedBox(height: 20),
-            Text(
-              'Detection mode',
-              style: Theme.of(context).textTheme.titleMedium,
+            _SectionHeader(
+              title: 'Detection Signals',
+              caption: 'Control which signals the built-in detector can use.',
             ),
             const SizedBox(height: 12),
             SegmentedButton<CountryDetectionMode>(
@@ -236,9 +239,9 @@ class _ExampleHomePageState extends State<ExampleHomePage> {
               },
             ),
             const SizedBox(height: 20),
-            Text(
-              'Detected country ordering',
-              style: Theme.of(context).textTheme.titleMedium,
+            _SectionHeader(
+              title: 'Detection Ordering',
+              caption: 'Choose how detected countries are prioritized in the selector.',
             ),
             const SizedBox(height: 12),
             SegmentedButton<DetectedCountryOrderStrategy>(
@@ -253,12 +256,12 @@ class _ExampleHomePageState extends State<ExampleHomePage> {
                 ),
                 ButtonSegment(
                   value: DetectedCountryOrderStrategy.signalVotesThenDistance,
-                  label: Text('Signals'),
+                  label: Text('Signals first'),
                 ),
                 ButtonSegment(
                   value: DetectedCountryOrderStrategy
                       .signalVotesThenNeighborsThenDistance,
-                  label: Text('Signals + near'),
+                  label: Text('Signals + neighbors'),
                 ),
               ],
               selected: {_detectedCountryOrderStrategy},
@@ -269,6 +272,11 @@ class _ExampleHomePageState extends State<ExampleHomePage> {
               },
             ),
             const SizedBox(height: 24),
+            _SectionHeader(
+              title: 'Live Preview',
+              caption: _helperText,
+            ),
+            const SizedBox(height: 12),
             Form(
               key: _formKey,
               child: InternationalPhoneNumberInput(
@@ -299,8 +307,7 @@ class _ExampleHomePageState extends State<ExampleHomePage> {
                 inputBorder: const OutlineInputBorder(),
                 inputDecoration: const InputDecoration(
                   labelText: 'Phone number',
-                  helperText:
-                      'Enter the local number only. Country code input is blocked.',
+                  helperText: _helperText,
                 ),
                 onInputChanged: (number) {
                   WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -348,8 +355,8 @@ class _ExampleHomePageState extends State<ExampleHomePage> {
                       SnackBar(
                         content: Text(
                           isValid
-                              ? 'Current value is valid'
-                              : 'Current value is invalid',
+                              ? 'The current number is valid.'
+                              : 'The current number is invalid.',
                         ),
                       ),
                     );
@@ -358,7 +365,7 @@ class _ExampleHomePageState extends State<ExampleHomePage> {
                 ),
                 OutlinedButton(
                   onPressed: _setDemoNumber,
-                  child: const Text('Load demo number'),
+                  child: const Text('Load sample'),
                 ),
                 OutlinedButton(
                   onPressed: _clearField,
@@ -384,8 +391,8 @@ class _ExampleHomePageState extends State<ExampleHomePage> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'Current value',
-                      style: Theme.of(context).textTheme.titleMedium,
+                      'Live State',
+                      style: theme.textTheme.titleMedium,
                     ),
                     const SizedBox(height: 12),
                     _StatusRow(
@@ -414,15 +421,11 @@ class _ExampleHomePageState extends State<ExampleHomePage> {
                     ),
                     _StatusRow(
                       label: 'Detection mode',
-                      value:
-                          _countryDetectionMode ==
-                              CountryDetectionMode.networkSignals
-                          ? 'Local + IP'
-                          : 'Local only',
+                      value: _detectionModeLabel(_countryDetectionMode),
                     ),
                     _StatusRow(
                       label: 'Ordering',
-                      value: _detectedCountryOrderStrategy.name,
+                      value: _orderingLabel(_detectedCountryOrderStrategy),
                     ),
                     _StatusRow(
                       label: 'Detection confidence',
@@ -434,8 +437,8 @@ class _ExampleHomePageState extends State<ExampleHomePage> {
                         _detectedCountryResult!.allVotes.isNotEmpty) ...[
                       const SizedBox(height: 16),
                       Text(
-                        'Top ranked votes',
-                        style: Theme.of(context).textTheme.titleSmall,
+                        'Top Ranked Votes',
+                        style: theme.textTheme.titleSmall,
                       ),
                       const SizedBox(height: 8),
                       ..._detectedCountryResult!.allVotes.entries
@@ -459,9 +462,31 @@ class _ExampleHomePageState extends State<ExampleHomePage> {
 
   String _statusLabel(bool? value) {
     if (value == null) {
-      return 'Not checked';
+      return 'Not checked yet';
     }
     return value ? 'Valid' : 'Invalid';
+  }
+
+  String _detectionModeLabel(CountryDetectionMode mode) {
+    switch (mode) {
+      case CountryDetectionMode.localSignals:
+        return 'Local only';
+      case CountryDetectionMode.networkSignals:
+        return 'Local + IP';
+    }
+  }
+
+  String _orderingLabel(DetectedCountryOrderStrategy strategy) {
+    switch (strategy) {
+      case DetectedCountryOrderStrategy.none:
+        return 'Original list order';
+      case DetectedCountryOrderStrategy.detectedCountryFirst:
+        return 'Detected country first';
+      case DetectedCountryOrderStrategy.signalVotesThenDistance:
+        return 'Detected, then signals, then distance';
+      case DetectedCountryOrderStrategy.signalVotesThenNeighborsThenDistance:
+        return 'Detected, then signals, then neighbors';
+    }
   }
 }
 
@@ -487,6 +512,26 @@ class _StatusRow extends StatelessWidget {
           ),
         ],
       ),
+    );
+  }
+}
+
+class _SectionHeader extends StatelessWidget {
+  const _SectionHeader({required this.title, required this.caption});
+
+  final String title;
+  final String caption;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(title, style: theme.textTheme.titleMedium),
+        const SizedBox(height: 4),
+        Text(caption, style: theme.textTheme.bodyMedium),
+      ],
     );
   }
 }

@@ -2,47 +2,48 @@ import 'package:flutter/material.dart';
 import 'package:intl_phone_number_input/src/models/country_model.dart';
 import 'package:intl_phone_number_input/src/widgets/input_widget.dart';
 
-/// [CountryComparator] takes two countries: A and B.
+/// Compares two countries for custom selector ordering.
 ///
-/// Should return -1 if A precedes B, 0 if A is equal to B and 1 if B precedes A
+/// Return `-1` if `a` should come before `b`, `0` if they are equivalent,
+/// and `1` if `b` should come before `a`.
 typedef CountryComparator = int Function(Country, Country);
 
-/// [SelectorConfig] contains selector button configurations
+/// Configuration for the country selector UI.
 class SelectorConfig {
-  /// [selectorType], for selector button type
+  /// Which selector presentation to use.
   final PhoneInputSelectorType selectorType;
 
-  /// [showFlags], displays flags in the selector button, dropdown items,
-  /// and list items within the selector.
+  /// Whether to show flags in the selector button, dropdown items, and list rows.
   final bool showFlags;
 
-  /// [countryComparator], sort the country list according to the comparator.
+  /// Optional custom sort order for the country list.
   ///
-  /// Sorting is disabled by default
+  /// When omitted, the incoming list order is preserved unless other widget
+  /// features reorder it.
   final CountryComparator? countryComparator;
 
-  /// [setSelectorButtonAsPrefixIcon], this sets/places the selector button inside the [TextField] as a prefixIcon.
+  /// Whether to place the selector inside the text field as a prefix icon.
   final bool setSelectorButtonAsPrefixIcon;
 
-  /// Space before the flag icon
+  /// Leading space before the selector content.
   final double? leadingPadding;
 
-  /// Space before the flag icon
+  /// Trailing space after the selector content.
   final double? trailingPadding;
 
-  /// Add white space for short dial code
+  /// Whether to pad short dial codes for more stable visual width.
   final bool trailingSpace;
 
-  /// Use safe area for selectorType=BOTTOM_SHEET
+  /// Whether the bottom-sheet selector should respect the safe area.
   final bool useBottomSheetSafeArea;
 
-  //Use this to set the style of the title  of the country list
+  /// Text style for country names in the selector list.
   final TextStyle? titleStyle;
 
-  //Use this to set the style of the subtitle of the country list
+  /// Text style for country dial codes and empty-state text in the selector list.
   final TextStyle? subtitleStyle;
 
-  /// Search field hint shown in the country selector.
+  /// Hint text shown in the selector search field.
   final String searchHintText;
 
   /// Message shown when no country matches the current query.
