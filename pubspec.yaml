@@ -46,3 +46,6 @@ dependency_overrides:
   path_provider:
     git: https://github.com/kumsumit/path_provider.git
   xml: ^7.0.1
+
+flutter:
+  uses-material-design: true

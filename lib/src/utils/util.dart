@@ -1,4 +1,5 @@
 import 'package:intl_phone_number_input/src/models/country_model.dart';
+import 'package:phone_parser/phone_parser.dart';
 
 /// [Utils] class contains utility methods for `intl_phone_number_input` library
 class Utils {
@@ -17,10 +18,7 @@ class Utils {
   }
 
   /// Returns the subset of [countries] that match the provided [query].
-  static List<Country> filterCountries(
-    List<Country> countries,
-    String query,
-  ) {
+  static List<Country> filterCountries(List<Country> countries, String query) {
     final normalizedQuery = query.trim();
     if (normalizedQuery.isEmpty) {
       return List<Country>.from(countries);
@@ -41,6 +39,37 @@ class Utils {
           .map((e) => String.fromCharCode(base + e))
           .join();
     });
+  }
+
+  /// Returns a formatted local example number for [isoCode] when metadata has
+  /// one. Mobile examples are preferred because phone inputs most often collect
+  /// mobile numbers.
+  static String? examplePhoneNumberHint(String isoCode) {
+    try {
+      final example =
+          PhoneNumber.getExampleNumberForType(
+            isoCode: isoCode,
+            type: PhoneNumberType.mobile,
+          ) ??
+          PhoneNumber.getExampleNumberForType(
+            isoCode: isoCode,
+            type: PhoneNumberType.fixedLine,
+          ) ??
+          PhoneNumber.getExampleNumber(isoCode);
+
+      if (example == null || example.nsn.isEmpty) {
+        return null;
+      }
+
+      return PhoneNumberFormatter.formatNsn(
+        example.nsn,
+        example.isoCode,
+        NsnFormat.national,
+        false,
+      );
+    } catch (_) {
+      return null;
+    }
   }
 }
 

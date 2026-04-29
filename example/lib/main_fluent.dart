@@ -100,8 +100,6 @@ class _ExampleHomePageState extends State<ExampleHomePage> {
     });
   }
 
-
-
   @override
   Widget build(BuildContext context) {
     return fluent.NavigationView(
@@ -168,29 +166,29 @@ class _ExampleHomePageState extends State<ExampleHomePage> {
       ),
       const SizedBox(height: 12),
       Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            fluent.ToggleButton(
-              checked: _selectorType == PhoneInputSelectorType.DROPDOWN,
-              onChanged: (_) =>
-                  setState(() => _selectorType = PhoneInputSelectorType.DROPDOWN),
-              child: const Text('Dropdown'),
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          fluent.ToggleButton(
+            checked: _selectorType == PhoneInputSelectorType.DROPDOWN,
+            onChanged: (_) =>
+                setState(() => _selectorType = PhoneInputSelectorType.DROPDOWN),
+            child: const Text('Dropdown'),
+          ),
+          fluent.ToggleButton(
+            checked: _selectorType == PhoneInputSelectorType.BOTTOM_SHEET,
+            onChanged: (_) => setState(
+              () => _selectorType = PhoneInputSelectorType.BOTTOM_SHEET,
             ),
-            fluent.ToggleButton(
-              checked: _selectorType == PhoneInputSelectorType.BOTTOM_SHEET,
-              onChanged: (_) => setState(
-                () => _selectorType = PhoneInputSelectorType.BOTTOM_SHEET,
-              ),
-              child: const Text('Bottom sheet'),
-            ),
-            fluent.ToggleButton(
-              checked: _selectorType == PhoneInputSelectorType.DIALOG,
-              onChanged: (_) =>
-                  setState(() => _selectorType = PhoneInputSelectorType.DIALOG),
-              child: const Text('Dialog'),
-            ),
-          ],
-        ),
+            child: const Text('Bottom sheet'),
+          ),
+          fluent.ToggleButton(
+            checked: _selectorType == PhoneInputSelectorType.DIALOG,
+            onChanged: (_) =>
+                setState(() => _selectorType = PhoneInputSelectorType.DIALOG),
+            child: const Text('Dialog'),
+          ),
+        ],
+      ),
       const SizedBox(height: 20),
       Wrap(
         spacing: 12,
@@ -229,7 +227,7 @@ class _ExampleHomePageState extends State<ExampleHomePage> {
         caption: 'Control which signals the built-in detector can use.',
       ),
       const SizedBox(height: 12),
-     Row(
+      Row(
         mainAxisSize: MainAxisSize.min,
         children: [
           fluent.ToggleButton(
@@ -258,7 +256,7 @@ class _ExampleHomePageState extends State<ExampleHomePage> {
             'Choose how detected countries are prioritized in the selector.',
       ),
       const SizedBox(height: 12),
-     Row(
+      Row(
         mainAxisSize: MainAxisSize.min,
         children: [
           fluent.ToggleButton(
@@ -334,7 +332,7 @@ class _ExampleHomePageState extends State<ExampleHomePage> {
           ),
           selectorTextStyle: theme.typography.body,
           flagStyle: theme.typography.body,
-          placeholder: 'Phone number',
+          label: 'Phone number',
           onInputChanged: (number) {
             WidgetsBinding.instance.addPostFrameCallback((_) {
               if (mounted) {

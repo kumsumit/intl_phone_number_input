@@ -149,7 +149,7 @@ class _ExampleHomePageState extends State<ExampleHomePage> {
         caption: 'Choose how the country picker is presented.',
       ),
       const SizedBox(height: 12),
-     // ── SELECTOR TYPE ──────────────────────────────────────────────────────────
+      // ── SELECTOR TYPE ──────────────────────────────────────────────────────────
       RadioGroup<PhoneInputSelectorType>(
         groupValue: _selectorType,
         onChanged: (value) => setState(() => _selectorType = value!),
@@ -187,59 +187,71 @@ class _ExampleHomePageState extends State<ExampleHomePage> {
       ),
       const SizedBox(height: 20),
       // ── CHECKBOXES ─────────────────────────────────────────────────────────────
-// Before (broken):
-Wrap(
-  spacing: 12,
-  runSpacing: 8,
-  children: [
-    Row(children: [
-      macos.MacosCheckbox(
-        value: _formatInput,
-        onChanged: (value) => setState(() => _formatInput = value),
+      // Before (broken):
+      Wrap(
+        spacing: 12,
+        runSpacing: 8,
+        children: [
+          Row(
+            children: [
+              macos.MacosCheckbox(
+                value: _formatInput,
+                onChanged: (value) => setState(() => _formatInput = value),
+              ),
+              const SizedBox(width: 6),
+              const Text('Format input'),
+            ],
+          ),
+          Row(
+            children: [
+              macos.MacosCheckbox(
+                value: _prefixSelector,
+                onChanged: (value) => setState(() => _prefixSelector = value),
+              ),
+              const SizedBox(width: 6),
+              const Text('Prefix selector'),
+            ],
+          ),
+          Row(
+            children: [
+              macos.MacosCheckbox(
+                value: _ignoreBlank,
+                onChanged: (value) => setState(() => _ignoreBlank = value),
+              ),
+              const SizedBox(width: 6),
+              const Text('Ignore blank'),
+            ],
+          ),
+          Row(
+            children: [
+              macos.MacosCheckbox(
+                value: _disableLengthCheck,
+                onChanged: (value) =>
+                    setState(() => _disableLengthCheck = value),
+              ),
+              const SizedBox(width: 6),
+              const Text('Disable length check'),
+            ],
+          ),
+          Row(
+            children: [
+              macos.MacosCheckbox(
+                value: _autoDetectCountry,
+                onChanged: (value) => _setAutoDetectCountry(value),
+              ),
+              const SizedBox(width: 6),
+              const Text('Auto detect country'),
+            ],
+          ),
+        ],
       ),
-      const SizedBox(width: 6),
-      const Text('Format input'),
-    ]),
-    Row(children: [
-      macos.MacosCheckbox(
-        value: _prefixSelector,
-        onChanged: (value) => setState(() => _prefixSelector = value),
-      ),
-      const SizedBox(width: 6),
-      const Text('Prefix selector'),
-    ]),
-    Row(children: [
-      macos.MacosCheckbox(
-        value: _ignoreBlank,
-        onChanged: (value) => setState(() => _ignoreBlank = value),
-      ),
-      const SizedBox(width: 6),
-      const Text('Ignore blank'),
-    ]),
-    Row(children: [
-      macos.MacosCheckbox(
-        value: _disableLengthCheck,
-        onChanged: (value) => setState(() => _disableLengthCheck = value),
-      ),
-      const SizedBox(width: 6),
-      const Text('Disable length check'),
-    ]),
-    Row(children: [
-      macos.MacosCheckbox(
-        value: _autoDetectCountry,
-        onChanged: (value) => _setAutoDetectCountry(value),
-      ),
-      const SizedBox(width: 6),
-      const Text('Auto detect country'),
-    ]),
-  ],
-),const SizedBox(height: 20),
+      const SizedBox(height: 20),
       _SectionHeader(
         title: 'Detection Signals',
         caption: 'Control which signals the built-in detector can use.',
       ),
       const SizedBox(height: 12),
-     // ── DETECTION MODE ─────────────────────────────────────────────────────────
+      // ── DETECTION MODE ─────────────────────────────────────────────────────────
       RadioGroup<CountryDetectionMode>(
         groupValue: _countryDetectionMode,
         onChanged: (value) => setState(() {
@@ -278,11 +290,12 @@ Wrap(
       const SizedBox(height: 12),
       RadioGroup<DetectedCountryOrderStrategy>(
         groupValue: _detectedCountryOrderStrategy,
-        onChanged: (value) => setState(() => _detectedCountryOrderStrategy = value!),
+        onChanged: (value) =>
+            setState(() => _detectedCountryOrderStrategy = value!),
         child: const Text('Off'),
       ),
       const SizedBox(height: 8),
-     // ── DETECTION ORDERING ─────────────────────────────────────────────────────
+      // ── DETECTION ORDERING ─────────────────────────────────────────────────────
       RadioGroup<DetectedCountryOrderStrategy>(
         groupValue: _detectedCountryOrderStrategy,
         onChanged: (value) =>
@@ -359,7 +372,7 @@ Wrap(
           ),
           selectorTextStyle: theme.typography.body,
           flagStyle: theme.typography.largeTitle,
-          placeholder: 'Phone number',
+          label: const Text('Phone number'),
           onInputChanged: (number) {
             WidgetsBinding.instance.addPostFrameCallback((_) {
               if (mounted) {
@@ -572,10 +585,16 @@ class _StatusRow extends StatelessWidget {
         children: [
           SizedBox(
             width: 120,
-            child: Text(label, style: macos.MacosTheme.of(context).typography.body),
+            child: Text(
+              label,
+              style: macos.MacosTheme.of(context).typography.body,
+            ),
           ),
           Expanded(
-            child: Text(value, style: macos.MacosTheme.of(context).typography.body),
+            child: Text(
+              value,
+              style: macos.MacosTheme.of(context).typography.body,
+            ),
           ),
         ],
       ),

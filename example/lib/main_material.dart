@@ -99,14 +99,10 @@ class _ExampleHomePageState extends State<ExampleHomePage> {
     });
   }
 
-
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Phone Input Playground - Material'),
-      ),
+      appBar: AppBar(title: const Text('Phone Input Playground - Material')),
       body: SafeArea(
         child: LayoutBuilder(
           builder: (context, constraints) {
@@ -164,7 +160,7 @@ class _ExampleHomePageState extends State<ExampleHomePage> {
         caption: 'Choose how the country picker is presented.',
       ),
       const SizedBox(height: 12),
-     SegmentedButton<PhoneInputSelectorType>(
+      SegmentedButton<PhoneInputSelectorType>(
         segments: const [
           ButtonSegment(
             value: PhoneInputSelectorType.DROPDOWN,
@@ -227,7 +223,8 @@ class _ExampleHomePageState extends State<ExampleHomePage> {
             children: [
               Switch(
                 value: _disableLengthCheck,
-                onChanged: (value) => setState(() => _disableLengthCheck = value),
+                onChanged: (value) =>
+                    setState(() => _disableLengthCheck = value),
               ),
               const SizedBox(width: 8),
               const Text('Disable length check'),
@@ -252,7 +249,7 @@ class _ExampleHomePageState extends State<ExampleHomePage> {
         caption: 'Control which signals the built-in detector can use.',
       ),
       const SizedBox(height: 12),
-     SegmentedButton<CountryDetectionMode>(
+      SegmentedButton<CountryDetectionMode>(
         segments: const [
           ButtonSegment(
             value: CountryDetectionMode.localSignals,
@@ -332,7 +329,7 @@ class _ExampleHomePageState extends State<ExampleHomePage> {
           ),
           selectorTextStyle: theme.textTheme.bodyMedium,
           flagStyle: theme.textTheme.bodyMedium,
-          hintText: 'Phone number',
+          label: const Text('Phone number'),
           onInputChanged: (number) {
             WidgetsBinding.instance.addPostFrameCallback((_) {
               if (mounted) {
@@ -409,10 +406,7 @@ class _ExampleHomePageState extends State<ExampleHomePage> {
             onPressed: _setDemoNumber,
             child: const Text('Load sample'),
           ),
-          OutlinedButton(
-            onPressed: _clearField,
-            child: const Text('Clear'),
-          ),
+          OutlinedButton(onPressed: _clearField, child: const Text('Clear')),
           OutlinedButton(
             onPressed: () {
               _formKey.currentState?.save();
@@ -533,16 +527,10 @@ class _StatusRow extends StatelessWidget {
         children: [
           SizedBox(
             width: 120,
-            child: Text(
-              label,
-              style: Theme.of(context).textTheme.bodyMedium,
-            ),
+            child: Text(label, style: Theme.of(context).textTheme.bodyMedium),
           ),
           Expanded(
-            child: Text(
-              value,
-              style: Theme.of(context).textTheme.bodyMedium,
-            ),
+            child: Text(value, style: Theme.of(context).textTheme.bodyMedium),
           ),
         ],
       ),

@@ -92,7 +92,8 @@ class CupertinoInternationalPhoneNumber extends StatefulWidget {
   /// Initial phone number value used to populate the field and country.
   final PhoneNumber? initialValue;
 
-  /// Hint text used when [inputDecoration] is not provided.
+  /// Hint text for the field. Defaults to a formatted example number for the
+  /// selected country.
   final String? hintText;
 
   /// Label widget used when [inputDecoration] is not provided.
@@ -224,7 +225,7 @@ class CupertinoInternationalPhoneNumber extends StatefulWidget {
     this.keyboardAction,
     this.keyboardType = TextInputType.phone,
     this.initialValue,
-    this.hintText = 'Phone number',
+    this.hintText,
     this.errorMessage = 'Invalid phone number',
     this.countryCodeWarningMessage =
         'Enter the phone number without country code',
@@ -323,7 +324,10 @@ class CupertinoInternationalPhoneNumberState
           keyboardType: widget.keyboardType,
           textInputAction: widget.keyboardAction,
           textStyle: widget.textStyle,
-          placeholder: widget.placeholder ?? widget.hintText,
+          placeholder:
+              widget.placeholder ??
+              widget.hintText ??
+              Utils.examplePhoneNumberHint(country.alpha2Code),
           prefix: widget.prefix,
           textAlign: widget.textAlign,
           textAlignVertical: widget.textAlignVertical,

@@ -36,10 +36,40 @@ class YaruSelectorButton extends StatelessWidget {
     required this.filterFunction,
   });
 
+  Widget _buildItem(Country? itemCountry) {
+    return Item(
+      country: itemCountry,
+      showFlag: selectorConfig.showFlags,
+      leadingPadding: selectorConfig.leadingPadding,
+      trailingSpace: selectorConfig.trailingSpace,
+      textStyle: selectorTextStyle,
+      flagStyle: flagStyle,
+      flagSize: flagSize,
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
+    final hasMultipleCountries = countries.isNotEmpty && countries.length > 1;
+
+    if (selectorConfig.selectorType == PhoneInputSelectorType.DROPDOWN) {
+      return YaruPopupMenuButton<Country>(
+        initialValue: country,
+        enabled: hasMultipleCountries && isEnabled,
+        onSelected: onCountryChanged,
+        constraints: const BoxConstraints(maxHeight: 420),
+        child: _buildItem(country),
+        itemBuilder: (context) => countries
+            .map(
+              (item) =>
+                  PopupMenuItem<Country>(value: item, child: _buildItem(item)),
+            )
+            .toList(),
+      );
+    }
+
     return InkWell(
-      onTap: countries.isNotEmpty && countries.length > 1 && isEnabled
+      onTap: hasMultipleCountries && isEnabled
           ? () async {
               final selected = await _showSelector(context, countries);
               if (selected != null) {
@@ -47,15 +77,7 @@ class YaruSelectorButton extends StatelessWidget {
               }
             }
           : null,
-      child: Item(
-        country: country,
-        showFlag: selectorConfig.showFlags,
-        leadingPadding: selectorConfig.leadingPadding,
-        trailingSpace: selectorConfig.trailingSpace,
-        textStyle: selectorTextStyle,
-        flagStyle: flagStyle,
-        flagSize: flagSize,
-      ),
+      child: _buildItem(country),
     );
   }
 
@@ -63,9 +85,7 @@ class YaruSelectorButton extends StatelessWidget {
     BuildContext context,
     List<Country> countries,
   ) {
-    if (selectorConfig.selectorType == PhoneInputSelectorType.BOTTOM_SHEET) {
-      return showYaruBottomSheet(context, countries);
-    }
+    // Ubuntu desktop apps use dialogs/menus rather than mobile bottom sheets.
     return showYaruCountryDialog(context, countries);
   }
 
@@ -87,42 +107,12 @@ class YaruSelectorButton extends StatelessWidget {
           child: _buildSearchList(context),
         ),
         actions: [
-          YaruOptionButton(onPressed: () => Navigator.of(context).pop(), child: const Text('Cancel')),
+          YaruOptionButton(
+            onPressed: () => Navigator.of(context).pop(),
+            child: const Text('Cancel'),
+          ),
         ],
       ),
-    );
-  }
-
-  Future<Country?> showYaruBottomSheet(
-    BuildContext inheritedContext,
-    List<Country> countries,
-  ) {
-    return showModalBottomSheet<Country>(
-      context: inheritedContext,
-      isScrollControlled: isScrollControlled,
-      useSafeArea: selectorConfig.useBottomSheetSafeArea,
-      builder: (BuildContext context) {
-        return DraggableScrollableSheet(
-          initialChildSize: 0.7,
-          minChildSize: 0.5,
-          maxChildSize: 0.95,
-          expand: false,
-          builder: (context, scrollController) {
-            return Column(
-              children: [
-                Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: Text(
-                    searchFieldPlaceholder ?? 'Select Country',
-                    style: Theme.of(context).textTheme.titleLarge,
-                  ),
-                ),
-                Expanded(child: _buildSearchList(context)),
-              ],
-            );
-          },
-        );
-      },
     );
   }
 
@@ -135,8 +125,10 @@ class YaruSelectorButton extends StatelessWidget {
       showFlags: selectorConfig.showFlags,
       flagSize: flagSize,
       flagStyle: flagStyle,
-      titleStyle: selectorConfig.titleStyle ?? Theme.of(context).textTheme.titleMedium,
-      subtitleStyle: selectorConfig.subtitleStyle ?? Theme.of(context).textTheme.bodySmall,
+      titleStyle:
+          selectorConfig.titleStyle ?? Theme.of(context).textTheme.titleMedium,
+      subtitleStyle:
+          selectorConfig.subtitleStyle ?? Theme.of(context).textTheme.bodySmall,
       searchHintText: searchFieldPlaceholder ?? 'Search country',
       emptySearchMessage: 'No countries found',
       filterFunction: filterFunction,

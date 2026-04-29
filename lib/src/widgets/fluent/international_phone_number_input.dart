@@ -105,7 +105,7 @@ class FluentInternationalPhoneNumber extends StatefulWidget {
     this.keyboardAction,
     this.keyboardType = TextInputType.phone,
     this.initialValue,
-    this.hintText = 'Phone number',
+    this.hintText,
     this.errorMessage = 'Invalid phone number',
     this.countryCodeWarningMessage =
         'Enter the phone number without country code',
@@ -176,7 +176,6 @@ class FluentInternationalPhoneNumberState
     super.dispose();
   }
 
-
   @override
   void setState(fn) {
     if (mounted) {
@@ -199,7 +198,10 @@ class FluentInternationalPhoneNumberState
       keyboardType: widget.keyboardType,
       textInputAction: widget.keyboardAction,
       textStyle: widget.textStyle,
-      placeholder: widget.placeholder ?? widget.hintText,
+      placeholder:
+          widget.placeholder ??
+          widget.hintText ??
+          Utils.examplePhoneNumberHint(country.alpha2Code),
       prefix: widget.prefix,
       textAlign: widget.textAlign,
       textAlignVertical: widget.textAlignVertical,
@@ -245,6 +247,7 @@ class FluentInternationalPhoneNumberState
       filterFunction: widget.filterFunction,
     );
   }
+
   @override
   void didUpdateWidget(covariant FluentInternationalPhoneNumber oldWidget) {
     super.didUpdateWidget(oldWidget);
@@ -451,13 +454,20 @@ class FluentInternationalPhoneNumberState
     if (defaultIsoCode.isNotEmpty) {
       rootCodes.add(defaultIsoCode);
     }
-    if (detectedIsoCode != null && detectedIsoCode.isNotEmpty && detectedIsoCode != defaultIsoCode) {
+    if (detectedIsoCode != null &&
+        detectedIsoCode.isNotEmpty &&
+        detectedIsoCode != defaultIsoCode) {
       rootCodes.add(detectedIsoCode);
     }
-    rootCodes.addAll(voteOrderedCodes.where((code) => !rootCodes.contains(code)));
+    rootCodes.addAll(
+      voteOrderedCodes.where((code) => !rootCodes.contains(code)),
+    );
 
     if (strategy == DetectedCountryOrderStrategy.detectedCountryFirst) {
-      return _orderCountriesByCodesThenAlphabetical(sortedCountries, rootCodes.take(1).toList());
+      return _orderCountriesByCodesThenAlphabetical(
+        sortedCountries,
+        rootCodes.take(1).toList(),
+      );
     }
 
     final includeNeighbors =
@@ -506,23 +516,32 @@ class FluentInternationalPhoneNumberState
     final detectedResult = _detectedCountryResult;
     final detectedIsoCode = detectedResult?.countryCode?.toUpperCase();
 
-    final voteOrderedCodes = detectedResult?.allVotes.keys
-        .map((code) => code.toUpperCase())
-        .where((code) => code != detectedIsoCode)
-        .toList(growable: false) ?? [];
+    final voteOrderedCodes =
+        detectedResult?.allVotes.keys
+            .map((code) => code.toUpperCase())
+            .where((code) => code != detectedIsoCode)
+            .toList(growable: false) ??
+        [];
 
     // Put default first, then detected if different, then votes
     final rootCodes = <String>[];
     if (defaultIsoCode.isNotEmpty) {
       rootCodes.add(defaultIsoCode);
     }
-    if (detectedIsoCode != null && detectedIsoCode.isNotEmpty && detectedIsoCode != defaultIsoCode) {
+    if (detectedIsoCode != null &&
+        detectedIsoCode.isNotEmpty &&
+        detectedIsoCode != defaultIsoCode) {
       rootCodes.add(detectedIsoCode);
     }
-    rootCodes.addAll(voteOrderedCodes.where((code) => !rootCodes.contains(code)));
+    rootCodes.addAll(
+      voteOrderedCodes.where((code) => !rootCodes.contains(code)),
+    );
 
     if (strategy == DetectedCountryOrderStrategy.detectedCountryFirst) {
-      return _orderCountriesByCodesThenAlphabetical(sortedCountries, rootCodes.take(1).toList());
+      return _orderCountriesByCodesThenAlphabetical(
+        sortedCountries,
+        rootCodes.take(1).toList(),
+      );
     }
 
     final includeNeighbors =
@@ -533,8 +552,10 @@ class FluentInternationalPhoneNumberState
 
     if (includeNeighbors) {
       prioritizedCodes.addAll(
-        _interleavedRootAndNeighborCodesFor(rootCodes, sortedCountries)
-            .where((code) => !prioritizedCodes.contains(code)),
+        _interleavedRootAndNeighborCodesFor(
+          rootCodes,
+          sortedCountries,
+        ).where((code) => !prioritizedCodes.contains(code)),
       );
     } else {
       final remainingCodes = sortedCountries

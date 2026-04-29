@@ -36,10 +36,49 @@ class MacosSelectorButton extends StatelessWidget {
     required this.filterFunction,
   });
 
+  Widget _buildItem(Country? itemCountry) {
+    return Item(
+      country: itemCountry,
+      showFlag: selectorConfig.showFlags,
+      leadingPadding: selectorConfig.leadingPadding,
+      trailingSpace: selectorConfig.trailingSpace,
+      textStyle: selectorTextStyle,
+      flagStyle: flagStyle,
+      flagSize: flagSize,
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
+    final hasMultipleCountries = countries.isNotEmpty && countries.length > 1;
+
+    if (selectorConfig.selectorType == PhoneInputSelectorType.DROPDOWN) {
+      return MacosPopupButton<Country>(
+        value: country,
+        itemHeight: null,
+        items: countries
+            .map(
+              (item) => MacosPopupMenuItem<Country>(
+                value: item,
+                child: _buildItem(item),
+              ),
+            )
+            .toList(),
+        selectedItemBuilder: (context) =>
+            countries.map((_) => _buildItem(country)).toList(),
+        hint: _buildItem(country),
+        onChanged: hasMultipleCountries && isEnabled
+            ? (selected) {
+                if (selected != null) {
+                  onCountryChanged(selected);
+                }
+              }
+            : null,
+      );
+    }
+
     return GestureDetector(
-      onTap: countries.isNotEmpty && countries.length > 1 && isEnabled
+      onTap: hasMultipleCountries && isEnabled
           ? () async {
               final selected = await _showSelector(context, countries);
               if (selected != null) {
@@ -47,15 +86,7 @@ class MacosSelectorButton extends StatelessWidget {
               }
             }
           : null,
-      child: Item(
-        country: country,
-        showFlag: selectorConfig.showFlags,
-        leadingPadding: selectorConfig.leadingPadding,
-        trailingSpace: selectorConfig.trailingSpace,
-        textStyle: selectorTextStyle,
-        flagStyle: flagStyle,
-        flagSize: flagSize,
-      ),
+      child: _buildItem(country),
     );
   }
 

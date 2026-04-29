@@ -1,5 +1,6 @@
 import 'package:fluent_ui/fluent_ui.dart'; // Swapped from macos_ui
 import 'package:intl_phone_number_input/src/models/country_model.dart';
+import 'package:intl_phone_number_input/src/utils/input_types.dart';
 import 'package:intl_phone_number_input/src/utils/selector_config.dart';
 import 'package:intl_phone_number_input/src/widgets/fluent/countries_search_list_widget.dart';
 import 'package:intl_phone_number_input/src/widgets/common/item.dart';
@@ -34,11 +35,46 @@ class FluentSelectorButton extends StatelessWidget {
     required this.filterFunction,
   });
 
+  Widget _buildItem(Country? itemCountry) {
+    return Item(
+      country: itemCountry,
+      showFlag: selectorConfig.showFlags,
+      leadingPadding: selectorConfig.leadingPadding,
+      trailingSpace: selectorConfig.trailingSpace,
+      textStyle: selectorTextStyle,
+      flagStyle: flagStyle,
+      flagSize: flagSize,
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
-    // We use a HoverButton or Button to give it the Windows 'Clickable' feel
+    final hasMultipleCountries = countries.isNotEmpty && countries.length > 1;
+
+    if (selectorConfig.selectorType == PhoneInputSelectorType.DROPDOWN) {
+      return ComboBox<Country>(
+        value: country,
+        items: countries
+            .map(
+              (item) =>
+                  ComboBoxItem<Country>(value: item, child: _buildItem(item)),
+            )
+            .toList(),
+        selectedItemBuilder: (context) =>
+            countries.map((_) => _buildItem(country)).toList(),
+        placeholder: _buildItem(country),
+        onChanged: hasMultipleCountries && isEnabled
+            ? (selected) {
+                if (selected != null) {
+                  onCountryChanged(selected);
+                }
+              }
+            : null,
+      );
+    }
+
     return Button(
-      onPressed: countries.isNotEmpty && countries.length > 1 && isEnabled
+      onPressed: hasMultipleCountries && isEnabled
           ? () async {
               final selected = await _showSelector(context, countries);
               if (selected != null) {
@@ -50,15 +86,7 @@ class FluentSelectorButton extends StatelessWidget {
         padding: WidgetStateProperty.all(EdgeInsets.zero),
         backgroundColor: WidgetStateProperty.all(Colors.transparent),
       ),
-      child: Item(
-        country: country,
-        showFlag: selectorConfig.showFlags,
-        leadingPadding: selectorConfig.leadingPadding,
-        trailingSpace: selectorConfig.trailingSpace,
-        textStyle: selectorTextStyle,
-        flagStyle: flagStyle,
-        flagSize: flagSize,
-      ),
+      child: _buildItem(country),
     );
   }
 
@@ -66,8 +94,8 @@ class FluentSelectorButton extends StatelessWidget {
     BuildContext context,
     List<Country> countries,
   ) {
-    // Windows doesn't typically use bottom sheets for this.
-    // We default to a ContentDialog for both types for a consistent Windows experience.
+    // Windows does not have a bottom-sheet pattern; use a ContentDialog for
+    // modal selector presentations.
     return showCountrySelectorDialog(context, countries);
   }
 

@@ -210,6 +210,33 @@ void main() {
       externalController.dispose();
     });
 
+    testWidgets('uses the selected country example as the default hint', (
+      tester,
+    ) async {
+      final india = Country(
+        name: 'India',
+        alpha2Code: 'IN',
+        alpha3Code: 'IND',
+        dialCode: '+91',
+      );
+
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Scaffold(
+            body: MaterialInternationalPhoneNumber(
+              countries: [india],
+              defaultCountry: india,
+              filterFunction: (value) => [india],
+              label: const Text('Mobile number'),
+            ),
+          ),
+        ),
+      );
+
+      expect(find.text('Mobile number'), findsOneWidget);
+      expect(find.text('81234 56789'), findsOneWidget);
+    });
+
     testWidgets('updates the field when initialValue changes', (tester) async {
       final firstNumber = const PhoneNumber(isoCode: 'US', nsn: '4155552671');
       final secondNumber = const PhoneNumber(isoCode: 'US', nsn: '6505551234');

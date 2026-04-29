@@ -92,7 +92,8 @@ class MaterialInternationalPhoneNumber extends StatefulWidget {
   /// Initial phone number value used to populate the field and country.
   final PhoneNumber? initialValue;
 
-  /// Hint text used when [inputDecoration] is not provided.
+  /// Hint text for the field. Defaults to a formatted example number for the
+  /// selected country.
   final String? hintText;
 
   /// Label widget used when [inputDecoration] is not provided.
@@ -222,7 +223,7 @@ class MaterialInternationalPhoneNumber extends StatefulWidget {
     this.keyboardAction,
     this.keyboardType = TextInputType.phone,
     this.initialValue,
-    this.hintText = 'Phone number',
+    this.hintText,
     this.errorMessage = 'Invalid phone number',
     this.countryCodeWarningMessage =
         'Enter the phone number without country code',
@@ -975,15 +976,18 @@ class MaterialInternationalPhoneNumberState
 
   /// Creates or Select [InputDecoration]
   InputDecoration getInputDecoration(InputDecoration? decoration) {
+    final hintText =
+        widget.hintText ?? Utils.examplePhoneNumberHint(country.alpha2Code);
     InputDecoration value = (decoration != null
         ? decoration.copyWith(
             counterText: formatAcceptedLengths(acceptedLengths, currentLength),
+            hintText: decoration.hintText ?? hintText,
           )
         : InputDecoration(
             label: widget.label,
             counterText: formatAcceptedLengths(acceptedLengths, currentLength),
             border: widget.inputBorder ?? const UnderlineInputBorder(),
-            hintText: widget.hintText,
+            hintText: hintText,
           ));
 
     if (widget.selectorConfig.setSelectorButtonAsPrefixIcon) {

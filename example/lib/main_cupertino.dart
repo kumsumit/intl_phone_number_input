@@ -22,9 +22,7 @@ class ExampleApp extends StatelessWidget {
     return CupertinoApp(
       debugShowCheckedModeBanner: false,
       title: 'Intl Phone Number Input - Cupertino',
-      theme: const CupertinoThemeData(
-        primaryColor: CupertinoColors.systemBlue,
-      ),
+      theme: const CupertinoThemeData(primaryColor: CupertinoColors.systemBlue),
       home: const ExampleHomePage(),
     );
   }
@@ -201,7 +199,9 @@ class _ExampleHomePageState extends State<ExampleHomePage> {
               child: Text(
                 'Format input',
                 style: TextStyle(
-                  color: _formatInput ? theme.primaryColor : CupertinoColors.label,
+                  color: _formatInput
+                      ? theme.primaryColor
+                      : CupertinoColors.label,
                 ),
               ),
             ),
@@ -224,7 +224,9 @@ class _ExampleHomePageState extends State<ExampleHomePage> {
               child: Text(
                 'Prefix selector',
                 style: TextStyle(
-                  color: _prefixSelector ? theme.primaryColor : CupertinoColors.label,
+                  color: _prefixSelector
+                      ? theme.primaryColor
+                      : CupertinoColors.label,
                 ),
               ),
             ),
@@ -247,7 +249,9 @@ class _ExampleHomePageState extends State<ExampleHomePage> {
               child: Text(
                 'Ignore blank',
                 style: TextStyle(
-                  color: _ignoreBlank ? theme.primaryColor : CupertinoColors.label,
+                  color: _ignoreBlank
+                      ? theme.primaryColor
+                      : CupertinoColors.label,
                 ),
               ),
             ),
@@ -270,7 +274,9 @@ class _ExampleHomePageState extends State<ExampleHomePage> {
               child: Text(
                 'Disable length check',
                 style: TextStyle(
-                  color: _disableLengthCheck ? theme.primaryColor : CupertinoColors.label,
+                  color: _disableLengthCheck
+                      ? theme.primaryColor
+                      : CupertinoColors.label,
                 ),
               ),
             ),
@@ -291,7 +297,9 @@ class _ExampleHomePageState extends State<ExampleHomePage> {
               child: Text(
                 'Auto detect country',
                 style: TextStyle(
-                  color: _autoDetectCountry ? theme.primaryColor : CupertinoColors.label,
+                  color: _autoDetectCountry
+                      ? theme.primaryColor
+                      : CupertinoColors.label,
                 ),
               ),
             ),
@@ -329,8 +337,11 @@ class _ExampleHomePageState extends State<ExampleHomePage> {
         children: const {
           DetectedCountryOrderStrategy.none: Text('Off'),
           DetectedCountryOrderStrategy.detectedCountryFirst: Text('Detected'),
-          DetectedCountryOrderStrategy.signalVotesThenDistance: Text('Signals first'),
-          DetectedCountryOrderStrategy.signalVotesThenNeighborsThenDistance: Text('Signals + neighbors'),
+          DetectedCountryOrderStrategy.signalVotesThenDistance: Text(
+            'Signals first',
+          ),
+          DetectedCountryOrderStrategy.signalVotesThenNeighborsThenDistance:
+              Text('Signals + neighbors'),
         },
         onValueChanged: (value) {
           setState(() {
@@ -368,7 +379,7 @@ class _ExampleHomePageState extends State<ExampleHomePage> {
           ),
           selectorTextStyle: theme.textTheme.textStyle,
           flagStyle: theme.textTheme.textStyle.copyWith(fontSize: 20),
-          placeholder: 'Phone number',
+          label: const Text('Phone number'),
           onInputChanged: (number) {
             WidgetsBinding.instance.addPostFrameCallback((_) {
               if (mounted) {
@@ -445,10 +456,7 @@ class _ExampleHomePageState extends State<ExampleHomePage> {
             onPressed: _setDemoNumber,
             child: const Text('Load sample'),
           ),
-          CupertinoButton(
-            onPressed: _clearField,
-            child: const Text('Clear'),
-          ),
+          CupertinoButton(onPressed: _clearField, child: const Text('Clear')),
           CupertinoButton(
             onPressed: () {
               _formKey.currentState?.save();
@@ -511,7 +519,10 @@ class _ExampleHomePageState extends State<ExampleHomePage> {
             if (_detectedCountryResult != null &&
                 _detectedCountryResult!.allVotes.isNotEmpty) ...[
               const SizedBox(height: 16),
-              Text('Top Ranked Votes', style: theme.textTheme.navTitleTextStyle.copyWith(fontSize: 16)),
+              Text(
+                'Top Ranked Votes',
+                style: theme.textTheme.navTitleTextStyle.copyWith(fontSize: 16),
+              ),
               const SizedBox(height: 8),
               ..._detectedCountryResult!.allVotes.entries
                   .take(6)
@@ -573,10 +584,16 @@ class _StatusRow extends StatelessWidget {
         children: [
           SizedBox(
             width: 120,
-            child: Text(label, style: CupertinoTheme.of(context).textTheme.textStyle),
+            child: Text(
+              label,
+              style: CupertinoTheme.of(context).textTheme.textStyle,
+            ),
           ),
           Expanded(
-            child: Text(value, style: CupertinoTheme.of(context).textTheme.textStyle),
+            child: Text(
+              value,
+              style: CupertinoTheme.of(context).textTheme.textStyle,
+            ),
           ),
         ],
       ),

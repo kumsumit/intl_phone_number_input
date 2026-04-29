@@ -25,7 +25,6 @@ const Set<String> _sensitiveNeighborCodes = {'XK'};
 /// [countries] accepts list of string on Country isoCode, if specified filters
 /// available countries to match the [countries] specified.
 class MacosInternationalPhoneNumber extends StatefulWidget {
-
   /// Controls how the country selector is rendered and styled.
   final SelectorConfig selectorConfig;
 
@@ -93,7 +92,8 @@ class MacosInternationalPhoneNumber extends StatefulWidget {
   /// Initial phone number value used to populate the field and country.
   final PhoneNumber? initialValue;
 
-  /// Hint text used when [inputDecoration] is not provided.
+  /// Hint text for the field. Defaults to a formatted example number for the
+  /// selected country.
   final String? hintText;
 
   /// Label widget used when [inputDecoration] is not provided.
@@ -225,7 +225,7 @@ class MacosInternationalPhoneNumber extends StatefulWidget {
     this.keyboardAction,
     this.keyboardType = TextInputType.phone,
     this.initialValue,
-    this.hintText = 'Phone number',
+    this.hintText,
     this.errorMessage = 'Invalid phone number',
     this.countryCodeWarningMessage =
         'Enter the phone number without country code',
@@ -324,7 +324,10 @@ class MacosInternationalPhoneNumberState
           keyboardType: widget.keyboardType,
           textInputAction: widget.keyboardAction,
           textStyle: widget.textStyle,
-          placeholder: widget.placeholder ?? widget.hintText,
+          placeholder:
+              widget.placeholder ??
+              widget.hintText ??
+              Utils.examplePhoneNumberHint(country.alpha2Code),
           prefix: widget.prefix,
           textAlign: widget.textAlign,
           textAlignVertical: widget.textAlignVertical,
@@ -367,10 +370,7 @@ class MacosInternationalPhoneNumberState
         });
         if (widget.onInputChanged != null) {
           widget.onInputChanged!(
-            PhoneNumber(
-              isoCode: selected.alpha2Code,
-              nsn: controller.text,
-            ),
+            PhoneNumber(isoCode: selected.alpha2Code, nsn: controller.text),
           );
         }
       },
@@ -587,13 +587,20 @@ class MacosInternationalPhoneNumberState
     if (defaultIsoCode.isNotEmpty) {
       rootCodes.add(defaultIsoCode);
     }
-    if (detectedIsoCode != null && detectedIsoCode.isNotEmpty && detectedIsoCode != defaultIsoCode) {
+    if (detectedIsoCode != null &&
+        detectedIsoCode.isNotEmpty &&
+        detectedIsoCode != defaultIsoCode) {
       rootCodes.add(detectedIsoCode);
     }
-    rootCodes.addAll(voteOrderedCodes.where((code) => !rootCodes.contains(code)));
+    rootCodes.addAll(
+      voteOrderedCodes.where((code) => !rootCodes.contains(code)),
+    );
 
     if (strategy == DetectedCountryOrderStrategy.detectedCountryFirst) {
-      return _orderCountriesByCodesThenAlphabetical(sortedCountries, rootCodes.take(1).toList());
+      return _orderCountriesByCodesThenAlphabetical(
+        sortedCountries,
+        rootCodes.take(1).toList(),
+      );
     }
 
     final includeNeighbors =
@@ -642,23 +649,32 @@ class MacosInternationalPhoneNumberState
     final detectedResult = _detectedCountryResult;
     final detectedIsoCode = detectedResult?.countryCode?.toUpperCase();
 
-    final voteOrderedCodes = detectedResult?.allVotes.keys
-        .map((code) => code.toUpperCase())
-        .where((code) => code != detectedIsoCode)
-        .toList(growable: false) ?? [];
+    final voteOrderedCodes =
+        detectedResult?.allVotes.keys
+            .map((code) => code.toUpperCase())
+            .where((code) => code != detectedIsoCode)
+            .toList(growable: false) ??
+        [];
 
     // Put default first, then detected if different, then votes
     final rootCodes = <String>[];
     if (defaultIsoCode.isNotEmpty) {
       rootCodes.add(defaultIsoCode);
     }
-    if (detectedIsoCode != null && detectedIsoCode.isNotEmpty && detectedIsoCode != defaultIsoCode) {
+    if (detectedIsoCode != null &&
+        detectedIsoCode.isNotEmpty &&
+        detectedIsoCode != defaultIsoCode) {
       rootCodes.add(detectedIsoCode);
     }
-    rootCodes.addAll(voteOrderedCodes.where((code) => !rootCodes.contains(code)));
+    rootCodes.addAll(
+      voteOrderedCodes.where((code) => !rootCodes.contains(code)),
+    );
 
     if (strategy == DetectedCountryOrderStrategy.detectedCountryFirst) {
-      return _orderCountriesByCodesThenAlphabetical(sortedCountries, rootCodes.take(1).toList());
+      return _orderCountriesByCodesThenAlphabetical(
+        sortedCountries,
+        rootCodes.take(1).toList(),
+      );
     }
 
     final includeNeighbors =
@@ -669,8 +685,10 @@ class MacosInternationalPhoneNumberState
 
     if (includeNeighbors) {
       prioritizedCodes.addAll(
-        _interleavedRootAndNeighborCodesFor(rootCodes, sortedCountries)
-            .where((code) => !prioritizedCodes.contains(code)),
+        _interleavedRootAndNeighborCodesFor(
+          rootCodes,
+          sortedCountries,
+        ).where((code) => !prioritizedCodes.contains(code)),
       );
     } else {
       final remainingCodes = sortedCountries
