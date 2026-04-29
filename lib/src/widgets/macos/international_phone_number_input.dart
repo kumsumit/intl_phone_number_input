@@ -855,6 +855,7 @@ class MacosInternationalPhoneNumberState
 
       String phoneNumber = widget.initialValue!.formatNsn(
         isoCode: widget.initialValue?.isoCode,
+        format: NsnFormat.international,
       );
 
       controller.text = widget.formatInput

@@ -1,4 +1,5 @@
 import 'package:flutter/services.dart';
+import 'package:intl_phone_number_input/src/utils/util.dart';
 import 'package:phone_parser/phone_parser.dart';
 
 typedef OnInputFormatted<T> = void Function(T value);
@@ -31,11 +32,11 @@ class CountryCodeBlockerFormatter extends TextInputFormatter {
 
 /// Flutter adapter around `phone_parser`'s pure Dart formatter.
 class AsYouTypeFormatter extends TextInputFormatter {
-  /// Contains characters allowed as seperators.
-  final RegExp separatorChars = RegExp(r'[^\d]+');
+  /// Contains characters allowed as separators.
+  final RegExp separatorChars = RegExp('[^${Patterns.digits}]+');
 
   /// The [allowedChars] contains [RegExp] for allowable phone number characters.
-  final RegExp allowedChars = RegExp(r'[\d+]');
+  final RegExp allowedChars = RegExp('[${Patterns.plus}${Patterns.digits}]');
 
   /// The [isoCode] of the [Country] formatting the phone number to.
   final String isoCode;
@@ -71,25 +72,32 @@ class AsYouTypeFormatter extends TextInputFormatter {
     TextEditingValue oldValue,
     TextEditingValue newValue,
   ) {
-    final rawText = newValue.text.replaceAll(separatorChars, '');
-
-    if (rawText.isEmpty) {
-      return newValue;
-    }
-
-    if (rawText.length > effectiveMaxLength) {
-      return oldValue;
-    }
-
     final formatter = PhoneParserTextInputFormatter(
       isoCode: isoCode,
-      digitLimit: effectiveMaxLength,
+      digitLimit: newValue.text.runes.length,
     );
 
     late final String formattedText;
     try {
-      formattedText = formatter.replace(rawText);
+      formattedText = formatter.replace(newValue.text);
     } catch (_) {
+      return oldValue;
+    }
+
+    if (formatter.normalizedDigits.isEmpty) {
+      if (newValue.text.isEmpty) return newValue;
+      return TextEditingValue.empty;
+    }
+
+    final enteredDigits = formatter.normalizedDigits;
+    final nsnDigits = formatter.nationalSignificantDigits;
+    final dialCodeDigits = dialCode.replaceAll(RegExp(r'\D'), '');
+    final hasDialCodePrefix =
+        dialCodeDigits.isNotEmpty &&
+        enteredDigits.length > effectiveMaxLength &&
+        enteredDigits.startsWith(dialCodeDigits);
+
+    if (nsnDigits.length > effectiveMaxLength || hasDialCodePrefix) {
       return oldValue;
     }
 
@@ -115,23 +123,25 @@ class AsYouTypeFormatter extends TextInputFormatter {
       0,
       newValue.text.length,
     );
-    if (requestedOffset == 0) {
-      return 0;
-    }
+    if (requestedOffset == 0) return 0;
 
-    // If cursor was at the end of input, place it at the end of formatted text
-    if (requestedOffset == newValue.text.length) {
-      return formattedText.length;
-    }
-
+    // Count significant (digit / '+') chars that sit before the cursor in the
+    // raw new value.
     final significantCharsBeforeCursor = newValue.text
         .substring(0, requestedOffset)
         .split('')
         .where((char) => allowedChars.hasMatch(char))
         .length;
 
-    if (significantCharsBeforeCursor == 0) {
-      return 0;
+    if (significantCharsBeforeCursor == 0) return 0;
+
+    final totalSignificantChars = newValue.text
+        .split('')
+        .where((char) => allowedChars.hasMatch(char))
+        .length;
+
+    if (significantCharsBeforeCursor >= totalSignificantChars) {
+      return formattedText.length;
     }
 
     var seenSignificantChars = 0;

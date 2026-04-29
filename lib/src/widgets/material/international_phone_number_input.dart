@@ -866,6 +866,7 @@ class MaterialInternationalPhoneNumberState
 
       String phoneNumber = widget.initialValue!.formatNsn(
         isoCode: widget.initialValue?.isoCode,
+        format: NsnFormat.international,
       );
 
       controller.text = widget.formatInput
@@ -1033,9 +1034,7 @@ class MaterialInternationalPhoneNumberState
           ? AsYouTypeFormatter(
               isoCode: country.alpha2Code,
               dialCode: country.dialCode,
-              onInputFormatted: (v) {
-                debugPrint("Formatted text: ${v.text}");
-              },
+              onInputFormatted: (_) {},
               acceptedLengths: widget.disableLengthCheck
                   ? const []
                   : acceptedLengths,

@@ -25,7 +25,6 @@ const Set<String> _sensitiveNeighborCodes = {'XK'};
 /// [countries] accepts list of string on Country isoCode, if specified filters
 /// available countries to match the [countries] specified.
 class CupertinoInternationalPhoneNumber extends StatefulWidget {
-
   /// Controls how the country selector is rendered and styled.
   final SelectorConfig selectorConfig;
 
@@ -367,10 +366,7 @@ class CupertinoInternationalPhoneNumberState
         });
         if (widget.onInputChanged != null) {
           widget.onInputChanged!(
-            PhoneNumber(
-              isoCode: selected.alpha2Code,
-              nsn: controller.text,
-            ),
+            PhoneNumber(isoCode: selected.alpha2Code, nsn: controller.text),
           );
         }
       },
@@ -587,13 +583,20 @@ class CupertinoInternationalPhoneNumberState
     if (defaultIsoCode.isNotEmpty) {
       rootCodes.add(defaultIsoCode);
     }
-    if (detectedIsoCode != null && detectedIsoCode.isNotEmpty && detectedIsoCode != defaultIsoCode) {
+    if (detectedIsoCode != null &&
+        detectedIsoCode.isNotEmpty &&
+        detectedIsoCode != defaultIsoCode) {
       rootCodes.add(detectedIsoCode);
     }
-    rootCodes.addAll(voteOrderedCodes.where((code) => !rootCodes.contains(code)));
+    rootCodes.addAll(
+      voteOrderedCodes.where((code) => !rootCodes.contains(code)),
+    );
 
     if (strategy == DetectedCountryOrderStrategy.detectedCountryFirst) {
-      return _orderCountriesByCodesThenAlphabetical(sortedCountries, rootCodes.take(1).toList());
+      return _orderCountriesByCodesThenAlphabetical(
+        sortedCountries,
+        rootCodes.take(1).toList(),
+      );
     }
 
     final includeNeighbors =
@@ -642,23 +645,32 @@ class CupertinoInternationalPhoneNumberState
     final detectedResult = _detectedCountryResult;
     final detectedIsoCode = detectedResult?.countryCode?.toUpperCase();
 
-    final voteOrderedCodes = detectedResult?.allVotes.keys
-        .map((code) => code.toUpperCase())
-        .where((code) => code != detectedIsoCode)
-        .toList(growable: false) ?? [];
+    final voteOrderedCodes =
+        detectedResult?.allVotes.keys
+            .map((code) => code.toUpperCase())
+            .where((code) => code != detectedIsoCode)
+            .toList(growable: false) ??
+        [];
 
     // Put default first, then detected if different, then votes
     final rootCodes = <String>[];
     if (defaultIsoCode.isNotEmpty) {
       rootCodes.add(defaultIsoCode);
     }
-    if (detectedIsoCode != null && detectedIsoCode.isNotEmpty && detectedIsoCode != defaultIsoCode) {
+    if (detectedIsoCode != null &&
+        detectedIsoCode.isNotEmpty &&
+        detectedIsoCode != defaultIsoCode) {
       rootCodes.add(detectedIsoCode);
     }
-    rootCodes.addAll(voteOrderedCodes.where((code) => !rootCodes.contains(code)));
+    rootCodes.addAll(
+      voteOrderedCodes.where((code) => !rootCodes.contains(code)),
+    );
 
     if (strategy == DetectedCountryOrderStrategy.detectedCountryFirst) {
-      return _orderCountriesByCodesThenAlphabetical(sortedCountries, rootCodes.take(1).toList());
+      return _orderCountriesByCodesThenAlphabetical(
+        sortedCountries,
+        rootCodes.take(1).toList(),
+      );
     }
 
     final includeNeighbors =
@@ -669,8 +681,10 @@ class CupertinoInternationalPhoneNumberState
 
     if (includeNeighbors) {
       prioritizedCodes.addAll(
-        _interleavedRootAndNeighborCodesFor(rootCodes, sortedCountries)
-            .where((code) => !prioritizedCodes.contains(code)),
+        _interleavedRootAndNeighborCodesFor(
+          rootCodes,
+          sortedCountries,
+        ).where((code) => !prioritizedCodes.contains(code)),
       );
     } else {
       final remainingCodes = sortedCountries
@@ -855,6 +869,7 @@ class CupertinoInternationalPhoneNumberState
 
       String phoneNumber = widget.initialValue!.formatNsn(
         isoCode: widget.initialValue?.isoCode,
+        format: NsnFormat.international,
       );
 
       controller.text = widget.formatInput

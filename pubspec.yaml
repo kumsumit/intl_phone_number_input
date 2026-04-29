@@ -22,7 +22,8 @@ dependencies:
   yaru: ^10.1.0
   fluent_ui: ^4.15.1  
   phone_parser:
-    git: https://github.com/sumitsharansatsangi/phone_parser.git
+    path: ../phone_parser
+    # git: https://github.com/sumitsharansatsangi/phone_parser.git
   flutter_timezone:
     git: https://github.com/kumsumit/flutter_timezone.git
   http: ^1.6.0

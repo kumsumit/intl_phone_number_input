@@ -1,11 +1,19 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:intl_phone_number_input/intl_phone_number_input.dart';
 import 'package:intl_phone_number_input/src/utils/formatter/as_you_type_formatter.dart';
 import 'package:intl_phone_number_input/src/widgets/common/flag_widget.dart';
+import 'package:phone_parser/src/metadata/bundled_metadata.g.dart';
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
+
+  setUpAll(() {
+    MetadataFinder.info =
+        jsonDecode(bundledMetadataJson) as Map<String, dynamic>;
+  });
 
   group('AsYouTypeFormatter', () {
     test('rejects attempts to enter a country code prefix', () {
@@ -76,6 +84,88 @@ void main() {
       final result = formatter.formatEditUpdate(oldValue, newValue);
 
       expect(result, oldValue);
+    });
+
+    test('preserves a regional leading zero while checking NSN length', () {
+      final formatter = AsYouTypeFormatter(
+        isoCode: 'IT',
+        dialCode: '+39',
+        acceptedLengths: const [10],
+        onInputFormatted: (_) {},
+      );
+
+      const newValue = TextEditingValue(
+        text: '0212345678',
+        selection: TextSelection.collapsed(offset: 10),
+      );
+
+      final result = formatter.formatEditUpdate(
+        const TextEditingValue(text: ''),
+        newValue,
+      );
+
+      expect(result.text, '02 1234 5678');
+    });
+
+    test('formats and deletes Indian mobile input consistently', () {
+      final formatter = AsYouTypeFormatter(
+        isoCode: 'IN',
+        dialCode: '+91',
+        acceptedLengths: const [10],
+        onInputFormatted: (_) {},
+      );
+      var value = const TextEditingValue(text: '');
+      final insertionOutputs = <String>[];
+
+      for (final digit in '9931571989'.split('')) {
+        final nextText = '${value.text}$digit';
+        value = formatter.formatEditUpdate(
+          value,
+          TextEditingValue(
+            text: nextText,
+            selection: TextSelection.collapsed(offset: nextText.length),
+          ),
+        );
+        insertionOutputs.add(value.text);
+      }
+
+      expect(insertionOutputs, [
+        '9',
+        '99',
+        '993',
+        '9931',
+        '99315',
+        '99315 7',
+        '99315 71',
+        '99315 719',
+        '99315 7198',
+        '99315 71989',
+      ]);
+
+      final deletionOutputs = <String>[];
+      for (var i = 0; i < 9; i++) {
+        final nextText = value.text.substring(0, value.text.length - 1);
+        value = formatter.formatEditUpdate(
+          value,
+          TextEditingValue(
+            text: nextText,
+            selection: TextSelection.collapsed(offset: nextText.length),
+          ),
+        );
+        deletionOutputs.add(value.text);
+      }
+
+      expect(deletionOutputs, [
+        '99315 7198',
+        '99315 719',
+        '99315 71',
+        '99315 7',
+        '99315',
+        '9931',
+        '993',
+        '99',
+        '9',
+      ]);
     });
   });
 
