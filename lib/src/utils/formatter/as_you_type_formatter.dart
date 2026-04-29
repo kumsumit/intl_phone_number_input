@@ -90,7 +90,7 @@ class AsYouTypeFormatter extends TextInputFormatter {
     try {
       formattedText = formatter.replace(rawText);
     } catch (_) {
-      return newValue;
+      return oldValue;
     }
 
     final offset = _selectionOffsetForFormattedText(
@@ -111,9 +111,17 @@ class AsYouTypeFormatter extends TextInputFormatter {
     required String formattedText,
     required TextEditingValue newValue,
   }) {
-    final requestedOffset = newValue.selection.end.clamp(0, newValue.text.length);
+    final requestedOffset = newValue.selection.end.clamp(
+      0,
+      newValue.text.length,
+    );
     if (requestedOffset == 0) {
       return 0;
+    }
+
+    // If cursor was at the end of input, place it at the end of formatted text
+    if (requestedOffset == newValue.text.length) {
+      return formattedText.length;
     }
 
     final significantCharsBeforeCursor = newValue.text

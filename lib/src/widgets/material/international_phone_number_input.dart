@@ -1033,7 +1033,9 @@ class MaterialInternationalPhoneNumberState
           ? AsYouTypeFormatter(
               isoCode: country.alpha2Code,
               dialCode: country.dialCode,
-              onInputFormatted: (_) {},
+              onInputFormatted: (v) {
+                debugPrint("Formatted text: ${v.text}");
+              },
               acceptedLengths: widget.disableLengthCheck
                   ? const []
                   : acceptedLengths,
