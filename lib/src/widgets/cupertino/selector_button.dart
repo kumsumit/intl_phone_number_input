@@ -11,7 +11,6 @@ class CupertinoSelectorButton extends StatelessWidget {
   final SelectorConfig selectorConfig;
   final TextStyle? selectorTextStyle;
   final TextStyle? flagStyle;
-  final String? searchFieldPlaceholder;
   final bool autoFocusSearchField;
   final bool isEnabled;
   final bool isScrollControlled;
@@ -26,7 +25,6 @@ class CupertinoSelectorButton extends StatelessWidget {
     required this.selectorConfig,
     this.selectorTextStyle,
     this.flagStyle,
-    this.searchFieldPlaceholder,
     required this.autoFocusSearchField,
     required this.onCountryChanged,
     required this.isEnabled,
@@ -85,7 +83,7 @@ class CupertinoSelectorButton extends StatelessWidget {
             width: double.maxFinite,
             child: CupertinoCountrySearchListWidget(
               countries,
-              searchPlaceholder: searchFieldPlaceholder,
+              searchPlaceholder: selectorConfig.searchHintText,
               showFlags: selectorConfig.showFlags,
               autoFocus: autoFocusSearchField,
               flagSize: flagSize,
@@ -124,7 +122,7 @@ class CupertinoSelectorButton extends StatelessWidget {
                   height: MediaQuery.of(context).size.height * 0.7,
                   child: CupertinoCountrySearchListWidget(
                     countries,
-                    searchPlaceholder: searchFieldPlaceholder,
+                    searchPlaceholder: selectorConfig.searchHintText,
                     showFlags: selectorConfig.showFlags,
                     autoFocus: autoFocusSearchField,
                     flagSize: flagSize,

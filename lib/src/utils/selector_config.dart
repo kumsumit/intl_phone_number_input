@@ -46,6 +46,9 @@ class SelectorConfig {
   /// Hint text shown in the selector search field.
   final String searchHintText;
 
+  /// Title shown above the country selector.
+  final String selectorTitle;
+
   /// Message shown when no country matches the current query.
   final String emptySearchMessage;
 
@@ -60,7 +63,8 @@ class SelectorConfig {
     this.useBottomSheetSafeArea = false,
     this.titleStyle,
     this.subtitleStyle,
-    this.searchHintText = 'Search by country name or dial code',
+    this.searchHintText = 'Search country or calling code',
+    this.selectorTitle = 'Select country or region',
     this.emptySearchMessage = 'No matching countries',
   });
 }

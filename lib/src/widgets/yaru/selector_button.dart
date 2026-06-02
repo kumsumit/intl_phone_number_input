@@ -12,7 +12,6 @@ class YaruSelectorButton extends StatelessWidget {
   final SelectorConfig selectorConfig;
   final TextStyle? selectorTextStyle;
   final TextStyle? flagStyle;
-  final String? searchFieldPlaceholder;
   final bool autoFocusSearchField;
   final bool isEnabled;
   final bool isScrollControlled;
@@ -27,7 +26,6 @@ class YaruSelectorButton extends StatelessWidget {
     required this.selectorConfig,
     this.selectorTextStyle,
     this.flagStyle,
-    this.searchFieldPlaceholder,
     required this.autoFocusSearchField,
     required this.onCountryChanged,
     required this.isEnabled,
@@ -98,7 +96,7 @@ class YaruSelectorButton extends StatelessWidget {
       barrierDismissible: true,
       builder: (BuildContext context) => AlertDialog(
         title: YaruDialogTitleBar(
-          title: Text(searchFieldPlaceholder ?? 'Select Country'),
+          title: Text(selectorConfig.selectorTitle),
           isClosable: true,
         ),
         content: SizedBox(
@@ -129,8 +127,8 @@ class YaruSelectorButton extends StatelessWidget {
           selectorConfig.titleStyle ?? Theme.of(context).textTheme.titleMedium,
       subtitleStyle:
           selectorConfig.subtitleStyle ?? Theme.of(context).textTheme.bodySmall,
-      searchHintText: searchFieldPlaceholder ?? 'Search country',
-      emptySearchMessage: 'No countries found',
+      searchHintText: selectorConfig.searchHintText,
+      emptySearchMessage: selectorConfig.emptySearchMessage,
       filterFunction: filterFunction,
     );
   }

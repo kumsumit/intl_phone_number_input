@@ -11,7 +11,6 @@ class FluentSelectorButton extends StatelessWidget {
   final SelectorConfig selectorConfig;
   final TextStyle? selectorTextStyle;
   final TextStyle? flagStyle;
-  final String? searchFieldPlaceholder;
   final bool autoFocusSearchField;
   final bool isEnabled;
   final bool isScrollControlled;
@@ -26,7 +25,6 @@ class FluentSelectorButton extends StatelessWidget {
     required this.selectorConfig,
     this.selectorTextStyle,
     this.flagStyle,
-    this.searchFieldPlaceholder,
     required this.autoFocusSearchField,
     required this.onCountryChanged,
     required this.isEnabled,
@@ -107,13 +105,13 @@ class FluentSelectorButton extends StatelessWidget {
       context: context,
       barrierDismissible: true,
       builder: (BuildContext context) => ContentDialog(
-        title: Text(searchFieldPlaceholder ?? 'Select Country'),
+        title: Text(selectorConfig.selectorTitle),
         constraints: const BoxConstraints(maxWidth: 450),
         content: SizedBox(
           height: 500, // Fixed height for the scrollable list
           child: FluentCountrySearchListWidget(
             countries,
-            searchPlaceholder: searchFieldPlaceholder,
+            searchPlaceholder: selectorConfig.searchHintText,
             showFlags: selectorConfig.showFlags,
             autoFocus: autoFocusSearchField,
             flagSize: flagSize,

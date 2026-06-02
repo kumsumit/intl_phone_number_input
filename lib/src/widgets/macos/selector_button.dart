@@ -1,3 +1,5 @@
+import 'dart:math' as math;
+
 import 'package:flutter/cupertino.dart';
 import 'package:intl_phone_number_input/src/models/country_model.dart';
 import 'package:intl_phone_number_input/src/utils/selector_config.dart';
@@ -12,7 +14,6 @@ class MacosSelectorButton extends StatelessWidget {
   final SelectorConfig selectorConfig;
   final TextStyle? selectorTextStyle;
   final TextStyle? flagStyle;
-  final String? searchFieldPlaceholder;
   final bool autoFocusSearchField;
   final bool isEnabled;
   final bool isScrollControlled;
@@ -27,7 +28,6 @@ class MacosSelectorButton extends StatelessWidget {
     required this.selectorConfig,
     this.selectorTextStyle,
     this.flagStyle,
-    this.searchFieldPlaceholder,
     required this.autoFocusSearchField,
     required this.onCountryChanged,
     required this.isEnabled,
@@ -36,7 +36,7 @@ class MacosSelectorButton extends StatelessWidget {
     required this.filterFunction,
   });
 
-  Widget _buildItem(Country? itemCountry) {
+  Widget _buildItem(Country? itemCountry, {double? maximumFlagSize}) {
     return Item(
       country: itemCountry,
       showFlag: selectorConfig.showFlags,
@@ -44,7 +44,7 @@ class MacosSelectorButton extends StatelessWidget {
       trailingSpace: selectorConfig.trailingSpace,
       textStyle: selectorTextStyle,
       flagStyle: flagStyle,
-      flagSize: flagSize,
+      flagSize: math.min(flagSize, maximumFlagSize ?? flagSize),
     );
   }
 
@@ -53,27 +53,29 @@ class MacosSelectorButton extends StatelessWidget {
     final hasMultipleCountries = countries.isNotEmpty && countries.length > 1;
 
     if (selectorConfig.selectorType == PhoneInputSelectorType.DROPDOWN) {
-      return MacosPopupButton<Country>(
-        value: country,
-        itemHeight: null,
-        items: countries
-            .map(
-              (item) => MacosPopupMenuItem<Country>(
-                value: item,
-                child: _buildItem(item),
-              ),
-            )
-            .toList(),
-        selectedItemBuilder: (context) =>
-            countries.map((_) => _buildItem(country)).toList(),
-        hint: _buildItem(country),
-        onChanged: hasMultipleCountries && isEnabled
-            ? (selected) {
-                if (selected != null) {
-                  onCountryChanged(selected);
+      return SizedBox(
+        height: 38,
+        child: PushButton(
+          controlSize: ControlSize.large,
+          secondary: true,
+          borderRadius: BorderRadius.circular(7),
+          onPressed: hasMultipleCountries && isEnabled
+              ? () async {
+                  final selected = await _showSelector(context, countries);
+                  if (selected != null) {
+                    onCountryChanged(selected);
+                  }
                 }
-              }
-            : null,
+              : null,
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              _buildItem(country, maximumFlagSize: 16),
+              const SizedBox(width: 2),
+              const MacosIcon(CupertinoIcons.chevron_down, size: 11),
+            ],
+          ),
+        ),
       );
     }
 
@@ -110,14 +112,14 @@ class MacosSelectorButton extends StatelessWidget {
       barrierDismissible: true,
       builder: (BuildContext context) => MacosAlertDialog(
         appIcon: const MacosIcon(CupertinoIcons.globe),
-        title: Text(searchFieldPlaceholder ?? 'Select Country'),
+        title: Text(selectorConfig.selectorTitle),
         // Injecting the scrollable list into the message slot
         message: SizedBox(
           width: 400,
           height: 450,
           child: MacosCountrySearchListWidget(
             countries,
-            searchPlaceholder: searchFieldPlaceholder,
+            searchPlaceholder: selectorConfig.searchHintText,
             showFlags: selectorConfig.showFlags,
             autoFocus: autoFocusSearchField,
             flagSize: flagSize,
@@ -152,14 +154,14 @@ class MacosSelectorButton extends StatelessWidget {
             child: Column(
               children: [
                 Text(
-                  searchFieldPlaceholder ?? 'Select Country',
+                  selectorConfig.selectorTitle,
                   style: MacosTheme.of(context).typography.headline,
                 ),
                 const SizedBox(height: 12),
                 Expanded(
                   child: MacosCountrySearchListWidget(
                     countries,
-                    searchPlaceholder: searchFieldPlaceholder,
+                    searchPlaceholder: selectorConfig.searchHintText,
                     showFlags: selectorConfig.showFlags,
                     autoFocus: autoFocusSearchField,
                     flagSize: flagSize,

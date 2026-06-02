@@ -239,7 +239,6 @@ class FluentInternationalPhoneNumberState
       selectorConfig: widget.selectorConfig,
       selectorTextStyle: widget.selectorTextStyle,
       flagStyle: widget.flagStyle,
-      searchFieldPlaceholder: widget.placeholder ?? widget.hintText,
       isEnabled: widget.isEnabled,
       autoFocusSearchField: widget.autoFocusSearch,
       isScrollControlled: widget.countrySelectorScrollControlled,

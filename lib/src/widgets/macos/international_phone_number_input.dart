@@ -361,7 +361,6 @@ class MacosInternationalPhoneNumberState
       selectorConfig: widget.selectorConfig,
       selectorTextStyle: widget.selectorTextStyle,
       flagStyle: widget.flagStyle,
-      searchFieldPlaceholder: widget.placeholder ?? widget.hintText,
       autoFocusSearchField: widget.autoFocusSearch,
       onCountryChanged: (selected) {
         setState(() {

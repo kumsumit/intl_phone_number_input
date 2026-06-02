@@ -67,6 +67,7 @@ class MacosInputWidgetView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = MacosTheme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
     final field = FormField<String>(
       key: fieldKey,
       initialValue: controller.text,
@@ -75,16 +76,33 @@ class MacosInputWidgetView extends StatelessWidget {
       onSaved: onSaved,
       builder: (fieldState) {
         final resolvedErrorText = fieldState.errorText ?? errorText;
+        final fieldBackground = isDark
+            ? const Color(0xFF2D2F4D)
+            : MacosDynamicColor.resolve(
+                MacosColors.controlBackgroundColor,
+                context,
+              );
+        final fieldBorder = isDark
+            ? const Color(0xFF696D99)
+            : MacosDynamicColor.resolve(MacosColors.separatorColor, context);
+        final inputStyle = (textStyle ?? theme.typography.body).copyWith(
+          color: isDark ? const Color(0xFFF4F4FF) : null,
+        );
+        final placeholderStyle = inputStyle.copyWith(
+          color: isDark ? const Color(0xFFB7BAD5) : const Color(0xFF737473),
+          fontWeight: FontWeight.w400,
+        );
+        final counterStyle = theme.typography.caption1.copyWith(
+          color: isDark ? const Color(0xFFC3C6DE) : const Color(0xFF6C6D76),
+          fontWeight: FontWeight.w500,
+        );
         final BoxDecoration decoration = BoxDecoration(
-          color: MacosDynamicColor.resolve(
-            MacosColors.controlBackgroundColor,
-            context,
-          ),
+          color: fieldBackground,
           border: Border.all(
             color: resolvedErrorText == null
-                ? MacosDynamicColor.resolve(MacosColors.separatorColor, context)
+                ? fieldBorder
                 : MacosColors.systemRedColor,
-            width: 0.5,
+            width: isDark ? 0.8 : 0.5,
           ),
           borderRadius: BorderRadius.circular(7.0),
         );
@@ -105,8 +123,9 @@ class MacosInputWidgetView extends StatelessWidget {
               autofocus: autofocus,
               keyboardType: keyboardType,
               textInputAction: textInputAction,
-              style: textStyle ?? theme.typography.body,
+              style: inputStyle,
               placeholder: placeholder,
+              placeholderStyle: placeholderStyle,
               prefix: prefix,
               textAlign: textAlign,
               textAlignVertical: textAlignVertical,
@@ -115,8 +134,7 @@ class MacosInputWidgetView extends StatelessWidget {
               scrollPadding: scrollPadding,
               inputFormatters: inputFormatters,
               padding: const EdgeInsets.all(7.0), // Standard macOS padding
-              // MacosTextField handles its own native decoration/focus ring,
-              // but we can color it for error states:
+              decoration: decoration,
               focusedDecoration: decoration.copyWith(
                 border: Border.all(
                   color: resolvedErrorText == null
@@ -141,12 +159,7 @@ class MacosInputWidgetView extends StatelessWidget {
                           ),
                         ),
                 ),
-                Text(
-                  counterText,
-                   style: theme.typography.caption1.copyWith(
-                     color: MacosColors.disabledControlTextColor,
-                   ),
-                ),
+                Text(counterText, style: counterStyle),
               ],
             ),
           ],
