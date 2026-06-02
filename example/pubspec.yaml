@@ -33,9 +33,12 @@ dependencies:
     sdk: flutter
   intl_phone_number_input:
     path: ../
-  yaru: ^10.1.0
-  fluent_ui: ^4.15.1
-  macos_ui: ^2.2.2
+  yaru: 
+    git: https://github.com/kumsumit/yaru.dart.git
+  fluent_ui: 
+    git: https://github.com/kumsumit/fluent_ui.git
+  macos_ui: 
+    git: https://github.com/kumsumit/macos_ui.git
 
 dev_dependencies:
   flutter_test:

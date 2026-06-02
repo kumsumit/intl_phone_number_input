@@ -18,9 +18,12 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  macos_ui: ^2.2.2
-  yaru: ^10.1.0
-  fluent_ui: ^4.15.1  
+  macos_ui: 
+    git: https://github.com/kumsumit/macos_ui.git
+  yaru: 
+    git: https://github.com/kumsumit/yaru.dart.git
+  fluent_ui: 
+    git: https://github.com/kumsumit/fluent_ui.git
   phone_parser:
     git: https://github.com/sumitsharansatsangi/phone_parser.git
   flutter_timezone:
