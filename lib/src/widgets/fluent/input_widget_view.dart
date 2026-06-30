@@ -2,6 +2,8 @@ import 'package:fluent_ui/fluent_ui.dart';
 import 'package:flutter/services.dart';
 
 class FluentInputWidgetView extends StatelessWidget {
+  static const double _stackedLayoutBreakpoint = 540;
+
   final Widget? selectorSection;
   final double selectorSpacing;
   final String label;
@@ -105,22 +107,46 @@ class FluentInputWidgetView extends StatelessWidget {
       ),
     );
 
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.start,
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: <Widget>[
-        if (selectorSection != null) ...[
-          // Add padding to align selector with the input box (ignoring the label height)
-          Padding(
-            padding: EdgeInsets.only(top: 25.0),
-            child: selectorSection!,
-          ),
-          SizedBox(width: selectorSpacing),
-        ],
-        Flexible(
-          child: Directionality(textDirection: textDirection, child: field),
-        ),
-      ],
+    final directedField = Directionality(
+      textDirection: textDirection,
+      child: field,
+    );
+
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final shouldStack =
+            selectorSection != null &&
+            constraints.maxWidth < _stackedLayoutBreakpoint;
+
+        if (shouldStack) {
+          return Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Align(
+                alignment: AlignmentDirectional.centerStart,
+                child: selectorSection!,
+              ),
+              SizedBox(height: selectorSpacing),
+              directedField,
+            ],
+          );
+        }
+
+        return Row(
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: <Widget>[
+            if (selectorSection != null) ...[
+              Padding(
+                padding: EdgeInsets.only(top: 25.0),
+                child: selectorSection!,
+              ),
+              SizedBox(width: selectorSpacing),
+            ],
+            Flexible(child: directedField),
+          ],
+        );
+      },
     );
   }
 }

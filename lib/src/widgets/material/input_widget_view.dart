@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 class MaterialInputWidgetView extends StatelessWidget {
+  static const double _stackedLayoutBreakpoint = 540;
+
   final Widget? selectorSection;
   final double selectorSpacing;
   final TextDirection textDirection;
@@ -57,41 +59,63 @@ class MaterialInputWidgetView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.start,
-      crossAxisAlignment: CrossAxisAlignment.center,
-      children: <Widget>[
-        if (selectorSection != null) ...[
-          selectorSection!,
-          SizedBox(width: selectorSpacing),
-        ],
-        Flexible(
-          child: TextFormField(
-            textDirection: textDirection,
-            key: fieldKey,
-            controller: controller,
-            onTap: onTap,
-            cursorColor: cursorColor,
-            focusNode: focusNode,
-            enabled: enabled,
-            autofocus: autofocus,
-            keyboardType: keyboardType,
-            textInputAction: textInputAction,
-            style: textStyle,
-            decoration: decoration,
-            textAlign: textAlign,
-            textAlignVertical: textAlignVertical,
-            onEditingComplete: onEditingComplete,
-            onFieldSubmitted: onFieldSubmitted,
-            autovalidateMode: autovalidateMode,
-            autofillHints: autofillHints,
-            validator: validator,
-            onSaved: onSaved,
-            scrollPadding: scrollPadding,
-            inputFormatters: inputFormatters,
-          ),
-        ),
-      ],
+    final field = TextFormField(
+      textDirection: textDirection,
+      key: fieldKey,
+      controller: controller,
+      onTap: onTap,
+      cursorColor: cursorColor,
+      focusNode: focusNode,
+      enabled: enabled,
+      autofocus: autofocus,
+      keyboardType: keyboardType,
+      textInputAction: textInputAction,
+      style: textStyle,
+      decoration: decoration,
+      textAlign: textAlign,
+      textAlignVertical: textAlignVertical,
+      onEditingComplete: onEditingComplete,
+      onFieldSubmitted: onFieldSubmitted,
+      autovalidateMode: autovalidateMode,
+      autofillHints: autofillHints,
+      validator: validator,
+      onSaved: onSaved,
+      scrollPadding: scrollPadding,
+      inputFormatters: inputFormatters,
+    );
+
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final shouldStack =
+            selectorSection != null &&
+            constraints.maxWidth < _stackedLayoutBreakpoint;
+
+        if (shouldStack) {
+          return Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Align(
+                alignment: AlignmentDirectional.centerStart,
+                child: selectorSection!,
+              ),
+              SizedBox(height: selectorSpacing),
+              field,
+            ],
+          );
+        }
+
+        return Row(
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: <Widget>[
+            if (selectorSection != null) ...[
+              selectorSection!,
+              SizedBox(width: selectorSpacing),
+            ],
+            Flexible(child: field),
+          ],
+        );
+      },
     );
   }
 }

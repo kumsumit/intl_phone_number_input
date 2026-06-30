@@ -3,6 +3,8 @@ import 'package:flutter/services.dart';
 import 'package:macos_ui/macos_ui.dart';
 
 class MacosInputWidgetView extends StatelessWidget {
+  static const double _stackedLayoutBreakpoint = 540;
+
   final Widget? selectorSection;
   final double selectorSpacing;
   final Widget? label;
@@ -167,20 +169,43 @@ class MacosInputWidgetView extends StatelessWidget {
       },
     );
 
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.start,
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: <Widget>[
-        if (selectorSection != null) ...[
-          // Using a constrained box or padding to ensure the selector
-          // aligns with the macOS input height
-          selectorSection!,
-          SizedBox(width: selectorSpacing),
-        ],
-        Flexible(
-          child: Directionality(textDirection: textDirection, child: field),
-        ),
-      ],
+    final directedField = Directionality(
+      textDirection: textDirection,
+      child: field,
+    );
+
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final shouldStack =
+            selectorSection != null &&
+            constraints.maxWidth < _stackedLayoutBreakpoint;
+
+        if (shouldStack) {
+          return Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Align(
+                alignment: AlignmentDirectional.centerStart,
+                child: selectorSection!,
+              ),
+              SizedBox(height: selectorSpacing),
+              directedField,
+            ],
+          );
+        }
+
+        return Row(
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: <Widget>[
+            if (selectorSection != null) ...[
+              selectorSection!,
+              SizedBox(width: selectorSpacing),
+            ],
+            Flexible(child: directedField),
+          ],
+        );
+      },
     );
   }
 }

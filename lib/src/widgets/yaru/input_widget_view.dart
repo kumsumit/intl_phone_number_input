@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 class YaruInputWidgetView extends StatelessWidget {
+  static const double _stackedLayoutBreakpoint = 540;
+
   final Widget? selectorSection;
   final double selectorSpacing;
   final TextDirection textDirection;
@@ -60,53 +62,75 @@ class YaruInputWidgetView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final field = TextFormField(
+      textDirection: textDirection,
+      key: fieldKey,
+      controller: controller,
+      onTap: onTap,
+      cursorColor: cursorColor ?? theme.colorScheme.primary,
+      focusNode: focusNode,
+      enabled: enabled,
+      autofocus: autofocus,
+      keyboardType: keyboardType,
+      textInputAction: textInputAction,
+      style: textStyle,
+      // Yaru handles the decoration styling through the theme,
+      // but we ensure the borders look correct here.
+      decoration: decoration.copyWith(
+        isDense: true,
+        border: const OutlineInputBorder(),
+        counterText: counterText,
+      ),
+      textAlign: textAlign,
+      textAlignVertical: textAlignVertical,
+      onEditingComplete: onEditingComplete,
+      onFieldSubmitted: onFieldSubmitted,
+      autovalidateMode: autovalidateMode,
+      autofillHints: autofillHints,
+      validator: validator,
+      onSaved: onSaved,
+      scrollPadding: scrollPadding,
+      inputFormatters: inputFormatters,
+    );
 
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.start,
-      crossAxisAlignment:
-          CrossAxisAlignment.start, // Align to top for multi-line support
-      children: <Widget>[
-        if (selectorSection != null) ...[
-          // Using YaruOptionButton gives the selector the native Ubuntu "button" look
-          ConstrainedBox(
-            constraints: const BoxConstraints(minHeight: 40),
-            child: selectorSection!,
-          ),
-          SizedBox(width: selectorSpacing),
-        ],
-        Flexible(
-          child: TextFormField(
-            textDirection: textDirection,
-            key: fieldKey,
-            controller: controller,
-            onTap: onTap,
-            cursorColor: cursorColor ?? theme.colorScheme.primary,
-            focusNode: focusNode,
-            enabled: enabled,
-            autofocus: autofocus,
-            keyboardType: keyboardType,
-            textInputAction: textInputAction,
-            style: textStyle,
-            // Yaru handles the decoration styling through the theme,
-            // but we ensure the borders look correct here.
-            decoration: decoration.copyWith(
-              isDense: true,
-              border: const OutlineInputBorder(),
-              counterText: counterText,
-            ),
-            textAlign: textAlign,
-            textAlignVertical: textAlignVertical,
-            onEditingComplete: onEditingComplete,
-            onFieldSubmitted: onFieldSubmitted,
-            autovalidateMode: autovalidateMode,
-            autofillHints: autofillHints,
-            validator: validator,
-            onSaved: onSaved,
-            scrollPadding: scrollPadding,
-            inputFormatters: inputFormatters,
-          ),
-        ),
-      ],
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final shouldStack =
+            selectorSection != null &&
+            constraints.maxWidth < _stackedLayoutBreakpoint;
+        final selector = selectorSection == null
+            ? null
+            : ConstrainedBox(
+                constraints: const BoxConstraints(minHeight: 40),
+                child: selectorSection!,
+              );
+
+        if (shouldStack) {
+          return Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Align(
+                alignment: AlignmentDirectional.centerStart,
+                child: selector!,
+              ),
+              SizedBox(height: selectorSpacing),
+              field,
+            ],
+          );
+        }
+
+        return Row(
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: <Widget>[
+            if (selectorSection != null) ...[
+              selector!,
+              SizedBox(width: selectorSpacing),
+            ],
+            Flexible(child: field),
+          ],
+        );
+      },
     );
   }
 }

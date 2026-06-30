@@ -2,6 +2,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/services.dart';
 
 class CupertinoInputWidgetView extends StatelessWidget {
+  static const double _stackedLayoutBreakpoint = 540;
+
   final Widget? selectorSection;
   final double selectorSpacing;
   final Widget? label;
@@ -139,18 +141,43 @@ class CupertinoInputWidgetView extends StatelessWidget {
       },
     );
 
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.start,
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: <Widget>[
-        if (selectorSection != null) ...[
-          selectorSection!,
-          SizedBox(width: selectorSpacing),
-        ],
-        Flexible(
-          child: Directionality(textDirection: textDirection, child: field),
-        ),
-      ],
+    final directedField = Directionality(
+      textDirection: textDirection,
+      child: field,
+    );
+
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final shouldStack =
+            selectorSection != null &&
+            constraints.maxWidth < _stackedLayoutBreakpoint;
+
+        if (shouldStack) {
+          return Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Align(
+                alignment: AlignmentDirectional.centerStart,
+                child: selectorSection!,
+              ),
+              SizedBox(height: selectorSpacing),
+              directedField,
+            ],
+          );
+        }
+
+        return Row(
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: <Widget>[
+            if (selectorSection != null) ...[
+              selectorSection!,
+              SizedBox(width: selectorSpacing),
+            ],
+            Flexible(child: directedField),
+          ],
+        );
+      },
     );
   }
 }
