@@ -148,9 +148,11 @@ class CupertinoInputWidgetView extends StatelessWidget {
 
     return LayoutBuilder(
       builder: (context, constraints) {
+        final textScale = MediaQuery.textScalerOf(context).scale(1);
+        final stackedLayoutBreakpoint = _stackedLayoutBreakpoint * textScale;
         final shouldStack =
             selectorSection != null &&
-            constraints.maxWidth < _stackedLayoutBreakpoint;
+            constraints.maxWidth < stackedLayoutBreakpoint;
 
         if (shouldStack) {
           return Column(
