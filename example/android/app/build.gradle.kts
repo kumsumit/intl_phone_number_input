@@ -9,7 +9,7 @@ plugins {
 android {
     namespace = "com.example.intlphonenumberinputtest.example"
     compileSdk = 37
-    ndkVersion = "30.0.14904198"
+    ndkVersion = "30.0.15729638"
 
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_21
