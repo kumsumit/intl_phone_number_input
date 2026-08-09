@@ -15,6 +15,25 @@ void main() {
         jsonDecode(bundledMetadataJson) as Map<String, dynamic>;
   });
 
+  test('requires metadata bootstrap before building native inputs', () {
+    final existingMetadata = MetadataFinder.info;
+    MetadataFinder.info = {};
+    try {
+      expect(
+        PhoneMetadataBootstrap.ensureInitializedOrThrow,
+        throwsA(
+          isA<StateError>().having(
+            (error) => error.message,
+            'message',
+            contains('await PhoneMetadataBootstrap.ensureInitialized();'),
+          ),
+        ),
+      );
+    } finally {
+      MetadataFinder.info = existingMetadata;
+    }
+  });
+
   group('AsYouTypeFormatter', () {
     test('rejects attempts to enter a country code prefix', () {
       var rejected = false;

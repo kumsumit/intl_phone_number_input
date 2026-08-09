@@ -5,6 +5,7 @@ import 'package:intl_phone_number_input/src/models/country_model.dart';
 import 'package:intl_phone_number_input/src/utils/country_detector.dart';
 import 'package:intl_phone_number_input/src/utils/formatter/as_you_type_formatter.dart';
 import 'package:intl_phone_number_input/src/utils/input_types.dart';
+import 'package:intl_phone_number_input/src/utils/metadata_bootstrap.dart';
 import 'package:intl_phone_number_input/src/utils/selector_config.dart';
 import 'package:intl_phone_number_input/src/utils/util.dart';
 // Note: You should update your internal imports to point to the Fluent versions
@@ -162,6 +163,7 @@ class FluentInternationalPhoneNumberState
   @override
   void initState() {
     super.initState();
+    PhoneMetadataBootstrap.ensureInitializedOrThrow();
     country = widget.defaultCountry;
     countries = _reorderCountriesForStrategy(widget.countries);
     _attachController(widget.textFieldController);

@@ -84,9 +84,10 @@ InternationalPhoneNumberInput(
 );
 ```
 
-If your app runs on desktop, call `PhoneMetadataBootstrap.ensureInitialized()`
-before building the widget tree. It resolves a writable directory for
-`phone_parser` metadata and keeps the setup in the library instead of your app.
+Call `PhoneMetadataBootstrap.ensureInitialized()` before building the widget
+tree on every native platform (Android, iOS, Windows, Linux, and macOS). It
+resolves a writable directory for `phone_parser` metadata and keeps the setup
+in the library instead of your app.
 
 ## Quick Notes
 
@@ -253,12 +254,14 @@ Key options:
 - `searchHintText`: hint shown in the selector search field
 - `emptySearchMessage`: message shown when no country matches the search query
 
-## Desktop Support
+## Native Platform Support
 
 - The package now includes `PhoneMetadataBootstrap.ensureInitialized()` for
-  desktop-friendly metadata setup.
-- On Windows, Linux, and macOS, call it during app startup before rendering
+  phone metadata setup.
+- On Android, iOS, Windows, Linux, and macOS, call it during app startup before rendering
   `InternationalPhoneNumberInput`.
+- If it is missed, the widget throws an actionable error at creation time with
+  the exact initialization call to add.
 - If your Flutter macOS app uses the app sandbox, you must allow outbound
   network access.
 - Add this entitlement to both `macos/Runner/DebugProfile.entitlements` and

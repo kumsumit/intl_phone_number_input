@@ -6,7 +6,7 @@ import 'country_list.dart';
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   try {
-    await PhoneMetadataBootstrap.ensureInitialized();
+    // await PhoneMetadataBootstrap.ensureInitialized();
   } catch (e) {
     // Metadata download failed, continue with app
     debugPrint('Metadata download failed: $e');

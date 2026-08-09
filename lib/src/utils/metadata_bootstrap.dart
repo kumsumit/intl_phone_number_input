@@ -9,6 +9,11 @@ import 'package:phone_parser/phone_parser.dart';
 class PhoneMetadataBootstrap {
   static String? _resolvedDirectoryPath;
 
+  /// Whether the current platform needs metadata to be loaded.
+  static bool get _requiresInitialization {
+    return !kIsWeb;
+  }
+
   /// Ensures phone metadata is available to `phone_parser`.
   ///
   /// If [directoryPath] is omitted, a writable application support directory is
@@ -27,6 +32,27 @@ class PhoneMetadataBootstrap {
 
     await MetadataFinder.readMetadataJson(resolvedDirectoryPath);
     _resolvedDirectoryPath = resolvedDirectoryPath;
+  }
+
+  /// Throws an actionable error when a native phone input is built before
+  /// [ensureInitialized] has completed.
+  ///
+  /// This is called by the package's input widgets. The web does not require
+  /// this bootstrap step.
+  static void ensureInitializedOrThrow() {
+    if (!_requiresInitialization ||
+        _resolvedDirectoryPath != null ||
+        MetadataFinder.info.isNotEmpty) {
+      return;
+    }
+
+    throw StateError(
+      'Phone metadata has not been initialized. Before building an '
+      'InternationalPhoneNumberInput, call:\n\n'
+      'await PhoneMetadataBootstrap.ensureInitialized();\n\n'
+      'Call it after WidgetsFlutterBinding.ensureInitialized() and before '
+      'runApp().',
+    );
   }
 
   /// Returns the directory path used by [ensureInitialized] when no explicit
