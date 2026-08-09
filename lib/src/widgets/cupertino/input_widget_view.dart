@@ -2,7 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/services.dart';
 
 class CupertinoInputWidgetView extends StatelessWidget {
-  static const double _stackedLayoutBreakpoint = 650;
+  static const double _stackedLayoutBreakpoint = 700;
 
   final Widget? selectorSection;
   final double selectorSpacing;

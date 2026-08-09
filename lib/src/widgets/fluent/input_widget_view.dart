@@ -2,7 +2,7 @@ import 'package:fluent_ui/fluent_ui.dart';
 import 'package:flutter/services.dart';
 
 class FluentInputWidgetView extends StatelessWidget {
-  static const double _stackedLayoutBreakpoint = 650;
+  static const double _stackedLayoutBreakpoint = 700;
 
   final Widget? selectorSection;
   final double selectorSpacing;
