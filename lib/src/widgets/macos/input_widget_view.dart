@@ -3,7 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:macos_ui/macos_ui.dart';
 
 class MacosInputWidgetView extends StatelessWidget {
-  static const double _stackedLayoutBreakpoint = 540;
+  static const double _stackedLayoutBreakpoint = 650;
 
   final Widget? selectorSection;
   final double selectorSpacing;

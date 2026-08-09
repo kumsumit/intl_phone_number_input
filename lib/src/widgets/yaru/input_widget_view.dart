@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 class YaruInputWidgetView extends StatelessWidget {
-  static const double _stackedLayoutBreakpoint = 540;
+  static const double _stackedLayoutBreakpoint = 650;
 
   final Widget? selectorSection;
   final double selectorSpacing;
