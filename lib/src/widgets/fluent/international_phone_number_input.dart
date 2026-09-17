@@ -6,6 +6,7 @@ import 'package:intl_phone_number_input/src/utils/country_detector.dart';
 import 'package:intl_phone_number_input/src/utils/formatter/as_you_type_formatter.dart';
 import 'package:intl_phone_number_input/src/utils/input_types.dart';
 import 'package:intl_phone_number_input/src/utils/metadata_bootstrap.dart';
+import 'package:intl_phone_number_input/src/utils/phone_number_metadata_policy.dart';
 import 'package:intl_phone_number_input/src/utils/selector_config.dart';
 import 'package:intl_phone_number_input/src/utils/util.dart';
 // Note: You should update your internal imports to point to the Fluent versions
@@ -39,6 +40,8 @@ class FluentInternationalPhoneNumber extends StatefulWidget {
   final DetectedCountryOrderStrategy detectedCountryOrderStrategy;
   final ValueChanged<PhoneNumber>? onInputChanged;
   final ValueChanged<bool>? onInputValidated;
+  final ValueChanged<PhoneNumberType>? onInputTypeChanged;
+  final Set<PhoneNumberType> acceptedPhoneTypes;
   final VoidCallback? onSubmit;
   final ValueChanged<String>? onFieldSubmitted;
   final String? Function(String?)? validator;
@@ -95,6 +98,7 @@ class FluentInternationalPhoneNumber extends StatefulWidget {
     this.selectorConfig = const SelectorConfig(),
     this.onInputChanged,
     this.onInputValidated,
+    this.onInputTypeChanged,
     this.onSubmit,
     this.textDirection = TextDirection.ltr,
     this.onFieldSubmitted,
@@ -136,6 +140,7 @@ class FluentInternationalPhoneNumber extends StatefulWidget {
     this.betweenTextFieldWidget,
     this.label,
     this.disableLengthCheck = false,
+    this.acceptedPhoneTypes = PhoneNumberMetadataPolicy.defaultAcceptedTypes,
     this.flagSize = 20,
   });
 
@@ -265,6 +270,10 @@ class FluentInternationalPhoneNumberState
         oldWidget.defaultCountry != widget.defaultCountry;
     final initialValueChanged = oldWidget.initialValue != widget.initialValue;
     final formatChanged = oldWidget.formatInput != widget.formatInput;
+    final acceptedTypesChanged = !setEquals(
+      oldWidget.acceptedPhoneTypes,
+      widget.acceptedPhoneTypes,
+    );
     final autoDetectChanged =
         oldWidget.autoDetectCountry != widget.autoDetectCountry ||
         oldWidget.countryDetectionMode != widget.countryDetectionMode ||
@@ -277,6 +286,7 @@ class FluentInternationalPhoneNumberState
         !defaultCountryChanged &&
         !initialValueChanged &&
         !formatChanged &&
+        !acceptedTypesChanged &&
         !autoDetectChanged) {
       return;
     }
@@ -320,16 +330,19 @@ class FluentInternationalPhoneNumberState
   }
 
   List<int> _acceptedLengthsFor(String? isoCode) {
-    final cacheKey = isoCode ?? country.alpha2Code;
+    final resolvedIsoCode = isoCode ?? country.alpha2Code;
+    final cacheKey = '$resolvedIsoCode:${widget.acceptedPhoneTypes}';
     final cachedValue = _acceptedLengthCache[cacheKey];
     if (cachedValue != null) {
       return cachedValue;
     }
 
     try {
-      final lengths = MetadataFinder.findMetadataLengthForIsoCode(cacheKey);
       final acceptedLengths = List<int>.unmodifiable(
-        lengths["mobile"] ?? const <int>[],
+        PhoneNumberMetadataPolicy.acceptedLengths(
+          resolvedIsoCode,
+          widget.acceptedPhoneTypes,
+        ),
       );
       _acceptedLengthCache[cacheKey] = acceptedLengths;
       return acceptedLengths;
@@ -731,7 +744,10 @@ class FluentInternationalPhoneNumberState
     }
 
     try {
-      if (!widget.initialValue!.isValid(type: PhoneNumberType.mobile)) {
+      if (!PhoneNumberMetadataPolicy.accepts(
+        widget.initialValue!,
+        widget.acceptedPhoneTypes,
+      )) {
         controller.text = '';
         phoneNumberControllerListener();
         return;
@@ -796,9 +812,12 @@ class FluentInternationalPhoneNumberState
       return;
     }
 
-    final isValid =
-        phoneNumber.nsn.isNotEmpty &&
-        phoneNumber.isValid(type: PhoneNumberType.mobile);
+    final detectedType = phoneNumber.getNumberType();
+    widget.onInputTypeChanged?.call(detectedType);
+    final isValid = PhoneNumberMetadataPolicy.accepts(
+      phoneNumber,
+      widget.acceptedPhoneTypes,
+    );
     _cacheValidationResult(controller.text, isValid);
     if (!isValid) {
       widget.onInputValidated?.call(false);
@@ -929,9 +948,10 @@ class FluentInternationalPhoneNumberState
     }
     try {
       final phoneNumber = _parsePhoneNumberValue(value);
-      final isValid =
-          phoneNumber.nsn.isNotEmpty &&
-          phoneNumber.isValid(type: PhoneNumberType.mobile);
+      final isValid = PhoneNumberMetadataPolicy.accepts(
+        phoneNumber,
+        widget.acceptedPhoneTypes,
+      );
       _cacheValidationResult(value, isValid);
       return isValid;
     } catch (_) {

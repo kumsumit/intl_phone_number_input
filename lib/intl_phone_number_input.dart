@@ -17,7 +17,15 @@ export 'src/utils/input_types.dart'
 export 'src/utils/selector_config.dart';
 export 'src/utils/util.dart' show EnumParser;
 export 'src/utils/metadata_bootstrap.dart';
+export 'src/utils/phone_number_metadata_policy.dart';
 export 'src/models/country_model.dart';
 export 'src/utils/country_detector.dart' show CountryDetector, CountryResult;
+
 export 'package:phone_parser/phone_parser.dart'
-    show PhoneNumber, PhoneNumberType, MetadataFinder, NsnFormat;
+    show
+        MatchType,
+        MetadataFinder,
+        NsnFormat,
+        PhoneNumber,
+        PhoneNumberFormatter,
+        PhoneNumberType;

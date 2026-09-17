@@ -1,4 +1,7 @@
 ## [0.7.3+2]
+* Added configurable metadata-backed phone-number types with `acceptedPhoneTypes`.
+* Added `onInputTypeChanged` and `PhoneNumberMetadataPolicy` for number-type-aware workflows.
+* Expanded the Material example and README with metadata inspection, examples, regions, and canonical storage guidance.
 * Fixed cursor jumps while typing and validating formatted phone numbers
 * Fixed formatted input length limiting so spacing and punctuation no longer consume digit capacity
 * Fixed `onInputChanged` so empty and invalid edits no longer leave parent state stale

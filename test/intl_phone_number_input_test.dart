@@ -22,6 +22,28 @@ void main() {
     expect(number.isValid(type: PhoneNumberType.mobile), isFalse);
   });
 
+  test(
+    'metadata policy accepts selected number types and combines lengths',
+    () {
+      final number = PhoneNumber.parse('1616494954', destinationCountry: 'IN');
+      const mobileOnly = {PhoneNumberType.mobile};
+      const mobileAndLandline = {
+        PhoneNumberType.mobile,
+        PhoneNumberType.fixedLine,
+      };
+
+      expect(PhoneNumberMetadataPolicy.accepts(number, mobileOnly), isFalse);
+      expect(
+        PhoneNumberMetadataPolicy.accepts(number, mobileAndLandline),
+        isTrue,
+      );
+      expect(
+        PhoneNumberMetadataPolicy.acceptedLengths('IN', mobileAndLandline),
+        contains(number.nsn.length),
+      );
+    },
+  );
+
   test('requires metadata bootstrap before building native inputs', () {
     final existingMetadata = MetadataFinder.info;
     MetadataFinder.info = {};

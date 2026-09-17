@@ -53,6 +53,12 @@ class _ExampleHomePageState extends State<ExampleHomePage> {
   bool _disableLengthCheck = false;
   bool _autoDetectCountry = true;
   bool? _isValid;
+  PhoneNumberType _numberType = PhoneNumberType.unknown;
+  static const Set<PhoneNumberType> _acceptedPhoneTypes = {
+    PhoneNumberType.mobile,
+    PhoneNumberType.fixedLine,
+    PhoneNumberType.voip,
+  };
   CountryResult? _detectedCountryResult;
   PhoneNumber _number = const PhoneNumber(isoCode: 'IN', nsn: '');
   CountryDetectionMode _countryDetectionMode =
@@ -368,6 +374,7 @@ class _ExampleHomePageState extends State<ExampleHomePage> {
           formatInput: _formatInput,
           ignoreBlank: _ignoreBlank,
           disableLengthCheck: _disableLengthCheck,
+          acceptedPhoneTypes: _acceptedPhoneTypes,
           autoValidateMode: AutovalidateMode.onUserInteraction,
           countryCodeWarningMessage: _countryCodeWarningMessage,
           selectorConfig: SelectorConfig(
@@ -396,6 +403,11 @@ class _ExampleHomePageState extends State<ExampleHomePage> {
                   _isValid = isValid;
                 });
               }
+            });
+          },
+          onInputTypeChanged: (type) {
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              if (mounted) setState(() => _numberType = type);
             });
           },
           onAutoCountryDetected: (result) {
@@ -498,6 +510,22 @@ class _ExampleHomePageState extends State<ExampleHomePage> {
               label: 'International',
               value: _number.nsn.isNotEmpty ? _number.international : 'Empty',
             ),
+            _StatusRow(label: 'Number type', value: _numberType.name),
+            _StatusRow(
+              label: 'Matched region',
+              value: _number.nsn.isNotEmpty
+                  ? (_number.getRegionCode() ?? 'Unknown')
+                  : 'Empty',
+            ),
+            _StatusRow(
+              label: 'Allowed types',
+              value: _acceptedPhoneTypes.map((type) => type.name).join(', '),
+            ),
+            _StatusRow(
+              label: 'Allowed lengths',
+              value: _metadataLengthsLabel(),
+            ),
+            _StatusRow(label: 'Metadata example', value: _metadataExample()),
             _StatusRow(
               label: 'Detected country',
               value: _detectedCountryResult?.countryCode ?? 'None',
@@ -544,6 +572,27 @@ class _ExampleHomePageState extends State<ExampleHomePage> {
       return 'Not checked yet';
     }
     return value ? 'Valid' : 'Invalid';
+  }
+
+  String _metadataLengthsLabel() {
+    try {
+      return PhoneNumberMetadataPolicy.acceptedLengths(
+        _number.isoCode.isEmpty ? _defaultCountry.alpha2Code : _number.isoCode,
+        _acceptedPhoneTypes,
+      ).join(', ');
+    } catch (_) {
+      return 'Not available';
+    }
+  }
+
+  String _metadataExample() {
+    final number = PhoneNumber.getExampleNumberForType(
+      isoCode: _number.isoCode.isEmpty
+          ? _defaultCountry.alpha2Code
+          : _number.isoCode,
+      type: PhoneNumberType.mobile,
+    );
+    return number?.formatNsn(format: NsnFormat.national) ?? 'Not available';
   }
 
   String _detectionModeLabel(CountryDetectionMode mode) {

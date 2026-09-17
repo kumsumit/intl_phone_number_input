@@ -71,12 +71,20 @@ InternationalPhoneNumberInput(
   detectedCountryOrderStrategy:
       DetectedCountryOrderStrategy.signalVotesThenDistance,
   formatInput: true,
+  acceptedPhoneTypes: const {
+    PhoneNumberType.mobile,
+    PhoneNumberType.fixedLine,
+    PhoneNumberType.voip,
+  },
   countryCodeWarningMessage: 'Enter the local number only',
   onInputChanged: (number) {
     debugPrint(number.international);
   },
   onInputValidated: (isValid) {
     debugPrint('valid: $isValid');
+  },
+  onInputTypeChanged: (type) {
+    debugPrint('number type: $type');
   },
   onAutoCountryDetected: (result) {
     debugPrint('detected ${result.countryCode} (${result.confidence}%)');
@@ -128,7 +136,40 @@ Common options:
 - `filterFunction`: optional search/filter override for the selector list
 - `formatInput`: enables the as-you-type formatter
 - `disableLengthCheck`: skips metadata-based max-length enforcement in the formatter
+- `acceptedPhoneTypes`: number categories accepted by validation and length limits; defaults to mobile-only
+- `onInputTypeChanged`: receives the metadata-derived type such as mobile, fixed-line, VoIP, or toll-free
 - `countryCodeWarningMessage`: localized warning shown when a user tries to enter `+` country-code text
+
+## Using phone metadata beyond the input
+
+The public API re-exports `PhoneNumber`, `PhoneNumberType`, `MetadataFinder`,
+`MatchType`, and `PhoneNumberMetadataPolicy`. This lets an app use the same
+numbering-plan metadata after the field has parsed the number:
+
+```dart
+final number = PhoneNumber.parse('650 555 1234', destinationCountry: 'US');
+
+final canonicalValue = number.international; // +16505551234
+final type = number.getNumberType(); // PhoneNumberType.mobile
+final region = number.getRegionCode(); // resolves shared calling codes, e.g. +1
+final nationalDisplay = number.formatNsn(format: NsnFormat.national);
+
+final allowedLengths = PhoneNumberMetadataPolicy.acceptedLengths(
+  'US',
+  const {PhoneNumberType.mobile, PhoneNumberType.fixedLine},
+);
+final supportedTypes = MetadataFinder.getSupportedTypesForRegion('US');
+final examples = MetadataFinder.findMetadataExamplesForIsoCode('US');
+
+final duplicateCheck = PhoneNumber.isNumberMatch(
+  '+1 650 555 1234',
+  '6505551234',
+); // MatchType.nsnMatch when one side has no country code
+```
+
+Use `number.international` as the canonical value stored in your backend.
+Metadata validates numbering-plan structure only; complete OTP verification is
+still required to prove that the user controls the number.
 - `autoDetectCountry`: uses `CountryDetector` to guess the initial country
 - `detectedCountryOrderStrategy`: controls how the selector list is reordered after detection
 - `countryNeighborResolver`: optional callback to override the built-in boundary-sharing neighbors for a given ISO code

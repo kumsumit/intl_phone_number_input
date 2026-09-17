@@ -54,6 +54,8 @@ class _ExampleHomePageState extends State<ExampleHomePage> {
   bool _disableLengthCheck = false;
   bool _autoDetectCountry = true;
   bool? _isValid;
+  PhoneNumberType _numberType = PhoneNumberType.unknown;
+  final Set<PhoneNumberType> _acceptedPhoneTypes = {PhoneNumberType.mobile};
   CountryResult? _detectedCountryResult;
   PhoneNumber _number = const PhoneNumber(isoCode: 'IN', nsn: '');
   CountryDetectionMode _countryDetectionMode =
@@ -79,6 +81,7 @@ class _ExampleHomePageState extends State<ExampleHomePage> {
   void _setDemoNumber() {
     setState(() {
       _number = const PhoneNumber(isoCode: 'US', nsn: '6505551234');
+      _numberType = _number.getNumberType();
     });
   }
 
@@ -87,6 +90,7 @@ class _ExampleHomePageState extends State<ExampleHomePage> {
     setState(() {
       _number = const PhoneNumber(isoCode: 'IN', nsn: '');
       _isValid = null;
+      _numberType = PhoneNumberType.unknown;
     });
   }
 
@@ -245,6 +249,39 @@ class _ExampleHomePageState extends State<ExampleHomePage> {
       ),
       const SizedBox(height: 20),
       _SectionHeader(
+        title: 'Metadata validation',
+        caption:
+            'Choose which numbering-plan types this field accepts. Length limits and validation update from the selected country metadata.',
+      ),
+      const SizedBox(height: 12),
+      Wrap(
+        spacing: 8,
+        runSpacing: 4,
+        children:
+            [
+              PhoneNumberType.mobile,
+              PhoneNumberType.fixedLine,
+              PhoneNumberType.voip,
+              PhoneNumberType.tollFree,
+              PhoneNumberType.personalNumber,
+            ].map((type) {
+              return FilterChip(
+                label: Text(_phoneTypeLabel(type)),
+                selected: _acceptedPhoneTypes.contains(type),
+                onSelected: (selected) {
+                  setState(() {
+                    if (selected) {
+                      _acceptedPhoneTypes.add(type);
+                    } else if (_acceptedPhoneTypes.length > 1) {
+                      _acceptedPhoneTypes.remove(type);
+                    }
+                  });
+                },
+              );
+            }).toList(),
+      ),
+      const SizedBox(height: 20),
+      _SectionHeader(
         title: 'Detection Signals',
         caption: 'Control which signals the built-in detector can use.',
       ),
@@ -318,6 +355,7 @@ class _ExampleHomePageState extends State<ExampleHomePage> {
           formatInput: _formatInput,
           ignoreBlank: _ignoreBlank,
           disableLengthCheck: _disableLengthCheck,
+          acceptedPhoneTypes: Set.unmodifiable(_acceptedPhoneTypes),
           autoValidateMode: AutovalidateMode.onUserInteraction,
           countryCodeWarningMessage: _countryCodeWarningMessage,
           selectorConfig: SelectorConfig(
@@ -346,6 +384,11 @@ class _ExampleHomePageState extends State<ExampleHomePage> {
                   _isValid = isValid;
                 });
               }
+            });
+          },
+          onInputTypeChanged: (type) {
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              if (mounted) setState(() => _numberType = type);
             });
           },
           onAutoCountryDetected: (result) {
@@ -445,6 +488,25 @@ class _ExampleHomePageState extends State<ExampleHomePage> {
               value: _number.nsn.isNotEmpty ? _number.international : 'Empty',
             ),
             _StatusRow(
+              label: 'Number type',
+              value: _phoneTypeLabel(_numberType),
+            ),
+            _StatusRow(
+              label: 'Matched region',
+              value: _number.nsn.isNotEmpty
+                  ? (_number.getRegionCode() ?? 'Unknown')
+                  : 'Empty',
+            ),
+            _StatusRow(
+              label: 'Accepted types',
+              value: _acceptedPhoneTypes.map(_phoneTypeLabel).join(', '),
+            ),
+            _StatusRow(
+              label: 'Allowed lengths',
+              value: _metadataLengthsLabel(),
+            ),
+            _StatusRow(label: 'Example', value: _metadataExampleLabel()),
+            _StatusRow(
               label: 'Detected country',
               value: _detectedCountryResult?.countryCode ?? 'None',
             ),
@@ -487,6 +549,57 @@ class _ExampleHomePageState extends State<ExampleHomePage> {
       return 'Not checked yet';
     }
     return value ? 'Valid' : 'Invalid';
+  }
+
+  String _phoneTypeLabel(PhoneNumberType type) {
+    switch (type) {
+      case PhoneNumberType.fixedLine:
+        return 'Landline';
+      case PhoneNumberType.mobile:
+        return 'Mobile';
+      case PhoneNumberType.fixedLineOrMobile:
+        return 'Landline or mobile';
+      case PhoneNumberType.voip:
+        return 'VoIP';
+      case PhoneNumberType.tollFree:
+        return 'Toll-free';
+      case PhoneNumberType.premiumRate:
+        return 'Premium rate';
+      case PhoneNumberType.sharedCost:
+        return 'Shared cost';
+      case PhoneNumberType.personalNumber:
+        return 'Personal';
+      case PhoneNumberType.uan:
+        return 'UAN';
+      case PhoneNumberType.pager:
+        return 'Pager';
+      case PhoneNumberType.voiceMail:
+        return 'Voicemail';
+      case PhoneNumberType.unknown:
+        return 'Unknown';
+    }
+  }
+
+  String _metadataLengthsLabel() {
+    try {
+      final lengths = PhoneNumberMetadataPolicy.acceptedLengths(
+        _number.isoCode.isEmpty ? _defaultCountry.alpha2Code : _number.isoCode,
+        _acceptedPhoneTypes,
+      );
+      return lengths.isEmpty ? 'Not available' : lengths.join(', ');
+    } catch (_) {
+      return 'Not available';
+    }
+  }
+
+  String _metadataExampleLabel() {
+    final example = PhoneNumber.getExampleNumberForType(
+      isoCode: _number.isoCode.isEmpty
+          ? _defaultCountry.alpha2Code
+          : _number.isoCode,
+      type: _acceptedPhoneTypes.first,
+    );
+    return example?.formatNsn(format: NsnFormat.national) ?? 'Not available';
   }
 
   String _detectionModeLabel(CountryDetectionMode mode) {
