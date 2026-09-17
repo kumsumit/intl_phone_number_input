@@ -15,6 +15,13 @@ void main() {
         jsonDecode(bundledMetadataJson) as Map<String, dynamic>;
   });
 
+  test('rejects an Indian fixed-line number when validating mobile input', () {
+    final number = PhoneNumber.parse('1616494954', destinationCountry: 'IN');
+
+    expect(number.isValid(), isTrue);
+    expect(number.isValid(type: PhoneNumberType.mobile), isFalse);
+  });
+
   test('requires metadata bootstrap before building native inputs', () {
     final existingMetadata = MetadataFinder.info;
     MetadataFinder.info = {};

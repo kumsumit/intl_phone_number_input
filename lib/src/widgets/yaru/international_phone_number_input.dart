@@ -869,7 +869,7 @@ class YaruInternationalPhoneNumberState
     }
 
     try {
-      if (!widget.initialValue!.isValid()) {
+      if (!widget.initialValue!.isValid(type: PhoneNumberType.mobile)) {
         controller.text = '';
         phoneNumberControllerListener();
         return;
@@ -934,7 +934,9 @@ class YaruInternationalPhoneNumberState
       return;
     }
 
-    final isValid = phoneNumber.nsn.isNotEmpty && phoneNumber.isValid();
+    final isValid =
+        phoneNumber.nsn.isNotEmpty &&
+        phoneNumber.isValid(type: PhoneNumberType.mobile);
     _cacheValidationResult(controller.text, isValid);
     if (!isValid) {
       widget.onInputValidated?.call(false);
@@ -1054,7 +1056,9 @@ class YaruInternationalPhoneNumberState
     }
     try {
       final phoneNumber = _parsePhoneNumberValue(value);
-      final isValid = phoneNumber.nsn.isNotEmpty && phoneNumber.isValid();
+      final isValid =
+          phoneNumber.nsn.isNotEmpty &&
+          phoneNumber.isValid(type: PhoneNumberType.mobile);
       _cacheValidationResult(value, isValid);
       return isValid;
     } catch (_) {
