@@ -417,6 +417,38 @@ void main() {
       expect(validatedValues.last, isFalse);
     });
 
+    testWidgets('rejects a parseable US number that fails metadata patterns', (
+      tester,
+    ) async {
+      final formKey = GlobalKey<FormState>();
+      final validatedValues = <bool>[];
+
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Scaffold(
+            body: Form(
+              key: formKey,
+              child: MaterialInternationalPhoneNumber(
+                countries: countries,
+                defaultCountry: defaultCountry,
+                filterFunction: filterCountries,
+                formatInput: false,
+                onInputValidated: validatedValues.add,
+              ),
+            ),
+          ),
+        ),
+      );
+
+      // Ten digits pass the US length check, but `1` is not a valid US area
+      // code prefix, so this must fail phone_parser's metadata regexes.
+      await tester.enterText(find.byType(TextFormField), '1234567890');
+      await tester.pump();
+
+      expect(validatedValues.last, isFalse);
+      expect(formKey.currentState!.validate(), isFalse);
+    });
+
     testWidgets('shows a custom warning when country code input is attempted', (
       tester,
     ) async {

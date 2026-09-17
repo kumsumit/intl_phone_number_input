@@ -160,6 +160,11 @@ class FluentInternationalPhoneNumberState
   CountryResult? _detectedCountryResult;
   bool _hasUserSelectedCountry = false;
 
+  // Cache the metadata-pattern result so one edit is parsed only once.
+  String? _validatedInput;
+  String? _validatedIsoCode;
+  bool? _validatedPhoneNumberIsValid;
+
   @override
   void initState() {
     super.initState();
@@ -230,14 +235,7 @@ class FluentInternationalPhoneNumberState
     return FluentSelectorButton(
       country: country,
       countries: countries,
-      onCountryChanged: (selected) {
-        setState(() {
-          country = selected;
-          _hasUserSelectedCountry = true;
-          acceptedLengths = _acceptedLengthsFor(selected.alpha2Code);
-        });
-        phoneNumberControllerListener();
-      },
+      onCountryChanged: onCountryChanged,
       selectorConfig: widget.selectorConfig,
       selectorTextStyle: widget.selectorTextStyle,
       flagStyle: widget.flagStyle,
@@ -763,6 +761,7 @@ class FluentInternationalPhoneNumberState
 
     if (controller.text.isEmpty) {
       final isValidWhenBlank = widget.ignoreBlank;
+      _cacheValidationResult(controller.text, false);
       widget.onInputChanged?.call(
         PhoneNumber(isoCode: country.alpha2Code, nsn: ''),
       );
@@ -784,6 +783,7 @@ class FluentInternationalPhoneNumberState
     try {
       phoneNumber = _parsePhoneNumberValue(parsedPhoneNumberString);
     } catch (_) {
+      _cacheValidationResult(controller.text, false);
       widget.onInputChanged?.call(
         _parsePhoneNumberValueOrFallback(parsedPhoneNumberString),
       );
@@ -796,7 +796,9 @@ class FluentInternationalPhoneNumberState
       return;
     }
 
-    if (phoneNumber.nsn.isEmpty || !phoneNumber.isValid()) {
+    final isValid = phoneNumber.nsn.isNotEmpty && phoneNumber.isValid();
+    _cacheValidationResult(controller.text, isValid);
+    if (!isValid) {
       widget.onInputValidated?.call(false);
       isNotValid = true;
     } else {
@@ -913,15 +915,31 @@ class FluentInternationalPhoneNumberState
     final bool hasContent = value?.isNotEmpty ?? false;
     final bool shouldValidateBlank = !widget.ignoreBlank;
     final bool isInvalid = isNotValid && (hasContent || shouldValidateBlank);
-    try {
-      final isParsed = _parsePhoneNumberValue(value ?? "");
-      if (isParsed.isValid()) {
-        return null;
-      }
-    } catch (_) {
-      return isInvalid ? widget.errorMessage : null;
-    }
+    if (_isPhoneNumberValid(value ?? '')) return null;
     return isInvalid ? widget.errorMessage : null;
+  }
+
+  bool _isPhoneNumberValid(String value) {
+    if (_validatedInput == value &&
+        _validatedIsoCode == country.alpha2Code &&
+        _validatedPhoneNumberIsValid != null) {
+      return _validatedPhoneNumberIsValid!;
+    }
+    try {
+      final phoneNumber = _parsePhoneNumberValue(value);
+      final isValid = phoneNumber.nsn.isNotEmpty && phoneNumber.isValid();
+      _cacheValidationResult(value, isValid);
+      return isValid;
+    } catch (_) {
+      _cacheValidationResult(value, false);
+      return false;
+    }
+  }
+
+  void _cacheValidationResult(String value, bool isValid) {
+    _validatedInput = value;
+    _validatedIsoCode = country.alpha2Code;
+    _validatedPhoneNumberIsValid = isValid;
   }
 
   /// Changes Selector Button Country and Validate Change.

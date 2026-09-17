@@ -6,6 +6,7 @@ analyzer:
     - example/**/GeneratedPluginRegistrant.*
     - example/**/.dart_tool/**
     - example/**/build/**
+    - build/**
 
 linter:
   rules:

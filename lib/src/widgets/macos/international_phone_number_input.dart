@@ -281,6 +281,11 @@ class MacosInternationalPhoneNumberState
   bool _autoDetectionStarted = false;
   CountryResult? _detectedCountryResult;
 
+  // Cache the metadata-pattern result so one edit is parsed only once.
+  String? _validatedInput;
+  String? _validatedIsoCode;
+  bool? _validatedPhoneNumberIsValid;
+
   @override
   void dispose() {
     _detachController();
@@ -364,17 +369,7 @@ class MacosInternationalPhoneNumberState
       selectorTextStyle: widget.selectorTextStyle,
       flagStyle: widget.flagStyle,
       autoFocusSearchField: widget.autoFocusSearch,
-      onCountryChanged: (selected) {
-        setState(() {
-          country = selected;
-          acceptedLengths = _acceptedLengthsFor(selected.alpha2Code);
-        });
-        if (widget.onInputChanged != null) {
-          widget.onInputChanged!(
-            PhoneNumber(isoCode: selected.alpha2Code, nsn: controller.text),
-          );
-        }
-      },
+      onCountryChanged: onCountryChanged,
       isEnabled: widget.isEnabled,
       isScrollControlled: widget.countrySelectorScrollControlled,
       flagSize: widget.flagSize,
@@ -896,6 +891,7 @@ class MacosInternationalPhoneNumberState
 
     if (controller.text.isEmpty) {
       final isValidWhenBlank = widget.ignoreBlank;
+      _cacheValidationResult(controller.text, false);
       widget.onInputChanged?.call(
         PhoneNumber(isoCode: country.alpha2Code, nsn: ''),
       );
@@ -917,6 +913,7 @@ class MacosInternationalPhoneNumberState
     try {
       phoneNumber = _parsePhoneNumberValue(parsedPhoneNumberString);
     } catch (_) {
+      _cacheValidationResult(controller.text, false);
       widget.onInputChanged?.call(
         _parsePhoneNumberValueOrFallback(parsedPhoneNumberString),
       );
@@ -929,7 +926,9 @@ class MacosInternationalPhoneNumberState
       return;
     }
 
-    if (phoneNumber.nsn.isEmpty || !phoneNumber.isValid()) {
+    final isValid = phoneNumber.nsn.isNotEmpty && phoneNumber.isValid();
+    _cacheValidationResult(controller.text, isValid);
+    if (!isValid) {
       widget.onInputValidated?.call(false);
       isNotValid = true;
     } else {
@@ -1046,15 +1045,31 @@ class MacosInternationalPhoneNumberState
     final bool hasContent = value?.isNotEmpty ?? false;
     final bool shouldValidateBlank = !widget.ignoreBlank;
     final bool isInvalid = isNotValid && (hasContent || shouldValidateBlank);
-    try {
-      final isParsed = _parsePhoneNumberValue(value ?? "");
-      if (isParsed.isValid()) {
-        return null;
-      }
-    } catch (_) {
-      return isInvalid ? widget.errorMessage : null;
-    }
+    if (_isPhoneNumberValid(value ?? '')) return null;
     return isInvalid ? widget.errorMessage : null;
+  }
+
+  bool _isPhoneNumberValid(String value) {
+    if (_validatedInput == value &&
+        _validatedIsoCode == country.alpha2Code &&
+        _validatedPhoneNumberIsValid != null) {
+      return _validatedPhoneNumberIsValid!;
+    }
+    try {
+      final phoneNumber = _parsePhoneNumberValue(value);
+      final isValid = phoneNumber.nsn.isNotEmpty && phoneNumber.isValid();
+      _cacheValidationResult(value, isValid);
+      return isValid;
+    } catch (_) {
+      _cacheValidationResult(value, false);
+      return false;
+    }
+  }
+
+  void _cacheValidationResult(String value, bool isValid) {
+    _validatedInput = value;
+    _validatedIsoCode = country.alpha2Code;
+    _validatedPhoneNumberIsValid = isValid;
   }
 
   /// Changes Selector Button Country and Validate Change.
