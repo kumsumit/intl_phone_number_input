@@ -40,6 +40,8 @@ dependencies:
   macos_ui: 
     git: https://github.com/kumsumit/macos_ui.git
 
+  cupertino_ui: any
+  material_ui: any
 dev_dependencies:
   flutter_test:
     sdk: flutter

@@ -1,4 +1,4 @@
-import 'package:flutter/cupertino.dart';
+import 'package:cupertino_ui/cupertino_ui.dart';
 import 'package:intl_phone_number_input/intl_phone_number_input.dart';
 
 import 'country_list.dart';

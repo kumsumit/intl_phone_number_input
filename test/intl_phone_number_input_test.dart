@@ -1,6 +1,6 @@
 import 'dart:convert';
 
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:intl_phone_number_input/intl_phone_number_input.dart';
 import 'package:intl_phone_number_input/src/utils/formatter/as_you_type_formatter.dart';
