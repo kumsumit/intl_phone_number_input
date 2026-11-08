@@ -1,5 +1,6 @@
 import 'package:cupertino_ui/cupertino_ui.dart';
 import 'package:flutter/services.dart';
+import 'package:intl_phone_number_input/src/widgets/common/selector_layout.dart';
 import 'package:macos_ui/macos_ui.dart';
 
 class MacosInputWidgetView extends StatelessWidget {
@@ -188,7 +189,7 @@ class MacosInputWidgetView extends StatelessWidget {
             children: [
               Align(
                 alignment: AlignmentDirectional.centerStart,
-                child: selectorSection!,
+                child: SelectorLayout(child: selectorSection!),
               ),
               SizedBox(height: selectorSpacing),
               directedField,

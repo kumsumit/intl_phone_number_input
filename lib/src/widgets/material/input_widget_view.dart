@@ -1,5 +1,6 @@
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter/services.dart';
+import 'package:intl_phone_number_input/src/widgets/common/selector_layout.dart';
 
 class MaterialInputWidgetView extends StatelessWidget {
   static const double _stackedLayoutBreakpoint = 700;
@@ -98,7 +99,7 @@ class MaterialInputWidgetView extends StatelessWidget {
             children: [
               Align(
                 alignment: AlignmentDirectional.centerStart,
-                child: selectorSection!,
+                child: SelectorLayout(child: selectorSection!),
               ),
               SizedBox(height: selectorSpacing),
               field,

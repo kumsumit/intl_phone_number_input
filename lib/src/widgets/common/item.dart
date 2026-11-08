@@ -1,4 +1,5 @@
 import 'package:flutter/widgets.dart';
+import 'package:intl_phone_number_input/src/widgets/common/selector_layout.dart';
 import 'package:intl_phone_number_input/src/models/country_model.dart';
 import 'package:intl_phone_number_input/src/widgets/common/flag_widget.dart';
 
@@ -44,6 +45,17 @@ class Item extends StatelessWidget {
                 TextStyle(fontSize: flagSize),
           ),
         SizedBox(width: 3.0),
+        if (SelectorLayout.showCountryNameOf(context) && country != null) ...[
+          Flexible(
+            child: Text(
+              country!.name,
+              style: textStyle,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+            ),
+          ),
+          const SizedBox(width: 6),
+        ],
         Text(dialCode, textDirection: TextDirection.ltr, style: textStyle),
         SizedBox(width: trailingPadding),
       ],

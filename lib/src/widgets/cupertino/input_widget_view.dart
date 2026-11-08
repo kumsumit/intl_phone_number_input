@@ -1,5 +1,6 @@
 import 'package:cupertino_ui/cupertino_ui.dart';
 import 'package:flutter/services.dart';
+import 'package:intl_phone_number_input/src/widgets/common/selector_layout.dart';
 
 class CupertinoInputWidgetView extends StatelessWidget {
   static const double _stackedLayoutBreakpoint = 700;
@@ -160,7 +161,7 @@ class CupertinoInputWidgetView extends StatelessWidget {
             children: [
               Align(
                 alignment: AlignmentDirectional.centerStart,
-                child: selectorSection!,
+                child: SelectorLayout(child: selectorSection!),
               ),
               SizedBox(height: selectorSpacing),
               directedField,
