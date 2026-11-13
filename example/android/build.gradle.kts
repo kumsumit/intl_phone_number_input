@@ -1,3 +1,5 @@
+import com.android.build.gradle.LibraryExtension
+
 allprojects {
     repositories {
         google()
@@ -16,6 +18,12 @@ subprojects {
 }
 subprojects {
     project.evaluationDependsOn(":app")
+
+    plugins.withId("com.android.library") {
+        extensions.configure<LibraryExtension> {
+            ndkVersion = "30.0.16248370"
+        }
+    }
 }
 
 tasks.register<Delete>("clean") {

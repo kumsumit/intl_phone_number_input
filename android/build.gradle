@@ -14,6 +14,3 @@ android {
     }
 }
 
-dependencies {
-    compileOnly 'io.flutter:flutter_embedding_release:1.0.0'
-}

@@ -181,16 +181,15 @@ class MaterialSelectorButton extends StatelessWidget {
                 builder: (BuildContext context, ScrollController controller) {
                   return Directionality(
                     textDirection: Directionality.of(inheritedContext),
-                    child: DecoratedBox(
-                      decoration: ShapeDecoration(
-                        color: Theme.of(context).canvasColor,
-                        shape: const RoundedRectangleBorder(
-                          borderRadius: BorderRadius.only(
-                            topLeft: Radius.circular(12),
-                            topRight: Radius.circular(12),
-                          ),
+                    child: Material(
+                      color: Theme.of(context).canvasColor,
+                      shape: const RoundedRectangleBorder(
+                        borderRadius: BorderRadius.only(
+                          topLeft: Radius.circular(12),
+                          topRight: Radius.circular(12),
                         ),
                       ),
+                      clipBehavior: Clip.hardEdge,
                       child: MaterialCountrySearchListWidget(
                         countries,
                         searchBoxDecoration: searchBoxDecoration,
