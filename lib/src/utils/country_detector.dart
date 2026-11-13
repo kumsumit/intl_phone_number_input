@@ -4,6 +4,7 @@ import 'dart:convert';
 import 'dart:math' as math;
 
 import 'package:flutter/foundation.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_timezone/flutter_timezone.dart';
 import 'package:http/http.dart' as http;
 
@@ -37,6 +38,8 @@ class CountryResult {
 }
 
 class CountryDetector {
+  static const MethodChannel _platformChannel =
+      MethodChannel('intl_phone_number_input/country_detector');
   static const Duration _localSignalsCacheTtl = Duration(seconds: 5);
   static _LocalSignalsSnapshot? _cachedLocalSignals;
   static DateTime? _cachedLocalSignalsAt;
@@ -316,6 +319,26 @@ class CountryDetector {
     }
   }
 
+  // Android exposes these values without a location permission. The channel
+  // is optional so the detector remains fully functional on other platforms
+  // and in applications that do not include the Android implementation.
+  static Future<Map<String, String?>> _getTelephonySignal() async {
+    try {
+      final value = await _platformChannel.invokeMethod<Map<dynamic, dynamic>>(
+        'getCountrySignals',
+      );
+      if (value == null) return const {};
+      return {
+        'simCountry': value['simCountry']?.toString(),
+        'networkCountry': value['networkCountry']?.toString(),
+      };
+    } on MissingPluginException {
+      return const {};
+    } on PlatformException {
+      return const {};
+    }
+  }
+
   // ── Signal 5: IP Geolocation (async, most accurate) ───────────────────────
   static Future<Map<String, String?>> _getIPSignal() async {
     final apis = [_fetchIpApiCo, _fetchIpApiCom, _fetchFreeIpApi];
@@ -365,6 +388,7 @@ class CountryDetector {
   // ── Combiner ───────────────────────────────────────────────────────────────
   static CountryResult _combine({
     required Map<String, String?> ip,
+    required Map<String, String?> telephony,
     required Map<String, String?> timezone,
     required Map<String, dynamic> offset,
     required Map<String, String?> locale,
@@ -372,10 +396,63 @@ class CountryDetector {
   }) {
     final weighted = <String, int>{};
 
+    // Signals are platform-dependent. Keep the scoring policy here so a
+    // signal that cannot exist on a platform is not treated as evidence.
+    final weights = switch (defaultTargetPlatform) {
+      TargetPlatform.android => (
+          ip: 45,
+          sim: 30,
+          network: 25,
+          timezone: 10,
+          locale: 8,
+          secondaryLocale: 2,
+          offset: 3,
+        ),
+      TargetPlatform.iOS => (
+          ip: 50,
+          sim: 0,
+          network: 0,
+          timezone: 15,
+          locale: 25,
+          secondaryLocale: 5,
+          offset: 3,
+        ),
+      TargetPlatform.macOS => (
+          ip: 50,
+          sim: 0,
+          network: 0,
+          timezone: 20,
+          locale: 25,
+          secondaryLocale: 5,
+          offset: 3,
+        ),
+      TargetPlatform.windows || TargetPlatform.linux => (
+          ip: 50,
+          sim: 0,
+          network: 0,
+          timezone: 20,
+          locale: 25,
+          secondaryLocale: 5,
+          offset: 3,
+        ),
+      TargetPlatform.fuchsia => (
+          ip: 50,
+          sim: 0,
+          network: 0,
+          timezone: 20,
+          locale: 25,
+          secondaryLocale: 5,
+          offset: 3,
+        ),
+    };
+
+    var availableWeight = 0;
+
     void vote(String? country, int weight) {
       if (country == null || country.isEmpty) return;
       final c = country.toUpperCase();
       weighted[c] = (weighted[c] ?? 0) + weight;
+      availableWeight += weight;
     }
 
     void voteMany(List<String> countries, int weight) {
@@ -387,16 +464,21 @@ class CountryDetector {
     final localeCountry = locale['country']?.toUpperCase();
     final localesCountry = locales['country']?.toUpperCase();
 
-    vote(ip['country'], 60);
-    vote(timezone['country'], 20);
-    vote(localeCountry, 15);
+    // These weights reflect how directly a signal represents the user's
+    // current country. They are deliberately independent: a missing signal
+    // does not reduce the confidence of the signals that are available.
+    vote(ip['country'], weights.ip);
+    vote(telephony['simCountry'], weights.sim);
+    vote(telephony['networkCountry'], weights.network);
+    vote(timezone['country'], weights.timezone);
+    vote(localeCountry, weights.locale);
     if (localesCountry != localeCountry) {
-      vote(localesCountry, 5);
+      vote(localesCountry, weights.secondaryLocale);
     }
     // Boost all possible countries for this offset
     final offsetCountries =
         (offset['countries'] as List?)?.cast<String>() ?? [];
-    voteMany(offsetCountries, 10);
+    voteMany(offsetCountries, weights.offset);
 
     if (weighted.isEmpty) {
       return const CountryResult(confidence: 0);
@@ -407,7 +489,9 @@ class CountryDetector {
 
     final topCode = sorted.first.key;
     final topScore = sorted.first.value;
-    final confidence = topScore.clamp(0, 100);
+    final confidence = availableWeight == 0
+        ? 0
+        : ((topScore / availableWeight) * 100).round().clamp(0, 100);
 
     return CountryResult(
       countryCode: topCode,
@@ -467,17 +551,20 @@ class CountryDetector {
     final offset = _getOffsetSignal();
     final locale = _getLocaleSignal();
     final locales = _getLocalesSignal();
+    final telephony = await _getTelephonySignal();
 
     debugPrint('[CountryDetector] timezone signal:   $timezone');
     debugPrint('[CountryDetector] offset signal:     $offset');
     debugPrint('[CountryDetector] locale signal:     $locale');
     debugPrint('[CountryDetector] locales signal:    $locales');
+    debugPrint('[CountryDetector] telephony signal:  $telephony');
 
     return _LocalSignalsSnapshot(
       timezone: timezone,
       offset: offset,
       locale: locale,
       locales: locales,
+      telephony: telephony,
     );
   }
 
@@ -488,6 +575,7 @@ class CountryDetector {
     final localSignals = await _collectLocalSignals();
     return _combine(
       ip: {},
+      telephony: localSignals.telephony,
       timezone: localSignals.timezone,
       offset: localSignals.offset,
       locale: localSignals.locale,
@@ -502,6 +590,7 @@ class CountryDetector {
     debugPrint('[CountryDetector] ip signal:         $ip');
     return _combine(
       ip: ip,
+      telephony: localSignals.telephony,
       timezone: localSignals.timezone,
       offset: localSignals.offset,
       locale: localSignals.locale,
@@ -607,12 +696,14 @@ class _LocalSignalsSnapshot {
   final Map<String, dynamic> offset;
   final Map<String, String?> locale;
   final Map<String, String?> locales;
+  final Map<String, String?> telephony;
 
   const _LocalSignalsSnapshot({
     required this.timezone,
     required this.offset,
     required this.locale,
     required this.locales,
+    required this.telephony,
   });
 }
 

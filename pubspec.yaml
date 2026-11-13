@@ -18,7 +18,7 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  material_ui: ^1.10.0
+  material_ui: ^1.11.0
   cupertino_ui: ^1.1.6 
   macos_ui: 
     git: https://github.com/kumsumit/macos_ui.git
@@ -53,3 +53,8 @@ dependency_overrides:
 
 flutter:
   uses-material-design: true
+  plugin:
+    platforms:
+      android:
+        package: com.intlphonenumberinput
+        pluginClass: IntlPhoneNumberInputPlugin

@@ -7,6 +7,7 @@ analyzer:
     - example/**/.dart_tool/**
     - example/**/build/**
     - build/**
+    - android/**
 
 linter:
   rules:
