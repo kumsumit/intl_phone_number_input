@@ -9,17 +9,11 @@ plugins {
 android {
     namespace = "com.example.intlphonenumberinputtest.example"
     compileSdk = 37
-    ndkVersion = "30.0.15729638"
+    ndkVersion = "30.0.16248370"
 
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_21
-        targetCompatibility = JavaVersion.VERSION_21
-    }
-
-    kotlin {
-        compilerOptions {
-            jvmTarget.set(JvmTarget.JVM_21)
-        }
+        sourceCompatibility = JavaVersion.VERSION_25
+        targetCompatibility = JavaVersion.VERSION_25
     }
 
     defaultConfig {
@@ -41,6 +35,13 @@ android {
         }
     }
 }
+
+kotlin {
+    jvmToolchain(25)
+    compilerOptions {
+            jvmTarget = org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_25
+        }
+    }
 
 flutter {
     source = "../.."

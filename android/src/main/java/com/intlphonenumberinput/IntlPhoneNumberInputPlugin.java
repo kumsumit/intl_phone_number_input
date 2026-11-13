@@ -3,8 +3,6 @@ package com.intlphonenumberinput;
 import android.content.Context;
 import android.telephony.TelephonyManager;
 
-import androidx.annotation.NonNull;
-
 import java.util.HashMap;
 import java.util.Map;
 
@@ -19,7 +17,7 @@ public final class IntlPhoneNumberInputPlugin implements FlutterPlugin, MethodCa
   private Context context;
 
   @Override
-  public void onAttachedToEngine(@NonNull FlutterPluginBinding binding) {
+  public void onAttachedToEngine(FlutterPluginBinding binding) {
     context = binding.getApplicationContext();
     channel = new MethodChannel(binding.getBinaryMessenger(),
         "intl_phone_number_input/country_detector");
@@ -27,7 +25,7 @@ public final class IntlPhoneNumberInputPlugin implements FlutterPlugin, MethodCa
   }
 
   @Override
-  public void onMethodCall(@NonNull MethodCall call, @NonNull Result result) {
+  public void onMethodCall(MethodCall call, Result result) {
     if (!"getCountrySignals".equals(call.method)) {
       result.notImplemented();
       return;
@@ -52,7 +50,7 @@ public final class IntlPhoneNumberInputPlugin implements FlutterPlugin, MethodCa
   }
 
   @Override
-  public void onDetachedFromEngine(@NonNull FlutterPluginBinding binding) {
+  public void onDetachedFromEngine(FlutterPluginBinding binding) {
     if (channel != null) channel.setMethodCallHandler(null);
     channel = null;
     context = null;
