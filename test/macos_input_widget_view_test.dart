@@ -1,4 +1,3 @@
-import 'package:cupertino_ui/cupertino_ui.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:intl_phone_number_input/src/widgets/macos/input_widget_view.dart';
 import 'package:macos_ui/macos_ui.dart';
